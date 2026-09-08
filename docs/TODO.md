@@ -1,6 +1,6 @@
 # TODO — AppLibrary
 
-最終更新日: 2026-09-08
+最終更新日: 2026-09-09
 
 未完了のリポジトリ内タスクはありません。新しい改善は GitHub Issue に受け入れ条件を置き、着手時にこのファイルへ追加します。
 
@@ -10,9 +10,11 @@
 - [x] Issue #14 で OGP、サイト法務ページ、アプリ法務本文、機能カード、metadata、アクセシビリティ、キャッシュを公開向けに整備
 - [x] Issue #16 で Dev-Tools を追加し、iOS / Web の platform filter、外部サイト CTA、画像・privacy coverage を検証
 - [x] Issue #21 でトップページを紙とステッカーへ再設計し、検索・フィルタ・モーダル・Liquid Glass・未使用設定を削除
+- [x] Issue #23 で一覧行とステッカーの相互ハイライト、掴み位置に応じた傾き、フッターの奥付を追加
 
 ## 見送った改善
 
 - OGP 画像 (`public/ogp.png`) が旧 Liquid Glass 意匠のまま。刷新は別 Issue にする。
+- ドラッグで現れる鉛筆注釈、個別ページの標本ステッカー（Issue #23 で Codex / Grok が提案したが見送り）。
 
 完了経緯は [設計判断](decisions/README.md)、[完了済み計画](superpowers/completed/)、GitHub の closed Issue / merged PR に保存します。未確認のローカルアプリ名を候補として列挙しません。

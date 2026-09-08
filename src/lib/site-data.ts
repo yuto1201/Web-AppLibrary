@@ -57,6 +57,10 @@ type Dict = {
   contact_h: string;
   contact_p: string;
   footer_copyright: string;
+  colophon_label: string;
+  colophon_p1: string;
+  colophon_p2: string;
+  colophon_source: string;
   privacy: string;
   terms: string;
   status_alpha: string;
@@ -86,6 +90,10 @@ export const i18n: Record<Lang, Dict> = {
     contact_h: "お仕事・感想・雑談まで。",
     contact_p: "お気軽にご連絡ください。SNS・メール、どちらでも。",
     footer_copyright: "© 2026 · 東京から、愛を込めて",
+    colophon_label: "奥付",
+    colophon_p1: "東京在住のひとりの開発者が、趣味と実益を兼ねて作って運用しています。",
+    colophon_p2: "解析もトラッキングも入れていません。Next.js の静的出力だけで動いていて、サーバーもデータベースもありません。",
+    colophon_source: "ソースコードは GitHub にあります",
     privacy: "プライバシー",
     terms: "利用規約",
     status_alpha: "α 開発中",
@@ -113,6 +121,10 @@ export const i18n: Record<Lang, Dict> = {
     contact_h: "Work, feedback, or just hi.",
     contact_p: "Always happy to hear from you — email or social, either works.",
     footer_copyright: "© 2026 · Made in Tokyo, with care",
+    colophon_label: "Colophon",
+    colophon_p1: "Built and run by one developer in Tokyo, as a side project.",
+    colophon_p2: "No analytics, no tracking. Just a static Next.js export — no server, no database.",
+    colophon_source: "Source code is on GitHub",
     privacy: "Privacy",
     terms: "Terms",
     status_alpha: "In Development",

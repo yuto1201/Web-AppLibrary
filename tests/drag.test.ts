@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { baseBox, clampOffset, isTap, moveOffset, ORIGIN } from "../src/lib/drag";
+import { baseBox, clampOffset, isTap, moveOffset, normalizeGrab, ORIGIN, spinFromGrab } from "../src/lib/drag";
 
 const band = { left: 0, top: 0, right: 800, bottom: 300 };
 /** 帯の左上に置いた 100x100 のステッカー。 */
@@ -65,5 +65,51 @@ describe("baseBox", () => {
 
   it("未移動なら矩形はそのまま", () => {
     expect(baseBox(sticker, ORIGIN)).toEqual(sticker);
+  });
+});
+
+describe("normalizeGrab", () => {
+  const centered = { left: 0, top: 0, right: 100, bottom: 100 };
+
+  it("中心を掴むと 0,0", () => {
+    expect(normalizeGrab({ x: 50, y: 50 }, centered)).toEqual({ x: 0, y: 0 });
+  });
+
+  it("右端を掴むと x が 1 に近づく", () => {
+    expect(normalizeGrab({ x: 100, y: 50 }, centered)).toEqual({ x: 1, y: 0 });
+  });
+
+  it("左端を掴むと x が -1 に近づく", () => {
+    expect(normalizeGrab({ x: 0, y: 50 }, centered)).toEqual({ x: -1, y: 0 });
+  });
+
+  it("矩形の外を掴んでも -1〜1 にクランプされる", () => {
+    expect(normalizeGrab({ x: 500, y: -500 }, centered)).toEqual({ x: 1, y: -1 });
+  });
+});
+
+describe("spinFromGrab", () => {
+  it("中心を掴んで動かしても回転しない", () => {
+    expect(spinFromGrab({ x: 0, y: 0 }, { x: 200, y: 200 })).toBe(0);
+  });
+
+  it("下端を掴んで右へ引くと片方向に回る", () => {
+    const spin = spinFromGrab({ x: 0, y: 1 }, { x: 100, y: 0 });
+    expect(spin).toBeLessThan(0);
+  });
+
+  it("上端を掴んで同じ向きに引くと逆方向に回る", () => {
+    const spin = spinFromGrab({ x: 0, y: -1 }, { x: 100, y: 0 });
+    expect(spin).toBeGreaterThan(0);
+  });
+
+  it("端を掴むほど、中心を掴むより大きく回る（てこの原理）", () => {
+    const edge = Math.abs(spinFromGrab({ x: 0, y: 1 }, { x: 100, y: 0 }));
+    const nearCenter = Math.abs(spinFromGrab({ x: 0, y: 0.2 }, { x: 100, y: 0 }));
+    expect(edge).toBeGreaterThan(nearCenter);
+  });
+
+  it("上限を超える回転量は max で頭打ちになる", () => {
+    expect(spinFromGrab({ x: 0, y: 1 }, { x: 10000, y: 0 }, 0.06, 14)).toBe(-14);
   });
 });

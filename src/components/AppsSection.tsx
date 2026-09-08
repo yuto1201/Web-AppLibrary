@@ -10,8 +10,17 @@ import { statusLabel } from "@/lib/labels";
  * 一覧は行の索引として描く。
  * 検索・絞り込み・モーダルは掲載数に対して過剰だったため持たない。
  * 行全体が個別ページへのリンクで、詳細（機能・スクリーンショット・配布先）はそちらが持つ。
+ *
+ * activeSlug / onHoverSlug はステッカー帯との相互ハイライト用。
+ * 行にホバー/フォーカスすると対応するステッカーが反応し、逆方向も同様に動く。
  */
-export function AppsSection() {
+export function AppsSection({
+  activeSlug,
+  onHoverSlug,
+}: {
+  activeSlug: string | null;
+  onHoverSlug: (slug: string | null) => void;
+}) {
   const { prefs, t } = useSiteState();
 
   return (
@@ -24,10 +33,14 @@ export function AppsSection() {
         {apps.map((app) => (
           <li key={app.slug}>
             <Link
-              className="app-row"
+              className={`app-row${app.slug === activeSlug ? " is-linked" : ""}`}
               href={`/apps/${app.slug}/`}
               // hover 時の色はアプリ自身の accent を使う。サイトの 1 色で塗り潰さない。
               style={{ "--row-accent": app.accent } as React.CSSProperties}
+              onMouseEnter={() => onHoverSlug(app.slug)}
+              onFocus={() => onHoverSlug(app.slug)}
+              onMouseLeave={() => onHoverSlug(null)}
+              onBlur={() => onHoverSlug(null)}
             >
               <span className="app-row-icon">
                 {/* 静的出力のため素の img を使う。next/image の最適化は使わない。 */}
