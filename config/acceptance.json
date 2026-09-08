@@ -3,7 +3,7 @@
   "criteria": [
     { "id": "AC-1", "description": "既存アプリと静的サイトの構成を維持する", "tests": ["tests/registry.test.ts", "tests/e2e/site.spec.ts"] },
     { "id": "AC-2", "description": "仕様・設定・文書リンク・生成物のずれを検出する", "tests": ["tests/tooling.test.mjs"] },
-    { "id": "AC-3", "description": "検索・モーダル・テーマ永続化・個別ページをブラウザで検証する", "tests": ["tests/e2e/site.spec.ts"] },
+    { "id": "AC-3", "description": "一覧行の遷移・ステッカーのドラッグ・テーマ永続化・実配色のコントラスト・個別ページをブラウザで検証する", "tests": ["tests/e2e/site.spec.ts"] },
     { "id": "AC-4", "description": "CI ジョブ、Ruleset export、GitHub Actions App に固定した必須チェックの不一致を検出する", "tests": ["tests/tooling.test.mjs"] },
     { "id": "AC-5", "description": "静的出力を配信し、404 とパス逸脱を検証する", "tests": ["tests/static-server.test.mjs"] }
   ]

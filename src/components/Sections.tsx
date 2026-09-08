@@ -3,8 +3,6 @@
 import Link from "next/link";
 import { useSiteState } from "@/lib/state";
 import { posts, profile, social } from "@/lib/site-data";
-import { useReveal } from "@/lib/use-reveal";
-import type { Post } from "@/lib/site-data";
 
 export function Posts() {
   const { t } = useSiteState();
@@ -13,59 +11,45 @@ export function Posts() {
   return (
     <section className="section" id="posts">
       <div className="section-head">
-        <div>
-          <h2 className="section-title">{t.section_posts}</h2>
-          <div className="section-sub">{t.section_posts_sub}</div>
-        </div>
+        <h2 className="section-title">{t.section_posts}</h2>
+        <span className="section-count">{posts.length}</span>
       </div>
-      <div className="posts">
-        {posts.map((post, index) => (
-          <PostCard post={post} index={index} key={post.date + post.title} />
+      <ul className="post-list">
+        {posts.map((post) => (
+          <li className="post" lang="ja" key={post.date + post.title}>
+            <time className="post-date" dateTime={post.date}>{post.date}</time>
+            <span className="post-body">
+              <span className="post-title">{post.title}</span>
+              <span className="post-excerpt">{post.excerpt}</span>
+            </span>
+          </li>
         ))}
-      </div>
+      </ul>
     </section>
-  );
-}
-
-function PostCard({ post, index }: { post: Post; index: number }) {
-  const { ref: revealRef, className: revealClass } = useReveal<HTMLElement>();
-  return (
-    <article className={`post glass ${revealClass}`} lang="ja" ref={revealRef} style={{ transitionDelay: `${index * 60}ms` }}>
-      <div className="post-date">{post.date}</div>
-      <h3 className="post-title">{post.title}</h3>
-      <p className="post-excerpt">{post.excerpt}</p>
-    </article>
   );
 }
 
 export function Contact() {
   const { t } = useSiteState();
-  const { ref: revealRef, className: revealClass } = useReveal<HTMLDivElement>();
   // url が空 / "#" のエントリは未公開とみなして描画しない。
   const visible = social.filter((entry) => entry.url && entry.url !== "#");
 
   return (
     <section className="section" id="contact">
-      <div className={`contact glass ${revealClass}`} ref={revealRef}>
-        <h2>{t.contact_h}</h2>
-        <p>{t.contact_p}</p>
-        {visible.length > 0 && (
-          <div className="socials">
-            {visible.map((entry) => (
-              <a
-                className="social-link"
-                key={entry.label}
-                href={entry.url}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <strong>{entry.label}</strong>
+      <h2 className="contact-h">{t.contact_h}</h2>
+      <p className="contact-p">{t.contact_p}</p>
+      {visible.length > 0 && (
+        <ul className="socials">
+          {visible.map((entry) => (
+            <li key={entry.label}>
+              <a className="social-link" href={entry.url} target="_blank" rel="noopener noreferrer">
+                <span className="social-label">{entry.label}</span>
                 <span className="social-handle">{entry.handle}</span>
               </a>
-            ))}
-          </div>
-        )}
-      </div>
+            </li>
+          ))}
+        </ul>
+      )}
     </section>
   );
 }
@@ -75,14 +59,12 @@ export function Footer() {
 
   return (
     <footer className="footer">
-      <div>{t.footer_copyright}</div>
-      <div>
+      <span>{t.footer_copyright}</span>
+      <span className="footer-links">
         <Link href="/privacy/">{t.privacy}</Link>
-        &nbsp;·&nbsp;
         <Link href="/terms/">{t.terms}</Link>
-        &nbsp;·&nbsp;
-        {profile.name}
-      </div>
+        <span>{profile.name}</span>
+      </span>
     </footer>
   );
 }
