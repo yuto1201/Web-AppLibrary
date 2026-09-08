@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { apps } from "@/data/registry";
 import { useSiteState } from "@/lib/state";
 import { baseBox, clampOffset, isTap, moveOffset, ORIGIN, type Box, type Point } from "@/lib/drag";
@@ -107,8 +107,12 @@ function Sticker({
     onPointerUp: handlePointerUp,
     onPointerCancel: handlePointerUp,
     // ドラッグの終わりに起きるクリックは遷移させない。
+    // フラグはここで消費して戻す。戻さないと、以降のキーボード Enter や
+    // 支援技術からの click（pointerdown を伴わない）まで抑止し続けてしまう。
     onClick: (event: React.MouseEvent) => {
-      if (dragged.current) event.preventDefault();
+      if (!dragged.current) return;
+      event.preventDefault();
+      dragged.current = false;
     },
     className: `sticker${held ? " is-held" : ""}`,
     style,
@@ -156,6 +160,15 @@ export function Stickers() {
 
   const moved = Object.keys(offsets).length > 0;
 
+  // 掴んだ時点の帯の矩形でクランプしているため、リサイズ後の位置は保証できない。
+  // 古い座標のまま帯の外へ残るより、並びを戻すほうが素直。
+  useEffect(() => {
+    if (!moved) return;
+    const onResize = () => setOffsets({});
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [moved]);
+
   return (
     <section className="stickers" aria-labelledby="stickers-title">
       <h2 className="visually-hidden" id="stickers-title">{t.stickers_title}</h2>
@@ -173,7 +186,7 @@ export function Stickers() {
             held={held === item.key}
             onGrab={() => setHeld(item.key)}
             onMove={(offset) => setOffsets((current) => ({ ...current, [item.key]: offset }))}
-            onRelease={() => setHeld(null)}
+            onRelease={() => setHeld((current) => (current === item.key ? null : current))}
           >
             {item.body}
           </Sticker>

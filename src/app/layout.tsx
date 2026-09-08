@@ -54,7 +54,7 @@ export const viewport: Viewport = {
  * ここを React 側へ移すと hydration 前に一瞬デフォルト配色が出るため、
  * 旧 index.html と同じくインラインスクリプトのまま維持する。
  */
-const restoreTheme = `(function(){var h=document.documentElement;h.setAttribute('data-theme','light');try{var s=JSON.parse(localStorage.getItem('applibrary_state')||'null');if(s){if(s.lang)h.lang=s.lang;if(s.theme)h.setAttribute('data-theme',s.theme);}}catch(e){}try{var seen=sessionStorage.getItem('applibrary_hero_seen');var rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;if(seen||rm){h.setAttribute('data-hero-opening','off');}else{h.setAttribute('data-hero-opening','play');sessionStorage.setItem('applibrary_hero_seen','1');}}catch(e){h.setAttribute('data-hero-opening','off');}})();`;
+const restoreTheme = `(function(){var h=document.documentElement;h.setAttribute('data-theme','light');try{var s=JSON.parse(localStorage.getItem('applibrary_state')||'null');if(s){if(s.lang==='en')h.lang='en';if(s.theme==='dark')h.setAttribute('data-theme','dark');}}catch(e){}try{var seen=sessionStorage.getItem('applibrary_hero_seen');var rm=window.matchMedia('(prefers-reduced-motion: reduce)').matches;if(seen||rm){h.setAttribute('data-hero-opening','off');}else{h.setAttribute('data-hero-opening','play');sessionStorage.setItem('applibrary_hero_seen','1');}}catch(e){h.setAttribute('data-hero-opening','off');}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -144,6 +144,25 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
     .toBeLessThan(2);
 });
 
+test("ドラッグの後でもキーボードから遷移できる", async ({ page }) => {
+  await page.goto("/");
+
+  const sticker = page.locator(`.sticker[href="/apps/${apps[0]!.slug}/"]`);
+  await sticker.scrollIntoViewIfNeeded();
+  const box = await sticker.boundingBox();
+
+  // 一度ドラッグする。この click 抑止フラグが戻らないと、以降の Enter が死ぬ。
+  await page.mouse.move(box!.x + box!.width / 2, box!.y + box!.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box!.x + 120, box!.y - 40, { steps: 8 });
+  await page.mouse.up();
+  await expect.poll(() => new URL(page.url()).pathname).toBe("/");
+
+  await sticker.focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(new RegExp(`/apps/${apps[0]!.slug}/$`, "u"));
+});
+
 test("ステッカーは動かさずに離すと個別ページへ移る", async ({ page }) => {
   await page.goto("/");
 
