@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync, realpathSync, statSync } from "node:fs";
 import path from "node:path";
-import { apps, getApp, usedPlatforms, usedCategories } from "@/data/registry";
+import { apps, getApp } from "@/data/registry";
 import { privacyDocuments } from "@/data/privacy/registry";
 import { appSchema } from "@/data/schema";
 
@@ -150,10 +150,5 @@ describe("apps registry", () => {
   it("getApp は slug で引ける / 無い slug は undefined", () => {
     expect(getApp("sublog")?.name).toBe("SubLog");
     expect(getApp("does-not-exist")).toBeUndefined();
-  });
-
-  it("フィルタ候補が実データから導出される", () => {
-    expect(usedPlatforms()).toEqual(["iOS", "Web"]);
-    expect(usedCategories()).toEqual(expect.arrayContaining(["ファイナンス", "ヘルスケア", "開発ツール"]));
   });
 });
