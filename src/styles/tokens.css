@@ -1,7 +1,11 @@
 /* ============================================================
-   AppLibrary Design Tokens
-   liquid-glass.css から移植・整理した標準トークン
+   AppLibrary Design Tokens — 紙 (paper) とインク (ink)
    すべてのページ（共通・個別）で読み込む
+
+   既定は light（紙）。dark は同じ紙面を反転した「濃いインク紙」。
+   ink-2 / ink-3 / accent は paper 上で 4.5:1 以上になる値を選んでいる。
+   axe の color-contrast を実際の配色で検証しているため、
+   明るくする方向へ動かすときは E2E で確認する。
    ============================================================ */
 
 :root {
@@ -15,64 +19,34 @@
   --space-8: 32px;
   --space-10: 40px;
   --space-12: 56px;
+  --space-16: 80px;
 
   /* --- Radius --- */
-  --radius-sm: 8px;
-  --radius: 12px;
-  --radius-lg: 20px;
+  --radius-sm: 6px;
+  --radius: 10px;
+  --radius-lg: 18px;
   --radius-full: 999px;
 
   /* --- Font --- */
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* 見出し・アプリ名・ワードマーク。日本語は OS のゴシックへ落ちる */
+  --font-display: var(--font-bricolage), var(--font-inter), 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
 
-  /* --- Liquid Glass --- */
-  --glass-blur: 22px;
-  --glass-blur-sm: 14px;
-  --glass-tint: rgba(255, 255, 255, 0.08);
-  --glass-tint-md: rgba(255, 255, 255, 0.12);
-  --glass-tint-hover: rgba(255, 255, 255, 0.18);
-  --glass-border: rgba(255, 255, 255, 0.4);
-  --glass-border-dim: rgba(255, 255, 255, 0.2);
-  --glass-border-bright: rgba(255, 255, 255, 0.6);
-  --glass-glow: 0 0 16px -6px rgba(255, 255, 255, 0.25);
-  --glass-glow-lg: 0 0 24px -6px rgba(255, 255, 255, 0.35);
-  --glass-inset: inset 0 0 10px -3px rgba(255, 255, 255, 0.6);
-  --glass-accent: rgba(0, 122, 255, 0.4);
-  --glass-text: #ffffff;
-  --glass-text-dim: rgba(255, 255, 255, 0.82);
-  --glass-text-faint: rgba(255, 255, 255, 0.72);
-  --glass-text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-  --filter-label-bg: #24335c;
-  --filter-label-ink: #ffffff;
-  --filter-label-border: rgba(255, 255, 255, 0.38);
+  /* --- Paper / Ink --- */
+  --paper: #fafaf8;        /* 紙面 */
+  --paper-raised: #ffffff; /* 紙面から一段浮いた面 */
+  --paper-sunken: #f2f1ec; /* 押し込んだ面（hover 帯など） */
+  --ink: #141310;          /* 見出し・本文 */
+  --ink-2: #57544d;        /* 副文 */
+  --ink-3: #6b675e;        /* メタ・ラベル（paper 上 5.3:1） */
+  --rule: #e4e1d8;         /* 1px 罫線。構造は影ではなく線で作る */
+  --rule-strong: #c9c5b8;
+  --accent: #c4301c;       /* paper 上 5.3:1。文字にも使える */
 
-  /* --- Shadow --- */
-  --shadow-out:    0 4px 24px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.06);
-  --shadow-out-sm: 0 2px 12px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
-  --shadow-out-lg: 0 8px 40px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
-  --shadow-in:     inset 0 2px 6px rgba(0, 0, 0, 0.08);
-  --shadow-in-sm:  inset 0 1px 3px rgba(0, 0, 0, 0.06);
-
-  /* --- Semantic Color --- */
-  --accent: #007AFF;
-  --accent-hover: #0a84ff;
-  --success: #30D158;
-  --danger:  #FF453A;
-  --warning: #FFD60A;
-  --info:    #5AC8FA;
-
-  /* --- Utility Palette --- */
-  --purple: #BF5AF2;
-  --pink:   #FF6482;
-  --orange: #FF9F0A;
-  --teal:   #64D2B1;
-  --indigo: #5856D6;
-
-  /* --- Tweakable runtime tokens (top page) --- */
-  --card-pad: 22px;
-  --font-serif: 'Iowan Old Style', Palatino, 'Hiragino Mincho ProN', 'Yu Mincho', Georgia, serif;
-  --font-stack: var(--font-sans);
+  /* --- Shadow --- 紙に置いたものの影だけに使う --- */
+  --shadow-sticker: 0 1px 1px rgba(20, 19, 16, 0.10), 0 6px 14px -6px rgba(20, 19, 16, 0.22);
+  --shadow-sticker-lift: 0 2px 3px rgba(20, 19, 16, 0.12), 0 20px 34px -12px rgba(20, 19, 16, 0.32);
 
   /* --- Hero opening animation --- */
   --hero-anim-duration: 0.5s;
@@ -83,26 +57,18 @@
   --hero-letter-stagger: 24ms;
 }
 
-/* --- Tweaks: density / font (top page only) --- */
-[data-density="tight"]    { --card-pad: 16px; }
-[data-density="relaxed"]  { --card-pad: 22px; }
-[data-density="spacious"] { --card-pad: 30px; }
-[data-font="sans"]  { --font-stack: var(--font-sans); }
-[data-font="serif"] { --font-stack: var(--font-serif); }
-[data-font="mono"]  { --font-stack: var(--font-mono); }
+[data-theme="dark"] {
+  --paper: #131210;
+  --paper-raised: #1b1a17;
+  --paper-sunken: #201e1a;
+  --ink: #f2f0ea;
+  --ink-2: #b5b1a6;
+  --ink-3: #8f8b80;        /* paper 上 5.5:1 */
+  --rule: #302d28;
+  --rule-strong: #45413a;
+  --accent: #ff7a55;       /* paper 上 7.3:1 */
 
-/* --- Light theme override (top page only — sub-pages are self-contained) --- */
-[data-theme="light"] {
-  --glass-text:        #1d1d1f;
-  --glass-text-dim:    rgba(29, 29, 31, 0.82);
-  --glass-text-faint:  rgba(29, 29, 31, 0.7);
-  --glass-text-shadow: 0 1px 0 rgba(255, 255, 255, 0.4);
-  --glass-tint:        rgba(255, 255, 255, 0.3);
-  --glass-tint-md:     rgba(255, 255, 255, 0.45);
-  --glass-tint-hover:  rgba(255, 255, 255, 0.6);
-  --glass-border:      rgba(255, 255, 255, 0.7);
-  --glass-border-dim:  rgba(255, 255, 255, 0.45);
-  --filter-label-bg:   #ffffff;
-  --filter-label-ink:  #1d1d1f;
-  --filter-label-border: rgba(29, 29, 31, 0.2);
+  --shadow-sticker: 0 1px 1px rgba(0, 0, 0, 0.5), 0 6px 14px -6px rgba(0, 0, 0, 0.6);
+  --shadow-sticker-lift: 0 2px 3px rgba(0, 0, 0, 0.55), 0 20px 34px -12px rgba(0, 0, 0, 0.7);
+  color-scheme: dark;
 }

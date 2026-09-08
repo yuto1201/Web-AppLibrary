@@ -5,23 +5,18 @@ import { i18n, type Lang } from "./site-data";
 
 const STORAGE_KEY = "applibrary_state";
 
-export const ACCENTS = ["#0A84FF", "#FF3B30", "#34C759", "#AF52DE", "#FF9500", "#5856D6"] as const;
-
 export type Prefs = {
   theme: "light" | "dark";
-  accent: string;
-  layout: "mosaic" | "grid" | "list";
-  density: "tight" | "relaxed" | "spacious";
-  font: "sans" | "serif" | "mono";
   lang: Lang;
 };
 
+/**
+ * 既定は light（紙面）。
+ * layout / density / font / accent は UI から切り替えられない死んだ設定だったため削除した。
+ * 旧い保存値に残っていても readStorage が DEFAULTS の形へ落とすので害はない。
+ */
 const DEFAULTS: Prefs = {
-  theme: "dark",
-  accent: "#0A84FF",
-  layout: "mosaic",
-  density: "relaxed",
-  font: "sans",
+  theme: "light",
   lang: "ja",
 };
 
@@ -38,7 +33,13 @@ let snapshot: Prefs | null = null;
 function readStorage(): Prefs {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return { ...DEFAULTS, ...(JSON.parse(raw) as Partial<Prefs>) };
+    if (raw) {
+      const saved = JSON.parse(raw) as Partial<Prefs>;
+      return {
+        theme: saved.theme === "dark" ? "dark" : "light",
+        lang: saved.lang === "en" ? "en" : "ja",
+      };
+    }
   } catch {
     // localStorage が使えない環境では既定値で動かす。
   }
@@ -64,10 +65,6 @@ function applyToDocument(prefs: Prefs) {
   const html = document.documentElement;
   html.lang = prefs.lang;
   html.setAttribute("data-theme", prefs.theme);
-  html.setAttribute("data-layout", prefs.layout);
-  html.setAttribute("data-density", prefs.density);
-  html.setAttribute("data-font", prefs.font);
-  html.style.setProperty("--accent", prefs.accent);
 }
 
 function writePrefs(patch: Partial<Prefs>) {

@@ -1,4 +1,4 @@
-import { PLATFORMS, registrySchema, type App } from "./schema";
+import { registrySchema, type App } from "./schema";
 
 /**
  * 掲載アプリの唯一の真実。
@@ -190,14 +190,4 @@ export const apps: App[] = registrySchema.parse(entries);
 
 export function getApp(slug: string): App | undefined {
   return apps.find((app) => app.slug === slug);
-}
-
-/** 掲載中のアプリが持つプラットフォームを、PLATFORMS の定義順で返す。 */
-export function usedPlatforms(): string[] {
-  const seen = new Set(apps.flatMap((app) => app.platforms));
-  return PLATFORMS.filter((platform) => seen.has(platform));
-}
-
-export function usedCategories(): string[] {
-  return [...new Set(apps.map((app) => app.category))];
 }
