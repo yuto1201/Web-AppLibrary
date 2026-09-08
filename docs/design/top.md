@@ -51,10 +51,11 @@
 
 ## 一覧行とステッカーの相互ハイライト
 
-`activeSlug` を `src/app/page.tsx` が持ち、`AppsSection` と `Stickers` の両方へ props で渡す。兄弟コンポーネント 2 つだけの共有なので、専用の Context は起こさずに素朴な state リフトで足りる。
+共有状態は `src/components/AppLibrarySection.tsx` が持ち、`AppsSection` と `Stickers` の両方へ props で渡す。兄弟コンポーネント 2 つだけの共有なので、専用の Context は起こさず、ページ全体を client にもしない（`page.tsx` は Server Component のまま）。
 
-- 行・ステッカーのどちらも `onMouseEnter` / `onFocus` で自分の `slug` を、`onMouseLeave` / `onBlur` で `null` を送る。
+- **ホバーとフォーカスは別系統で持つ**（`hoverSlug` / `focusSlug`、表示は `focusSlug ?? hoverSlug`）。1 本にまとめると、キーボードで行にフォーカスした状態で別の要素にマウスを乗せて離れただけで、フォーカス由来のハイライトまで消える。`onActivate(slug, source)` の `source`（`src/lib/activate.ts`）でどちらの系統か伝える。
 - 一致した側に `is-linked` を付ける。行は既存の hover 見た目（`paper-sunken` 背景 + `accent` 文字色）をセレクタ追加だけで再利用する。ステッカーは持ち上げるだけで、回転・拡大はしない（実際に掴んだときの反応と混同させないため）。
+- **`.sticker.is-linked` は `:not(:hover):not(:focus-visible):not(.is-held)` を付ける。** アプリのステッカーはホバーそれ自体が自分を is-linked にもする（行を介さず直接触れているだけでも slug が一致する）ため、特異性が同じ `:hover` / `.is-held` / `.is-linked` のうち最後に書かれた is-linked が常に勝ち、掴んだときの傾き演出とホバーの起き上がりが両方とも見えなくなっていた（レビューで発見）。直接触れている間は is-linked を降ろし、行経由のときだけ効かせる。
 - 装飾ステッカー（Swift / Tokyo）は `slug` を持たないため、この連動には参加しない。
 
 ## ステッカーの掴み位置と傾き（てこの原理）
@@ -62,6 +63,13 @@
 `src/lib/drag.ts` の `normalizeGrab`（掴んだ点を矩形の中心から -1〜1 に正規化）と `spinFromGrab`（そこから回転量を出す）が計算を持つ。中心から離れた点を掴んで横へ引くほど大きく回る。掴んでいる間だけ `--spin` を `--tilt` へ足し、離すと 0 へ戻る（`Sticker` コンポーネント内のローカル state。オフセットと違い親と共有しない）。
 
 掴んでいる間、元の位置に `.sticker-ghost`（1px 破線）を重ねる。ステッカー本体は `transform` で動くが、`.sticker-slot`（通常のフローに残る）へ `inset:0` で重ねているため、常に元の位置と正確に一致する。
+
+複数ポインタと中断への備え（レビューで指摘され対処）。
+
+- `held` は `Set<string>`。2 本指で別々のステッカーを同時に掴んでも、片方の `is-held` と跡が消えない。
+- 同じステッカーへの 2 本目の `pointerdown` は無視する（`drag.current` が残っていれば早期 return）。1 本目の掴み位置を上書きしない。
+- `pointercancel` / `lostpointercapture` は `pointerup` と同じ後始末をする。
+- リサイズは `offsets` と `held` を戻したうえで `resetToken` を進め、進行中のドラッグがあれば各 `Sticker` 側でも `drag.current` を捨てる。掴んだ時点の帯の矩形は無効になっているため、そのまま move/up を処理させない。
 
 **E2E を書く際の注意。** ステッカーへマウスを乗せると、上記の相互ハイライトが `is-linked` を発火させ、0.3s の `transform` transition で位置が数 px 動く。この収束を待たずに `mouse.down()` すると、掴んだ位置の計算がずれて回転の符号まで変わることがある（実機のユーザー操作では発生しない、機械的な自動操作特有のタイミング問題）。`tests/e2e/site.spec.ts` はホバー後に transition 分だけ待ってから押している。
 

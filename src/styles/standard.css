@@ -423,8 +423,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 /* is-linked は一覧行からの連動ハイライト。持ち上げるだけで、回転や拡大はしない
-   （実際に掴んだときの反応と混同させないため）。 */
-.sticker.is-linked {
+   （実際に掴んだときの反応と混同させないため）。
+   :not(:hover):not(:focus-visible):not(.is-held) が無いと、アプリのステッカーは
+   ホバーそれ自体が自分自身を is-linked にもする（行を介さず直接触れているだけでも
+   slug が一致する）ため、特異性が同じ 3 つのうち最後に書かれたこの規則が常に勝ち、
+   掴んだときの傾き演出とホバーの起き上がりが両方とも見えなくなっていた。 */
+.sticker.is-linked:not(:hover):not(:focus-visible):not(.is-held) {
   z-index: 2;
   transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px) - 6px)) rotate(var(--tilt, 0deg));
 }

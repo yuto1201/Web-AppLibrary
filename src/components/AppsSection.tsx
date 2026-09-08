@@ -5,21 +5,24 @@ import type { App } from "@/data/schema";
 import { apps } from "@/data/registry";
 import { useSiteState } from "@/lib/state";
 import { statusLabel } from "@/lib/labels";
+import type { ActivateSource } from "@/lib/activate";
 
 /**
  * 一覧は行の索引として描く。
  * 検索・絞り込み・モーダルは掲載数に対して過剰だったため持たない。
  * 行全体が個別ページへのリンクで、詳細（機能・スクリーンショット・配布先）はそちらが持つ。
  *
- * activeSlug / onHoverSlug はステッカー帯との相互ハイライト用。
+ * activeSlug / onActivate はステッカー帯との相互ハイライト用。
  * 行にホバー/フォーカスすると対応するステッカーが反応し、逆方向も同様に動く。
+ * ホバーとフォーカスは別系統として親へ伝える（片方が離れても、もう片方由来の
+ * ハイライトを消さないため）。
  */
 export function AppsSection({
   activeSlug,
-  onHoverSlug,
+  onActivate,
 }: {
   activeSlug: string | null;
-  onHoverSlug: (slug: string | null) => void;
+  onActivate: (slug: string | null, source: ActivateSource) => void;
 }) {
   const { prefs, t } = useSiteState();
 
@@ -37,10 +40,10 @@ export function AppsSection({
               href={`/apps/${app.slug}/`}
               // hover 時の色はアプリ自身の accent を使う。サイトの 1 色で塗り潰さない。
               style={{ "--row-accent": app.accent } as React.CSSProperties}
-              onMouseEnter={() => onHoverSlug(app.slug)}
-              onFocus={() => onHoverSlug(app.slug)}
-              onMouseLeave={() => onHoverSlug(null)}
-              onBlur={() => onHoverSlug(null)}
+              onMouseEnter={() => onActivate(app.slug, "hover")}
+              onFocus={() => onActivate(app.slug, "focus")}
+              onMouseLeave={() => onActivate(null, "hover")}
+              onBlur={() => onActivate(null, "focus")}
             >
               <span className="app-row-icon">
                 {/* 静的出力のため素の img を使う。next/image の最適化は使わない。 */}

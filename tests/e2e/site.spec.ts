@@ -47,6 +47,19 @@ async function expectColorContrast(page: Page, include?: string) {
   expect(results.passes.some(({ id }) => id === "color-contrast")).toBe(true);
 }
 
+/**
+ * CSS の matrix(a, b, c, d, e, f) から回転角度 (deg) を取り出す。
+ * 一様な scale は a・b を同じ倍率で伸ばすだけなので atan2 の比には影響しない。
+ * --spin という「値」だけでなく、実際に描画される transform（cascade の勝者）を
+ * 見るためのもの。CSS の詳細度勝負で --spin が無視される回帰を検出できる。
+ */
+function rotationDegrees(matrix: string): number {
+  const values = matrix.match(/matrix\(([^)]+)\)/u)?.[1]?.split(",").map(Number);
+  if (!values || values.length < 4) return 0;
+  const [a, b] = values;
+  return (Math.atan2(b!, a!) * 180) / Math.PI;
+}
+
 async function setStoredState(page: Page, state: Record<string, string>) {
   await page.evaluate((value) => localStorage.setItem("applibrary_state", value), JSON.stringify(state));
 }
@@ -204,6 +217,15 @@ test("一覧行とステッカーが slug で相互にハイライトする", as
   await expect(row).not.toHaveClass(/\bis-linked\b/u);
   await row.focus();
   await expect(sticker).toHaveClass(/\bis-linked\b/u);
+
+  // ホバーとフォーカスは別系統。行にキーボードフォーカスが残ったまま
+  // 別のステッカー（装飾・slug 無し）へマウスを乗せて離れても、
+  // フォーカス由来のハイライトは消えない。
+  const decorative = page.locator('.sticker[aria-hidden="true"]').first();
+  await decorative.hover();
+  await expect(sticker).toHaveClass(/\bis-linked\b/u);
+  await page.mouse.move(0, 0);
+  await expect(sticker).toHaveClass(/\bis-linked\b/u);
 });
 
 test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間だけ元の位置に跡が残る", async ({ page }) => {
@@ -214,7 +236,7 @@ test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間�
 
   // 1 回目のドラッグでステッカー自身が動くため、掴む中心座標は毎回その時点の
   // boundingBox から取り直す。使い回すと、動いた後のステッカーから外れて掴めない。
-  async function spinFromEdge(edge: "top" | "bottom"): Promise<number> {
+  async function spinFromEdge(edge: "top" | "bottom"): Promise<{ spin: number; renderedDeg: number }> {
     const box = (await sticker.boundingBox())!;
     const cx = box.x + box.width / 2;
     const grabY = edge === "top" ? box.y + 8 : box.y + box.height - 8;
@@ -227,24 +249,64 @@ test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間�
     await page.mouse.move(cx + 80, grabY, { steps: 8 });
     // ドラッグ中だけ跡（ghost）が現れる。
     await expect(slot.locator(".sticker-ghost")).toHaveCount(1);
-    const spin = await sticker.evaluate((el) => parseFloat(getComputedStyle(el).getPropertyValue("--spin")));
+    const [spin, transform] = await sticker.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return [parseFloat(cs.getPropertyValue("--spin")), cs.transform];
+    });
     await page.mouse.up();
     await expect(slot.locator(".sticker-ghost")).toHaveCount(0);
-    return spin;
+    return { spin, renderedDeg: rotationDegrees(transform) };
   }
 
-  const topSpin = await spinFromEdge("top");
+  const top = await spinFromEdge("top");
   await sticker.scrollIntoViewIfNeeded(); // 前のドラッグで動いている場合に備える
-  const bottomSpin = await spinFromEdge("bottom");
+  const bottom = await spinFromEdge("bottom");
 
   // てこの原理：上端と下端を掴んで同じ向きに引くと、回転が逆向きになる。
-  expect(topSpin).toBeGreaterThan(0);
-  expect(bottomSpin).toBeLessThan(0);
+  expect(top.spin).toBeGreaterThan(0);
+  expect(bottom.spin).toBeLessThan(0);
+
+  // --spin という「値」だけでなく、実際に描かれた transform（CSS cascade の
+  // 勝者）でも確認する。ドラッグ中は is-held と is-linked が同時に true になり
+  // うる。is-linked が詳細度で勝って --spin を無視する rotate(tilt) 固定へ
+  // 落ちる回帰が実際に一度発生しており、その場合 top/bottom の見た目の角度は
+  // ほぼ同じ（tilt のまま）になるため、はっきり差が付くことを確認する。
+  expect(top.renderedDeg - bottom.renderedDeg).toBeGreaterThan(4);
 
   // 離した後は 0 へ戻る。
   await expect
     .poll(() => sticker.evaluate((el) => parseFloat(getComputedStyle(el).getPropertyValue("--spin"))))
     .toBe(0);
+});
+
+test("画面リサイズがドラッグ中に起きても、掴んだままの見た目で固着しない", async ({ page }) => {
+  await page.goto("/");
+  const sticker = page.locator(".sticker").first();
+  const slot = page.locator(".sticker-slot").first();
+  await sticker.scrollIntoViewIfNeeded();
+  const box = (await sticker.boundingBox())!;
+
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 60, box.y - 40, { steps: 6 });
+  await expect(sticker).toHaveClass(/\bis-held\b/u);
+  await expect(slot.locator(".sticker-ghost")).toHaveCount(1);
+
+  // 掴んだ時点の帯の矩形は、この時点で無効になる。
+  const viewport = page.viewportSize()!;
+  await page.setViewportSize({ width: Math.max(360, viewport.width - 200), height: viewport.height });
+
+  // 古い矩形のまま move/up が来ても破綻しない。掴んだ表示は解ける。
+  await page.mouse.move(box.x + 90, box.y - 20, { steps: 4 });
+  await page.mouse.up();
+
+  await expect(sticker).not.toHaveClass(/\bis-held\b/u);
+  await expect(slot.locator(".sticker-ghost")).toHaveCount(0);
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+    .toBe(true);
+
+  await page.setViewportSize(viewport);
 });
 
 test("フッターの奥付は既定で閉じており、開くと本文とリンクが読める", async ({ page }) => {
