@@ -1,150 +1,58 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import Link from "next/link";
 import type { App } from "@/data/schema";
-import { apps, usedCategories, usedPlatforms } from "@/data/registry";
+import { apps } from "@/data/registry";
 import { useSiteState } from "@/lib/state";
-import { allCategoryLabel, allPlatformLabel } from "@/lib/site-data";
-import { AppCard } from "./AppCard";
-import { AppModal } from "./AppModal";
-import { IconSearch } from "./icons";
+import { statusLabel } from "@/lib/labels";
 
-const ALL = "__all__";
-
+/**
+ * 一覧は行の索引として描く。
+ * 検索・絞り込み・モーダルは掲載数に対して過剰だったため持たない。
+ * 行全体が個別ページへのリンクで、詳細（機能・スクリーンショット・配布先）はそちらが持つ。
+ */
 export function AppsSection() {
   const { prefs, t } = useSiteState();
-  const [search, setSearch] = useState("");
-  const [platform, setPlatform] = useState<string>(ALL);
-  const [category, setCategory] = useState<string>(ALL);
-  const [modalApp, setModalApp] = useState<App | null>(null);
-
-  const platforms = useMemo(() => usedPlatforms(), []);
-  const categories = useMemo(
-    () => [...usedCategories()].sort((a, b) => a.localeCompare(b, prefs.lang)),
-    [prefs.lang],
-  );
-
-  const query = search.trim().toLowerCase();
-  const hasFilters = query !== "" || platform !== ALL || category !== ALL;
-
-  const filtered = apps.filter((app) => {
-    if (platform !== ALL && !app.platforms.includes(platform as App["platforms"][number])) return false;
-    if (category !== ALL && app.category !== category) return false;
-    if (!query) return true;
-    return [app.name, app.tagline, app.description, app.category, ...app.platforms]
-      .join(" ")
-      .toLowerCase()
-      .includes(query);
-  });
-
-  function clearFilters() {
-    setSearch("");
-    setPlatform(ALL);
-    setCategory(ALL);
-  }
 
   return (
     <section className="section" id="apps">
       <div className="section-head">
-        <div>
-          <h2 className="section-title">{t.section_apps}</h2>
-          <div className="section-sub">{t.section_apps_sub}</div>
-        </div>
+        <h2 className="section-title">{t.section_apps}</h2>
+        <span className="section-count">{apps.length}</span>
       </div>
-
-      <div className="controls">
-        <div className="search">
-          <IconSearch />
-          <input
-            id="search-input"
-            type="text"
-            aria-label={t.search_placeholder}
-            placeholder={t.search_placeholder}
-            value={search}
-            autoComplete="off"
-            onChange={(event) => setSearch(event.target.value)}
-          />
-        </div>
-
-        {/* プラットフォーム軸。iOS 限定から複数プラットフォームへ広げたため新設した。 */}
-        <div className="filter-group">
-          <span className="filter-label" id="platform-filter-label">{t.filter_platform}</span>
-          <div className="chips" role="group" aria-labelledby="platform-filter-label">
-            <button
-              type="button"
-              className={`chip${platform === ALL ? " active" : ""}`}
-              aria-pressed={platform === ALL}
-              onClick={() => setPlatform(ALL)}
+      <ul className="app-list">
+        {apps.map((app) => (
+          <li key={app.slug}>
+            <Link
+              className="app-row"
+              href={`/apps/${app.slug}/`}
+              // hover 時の色はアプリ自身の accent を使う。サイトの 1 色で塗り潰さない。
+              style={{ "--row-accent": app.accent } as React.CSSProperties}
             >
-              {allPlatformLabel[prefs.lang]}
-            </button>
-            {platforms.map((name) => (
-              <button
-                key={name}
-                type="button"
-                className={`chip${platform === name ? " active" : ""}`}
-                aria-pressed={platform === name}
-                onClick={() => setPlatform(name)}
-              >
-                {name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="filter-group">
-          <span className="filter-label" id="category-filter-label">{t.filter_category}</span>
-          <div className="chips" role="group" aria-labelledby="category-filter-label">
-            <button
-              type="button"
-              className={`chip${category === ALL ? " active" : ""}`}
-              aria-pressed={category === ALL}
-              onClick={() => setCategory(ALL)}
-            >
-              {allCategoryLabel[prefs.lang]}
-            </button>
-            {categories.map((name) => (
-              <button
-                key={name}
-                type="button"
-                lang="ja"
-                className={`chip${category === name ? " active" : ""}`}
-                aria-pressed={category === name}
-                onClick={() => setCategory(name)}
-              >
-                {name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {hasFilters && filtered.length > 0 && (
-          <div className="filter-actions">
-            <span className="filter-state">{t.active_filters}</span>
-            <button className="clear-filters" type="button" onClick={clearFilters}>{t.clear_filters}</button>
-          </div>
-        )}
-      </div>
-
-      <div className="mosaic" aria-live="polite">
-        {filtered.length === 0 ? (
-          <div className="empty">
-            <div className="empty-title">{t.empty_title}</div>
-            <div>{t.empty_sub}</div>
-            {hasFilters && (
-              <button className="clear-filters empty-clear" type="button" onClick={clearFilters}>
-                {t.clear_filters}
-              </button>
-            )}
-          </div>
-        ) : (
-          filtered.map((app, index) => (
-            <AppCard key={app.slug} app={app} index={index} onOpen={setModalApp} />
-          ))
-        )}
-      </div>
-
-      {modalApp && <AppModal app={modalApp} onClose={() => setModalApp(null)} />}
+              <span className="app-row-icon">
+                {/* 静的出力のため素の img を使う。next/image の最適化は使わない。 */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={`/apps/${app.slug}/${app.icon}`} alt="" loading="lazy" />
+              </span>
+              <span className="app-row-main">
+                <span className="app-row-name">{app.name}</span>
+                <span className="app-row-tagline" lang="ja">{app.tagline}</span>
+              </span>
+              <span className="app-row-meta">
+                <StatusMark app={app} lang={prefs.lang} label={statusLabel(app.status, t)} />
+                <span className="app-row-platforms">{app.platforms.join(" ")}</span>
+                <span className="app-row-year">{app.year}</span>
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ul>
     </section>
   );
+}
+
+/** リリース済みは既定なので印を出さない。開発中・テスト中・公開終了だけ知らせる。 */
+function StatusMark({ app, lang, label }: { app: App; lang: string; label: string }) {
+  if (app.status === "release") return null;
+  return <span className="app-row-status" lang={lang}>{label}</span>;
 }
