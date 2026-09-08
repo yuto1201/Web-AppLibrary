@@ -1,7 +1,6 @@
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
-import { AppsSection } from "@/components/AppsSection";
-import { Stickers } from "@/components/Stickers";
+import { AppLibrarySection } from "@/components/AppLibrarySection";
 import { Posts, Contact, Footer } from "@/components/Sections";
 
 export default function HomePage() {
@@ -10,8 +9,7 @@ export default function HomePage() {
       <Nav />
       <main className="page">
         <Hero />
-        <AppsSection />
-        <Stickers />
+        <AppLibrarySection />
         <Posts />
         <Contact />
       </main>

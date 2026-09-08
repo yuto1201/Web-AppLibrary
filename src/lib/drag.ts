@@ -49,3 +49,28 @@ export function baseBox(rect: Box, offset: Point): Box {
     bottom: rect.bottom - offset.y,
   };
 }
+
+/**
+ * 矩形の中心から見た、掴んだ点の位置を -1〜1 に正規化する。
+ * 端に近いほど 1 に近づく。てこの原理で回転量を変えるための材料。
+ */
+export function normalizeGrab(point: Point, rect: Box): Point {
+  const halfW = (rect.right - rect.left) / 2 || 1;
+  const halfH = (rect.bottom - rect.top) / 2 || 1;
+  const centerX = (rect.left + rect.right) / 2;
+  const centerY = (rect.top + rect.bottom) / 2;
+  return {
+    x: clampAxis((point.x - centerX) / halfW, -1, 1),
+    y: clampAxis((point.y - centerY) / halfH, -1, 1),
+  };
+}
+
+/**
+ * 掴んだ位置に応じた回転量（度）。中心から離れた点を掴んで横へ引くほど、
+ * てこの原理で大きく回って見えるようにする。
+ * grab は normalizeGrab の結果、delta は掴んでから今までの移動量（px）。
+ */
+export function spinFromGrab(grab: Point, delta: Point, gain = 0.06, max = 14): number {
+  const torque = grab.x * delta.y - grab.y * delta.x;
+  return Math.max(-max, Math.min(max, torque * gain));
+}

@@ -260,7 +260,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   transition: background 0.15s;
 }
 .app-list > li:last-child .app-row { border-bottom: none; }
-.app-row:hover { background: var(--paper-sunken); }
+/* is-linked はステッカー帯からの連動ハイライト。hover と同じ見た目を再利用する。 */
+.app-row:hover,
+.app-row.is-linked { background: var(--paper-sunken); }
 
 .app-row-icon {
   width: 38px;
@@ -281,9 +283,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   letter-spacing: -0.01em;
   transition: color 0.15s;
 }
-.app-row:hover .app-row-name { color: var(--row-accent); }
+.app-row:hover .app-row-name,
+.app-row.is-linked .app-row-name { color: var(--row-accent); }
 /* アプリの accent は明色紙面向けの値。濃いインク紙では読めなくなるのでインクへ戻す。 */
-[data-theme="dark"] .app-row:hover .app-row-name { color: var(--ink); }
+[data-theme="dark"] .app-row:hover .app-row-name,
+[data-theme="dark"] .app-row.is-linked .app-row-name { color: var(--ink); }
 .app-row-tagline {
   display: block;
   font-size: 14px;
@@ -339,11 +343,27 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .sticker-band > * + * { margin-inline-start: clamp(-22px, -1.4vw, -8px); }
 
+/* スロットは通常のフローに留まる（フレックスアイテムとしての幅もここが持つ）。
+   ステッカー本体は transform で動くが、掴んでいる間の跡（ghost）は
+   このスロットの inset:0 に置くことで、元の位置へ正確に重なる。 */
+.sticker-slot {
+  position: relative;
+  flex: 0 0 auto;
+  width: clamp(88px, 14vw, 136px);
+}
+.sticker-ghost {
+  position: absolute;
+  inset: 0;
+  border: 1px dashed var(--rule-strong);
+  border-radius: 14px;
+  pointer-events: none;
+}
+
 .sticker {
   position: relative;
   z-index: 1;
-  flex: 0 0 auto;
-  width: clamp(88px, 14vw, 136px);
+  display: block;
+  width: 100%;
   padding: 8px 8px 6px;
   background: var(--paper-raised);
   border: 1px solid var(--rule-strong);
@@ -355,7 +375,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   touch-action: pan-y;
   -webkit-user-select: none;
   user-select: none;
-  transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px))) rotate(var(--tilt, 0deg));
+  /* --spin は掴んだ位置に応じた回転の上乗せ（てこの原理）。ドラッグ中だけ非0。 */
+  transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px))) rotate(calc(var(--tilt, 0deg) + var(--spin, 0deg)));
   transition: transform 0.3s cubic-bezier(0.2, 1.1, 0.3, 1), box-shadow 0.2s;
 }
 .sticker img {
@@ -392,13 +413,24 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   box-shadow: var(--shadow-sticker-lift);
   transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px) - 8px)) rotate(0deg) scale(1.04);
 }
-/* 掴んでいる間は追従を遅らせない */
+/* 掴んでいる間は追従を遅らせない。--spin は掴み位置に応じて move ごとに更新される。 */
 .sticker.is-held {
   z-index: 4;
   cursor: grabbing;
   transition: box-shadow 0.2s;
   box-shadow: var(--shadow-sticker-lift);
-  transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px) - 4px)) rotate(calc(var(--tilt, 0deg) * 0.4)) scale(1.06);
+  transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px) - 4px)) rotate(calc(var(--tilt, 0deg) * 0.4 + var(--spin, 0deg))) scale(1.06);
+}
+
+/* is-linked は一覧行からの連動ハイライト。持ち上げるだけで、回転や拡大はしない
+   （実際に掴んだときの反応と混同させないため）。
+   :not(:hover):not(:focus-visible):not(.is-held) が無いと、アプリのステッカーは
+   ホバーそれ自体が自分自身を is-linked にもする（行を介さず直接触れているだけでも
+   slug が一致する）ため、特異性が同じ 3 つのうち最後に書かれたこの規則が常に勝ち、
+   掴んだときの傾き演出とホバーの起き上がりが両方とも見えなくなっていた。 */
+.sticker.is-linked:not(:hover):not(:focus-visible):not(.is-held) {
+  z-index: 2;
+  transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px) - 6px)) rotate(var(--tilt, 0deg));
 }
 
 .stickers-foot {
@@ -498,12 +530,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   margin: 0 auto;
   padding: var(--space-8) 0 var(--space-10);
   border-top: 1px solid var(--rule);
+  font-size: 13px;
+  color: var(--ink-3);
+}
+.footer-row {
+  margin-top: var(--space-4);
   display: flex;
   flex-wrap: wrap;
   gap: var(--space-3) var(--space-6);
   justify-content: space-between;
-  font-size: 13px;
-  color: var(--ink-3);
 }
 .footer-links { display: flex; gap: var(--space-4); }
 .footer-links a {
@@ -513,6 +548,32 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .footer-links a:hover {
   color: var(--ink);
   border-bottom-color: var(--accent);
+}
+
+/* 奥付。閉じている間は summary の 1 行だけで、footer の見た目を増やさない。 */
+.colophon summary {
+  width: fit-content;
+  cursor: pointer;
+  color: var(--ink-3);
+  transition: color 0.15s;
+}
+.colophon summary:hover { color: var(--ink); }
+.colophon[open] summary { color: var(--ink); margin-bottom: var(--space-3); }
+.colophon-body {
+  display: grid;
+  gap: var(--space-2);
+  max-width: 46ch;
+  color: var(--ink-2);
+}
+.colophon-source {
+  width: fit-content;
+  color: var(--accent);
+  border-bottom: 1px solid var(--accent);
+  transition: color 0.15s, border-color 0.15s;
+}
+.colophon-source:hover {
+  color: var(--ink);
+  border-bottom-color: var(--ink);
 }
 
 /* ============================================================
@@ -534,7 +595,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .post { grid-template-columns: 1fr; gap: var(--space-1); }
 
   /* 5 枚が 1 行に収まらない幅では、傾き込みの外接矩形が帯を超える。 */
-  .sticker { width: 84px; }
+  .sticker-slot { width: 84px; }
   .sticker-note { padding: var(--space-3) 0; }
 }
 
