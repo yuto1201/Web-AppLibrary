@@ -183,6 +183,57 @@ const entries = [
     appStoreUrl: null,
     siteUrl: "https://yuto1201.github.io/Dev-Tools/",
   },
+  {
+    "slug": "pay-cycle",
+    "name": "PayCycle",
+    "tagline": "給料日から、次の支払いまでを見通す。",
+    "platforms": [
+      "iOS",
+      "iPadOS"
+    ],
+    "status": "alpha",
+    "releaseDate": null,
+    "year": 2026,
+    "icon": "icon.png",
+    "iconGlyph": "￥",
+    "color": "#F3EDE3",
+    "accent": "#C83F34",
+    "featured": false,
+    "category": "ファイナンス",
+    "description": "給料日を基準に、クレジットカード請求・家賃・公共料金などの支払いをまとめて確認。次の給料日までに残る見込み額や、不足しそうな時期を把握できます。現在リリースに向けて準備中です。",
+    "features": [
+      {
+        "icon": "📆",
+        "title": "給料日からの見通し",
+        "description": "給料日サイクルごとに収入・支払い・見込み差額を整理します。"
+      },
+      {
+        "icon": "🗓️",
+        "title": "予定が見えるカレンダー",
+        "description": "給料と支払いを日付で確認し、前後の月へ切り替えられます。"
+      },
+      {
+        "icon": "📊",
+        "title": "サイクルごとの振り返り",
+        "description": "これまでの差額の推移と確認が必要な支払いを見渡せます。"
+      },
+      {
+        "icon": "🔒",
+        "title": "家計情報は端末内に",
+        "description": "家計情報は端末内に保存し、広告SDKへ渡しません。無料利用時には広告を表示します。"
+      }
+    ],
+    "price": "無料・広告非表示の買い切りを予定",
+    "version": "1.0（準備中）",
+    "screenshots": [
+      "1.png",
+      "2.png",
+      "3.png",
+      "4.png"
+    ],
+    "appStoreUrl": null,
+    "siteUrl": null
+  },
 ] satisfies unknown[];
 
 /** ビルド時に検証する。スキーマ違反があれば build が失敗する。 */
