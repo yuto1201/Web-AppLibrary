@@ -4,6 +4,13 @@ import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { apps } from "../../src/data/registry";
 
+test("AdMob の公開 seller ファイルを正しい形式で配信する", async ({ request }) => {
+  const response = await request.get("/app-ads.txt");
+  expect(response.status()).toBe(200);
+  expect(response.headers()["content-type"]).toMatch(/^text\/plain(?:;|$)/u);
+  expect(await response.text()).toBe("google.com, pub-6131120324499407, DIRECT, f08c47fec0942fa0\n");
+});
+
 const privacyContacts: Record<string, { label: string; url: string }> = {
   "pay-cycle": { label: "開発者の連絡先", url: "https://app.yutodev.com/#contact" },
   sublog: {
@@ -369,6 +376,9 @@ for (const app of apps) {
       expect(row).not.toBeNull();
       expect(Math.abs((left + right) / 2 - (row!.x + row!.width / 2))).toBeLessThan(2);
     }
+    if (app.slug === "pay-cycle") {
+      await expect(page.locator('a[href*="apps.apple.com"]')).toHaveCount(0);
+    }
     await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/privacy/$`, "u"));
     await expect(page.getByRole("heading", { level: 1 })).toContainText("プライバシー");
@@ -379,6 +389,8 @@ for (const app of apps) {
       await expect(englishPolicy).toBeVisible();
       await expect(englishPolicy).toContainText("Google AdMob");
       await expect(englishPolicy).toContainText("StoreKit");
+      await expect(englishPolicy.getByRole("link", { name: "developer's contact links", exact: true }))
+        .toHaveAttribute("href", "https://app.yutodev.com/#contact");
     } else {
       await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese only.");
     }
