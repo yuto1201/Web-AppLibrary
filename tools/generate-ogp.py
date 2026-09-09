@@ -21,6 +21,7 @@ except ModuleNotFoundError as error:
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT = ROOT / "public" / "ogp.png"
 APPS = [
+    ("PayCycle", ROOT / "public" / "apps" / "pay-cycle" / "icon.png"),
     ("SubLog", ROOT / "public" / "apps" / "sublog" / "icon.png"),
     ("CafLog", ROOT / "public" / "apps" / "caflog" / "icon.png"),
     ("Dev-Tools", ROOT / "public" / "apps" / "dev-tools" / "icon.png"),
