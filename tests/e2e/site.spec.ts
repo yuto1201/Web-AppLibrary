@@ -5,6 +5,7 @@ import path from "node:path";
 import { apps } from "../../src/data/registry";
 
 const privacyContacts: Record<string, { label: string; url: string }> = {
+  "pay-cycle": { label: "開発者の連絡先", url: "https://app.yutodev.com/#contact" },
   sublog: {
     label: "SubLog お問い合わせフォーム",
     url: "https://docs.google.com/forms/d/e/1FAIpQLSfm2fsJLBAy4CVIBscx2ueab2znR5pYTzxZo7ntUULdtaoODg/viewform",
@@ -371,7 +372,16 @@ for (const app of apps) {
     await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/privacy/$`, "u"));
     await expect(page.getByRole("heading", { level: 1 })).toContainText("プライバシー");
-    await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese only.");
+    if (app.slug === "pay-cycle") {
+      await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese and English.");
+      await expect(page.locator("section[lang='ja']")).toBeVisible();
+      const englishPolicy = page.locator("section[lang='en']");
+      await expect(englishPolicy).toBeVisible();
+      await expect(englishPolicy).toContainText("Google AdMob");
+      await expect(englishPolicy).toContainText("StoreKit");
+    } else {
+      await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese only.");
+    }
     const expectedContact = privacyContacts[app.slug]!;
     const contact = page.getByRole("link", { name: expectedContact.label, exact: true });
     await expect(contact).toBeVisible();

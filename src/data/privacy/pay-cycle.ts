@@ -1,6 +1,6 @@
 export const html = String.raw`
 <h1>PayCycle プライバシーポリシー / Privacy Policy</h1>
-<p class="legal-language">日本語・English</p>
+<p class="legal-language">本ページは日本語と英語で提供しています。 <span lang="en">This page is available in Japanese and English.</span></p>
 <section lang="ja">
 <h2>日本語</h2>
 <p>PayCycleは、uesugiyuutoが提供する給料日サイクル単位の支払い管理アプリです。</p>
