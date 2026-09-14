@@ -5,25 +5,20 @@ import type { App } from "@/data/schema";
 import { apps } from "@/data/registry";
 import { useSiteState } from "@/lib/state";
 import { statusLabel } from "@/lib/labels";
-import type { ActivateSource } from "@/lib/activate";
+import { useActivate } from "@/lib/activate";
 
 /**
  * 一覧は行の索引として描く。
  * 検索・絞り込み・モーダルは掲載数に対して過剰だったため持たない。
  * 行全体が個別ページへのリンクで、詳細（機能・スクリーンショット・配布先）はそちらが持つ。
  *
- * activeSlug / onActivate はステッカー帯との相互ハイライト用。
+ * シール山との相互ハイライトは ActivateProvider が持つ。
  * 行にホバー/フォーカスすると対応するステッカーが反応し、逆方向も同様に動く。
- * ホバーとフォーカスは別系統として親へ伝える（片方が離れても、もう片方由来の
+ * ホバーとフォーカスは別系統として伝える（片方が離れても、もう片方由来の
  * ハイライトを消さないため）。
  */
-export function AppsSection({
-  activeSlug,
-  onActivate,
-}: {
-  activeSlug: string | null;
-  onActivate: (slug: string | null, source: ActivateSource) => void;
-}) {
+export function AppsSection() {
+  const { activeSlug, onActivate } = useActivate();
   const { prefs, t } = useSiteState();
 
   return (

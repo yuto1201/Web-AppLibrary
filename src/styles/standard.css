@@ -13,7 +13,10 @@
 /* --- Reset --- */
 *, *::before, *::after { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+  overflow-x: clip;
+}
 
 body {
   font-family: var(--font-sans);
@@ -49,9 +52,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   white-space: nowrap;
 }
 
-/* 紙面の幅。読み物としての行長を優先し、ステッカー帯だけがここを破る。
-   Nav と Footer は .page の外にあるので :root に置く。 */
+/* 紙面の幅。読み物としての行長を優先する。
+   Nav と Footer は .page の外にあるので :root に置く。
+   シールは .poster 全体をステージにし、行長を破って置ける。 */
 :root { --measure: 760px; }
+.poster { position: relative; }
 .hero,
 .section {
   width: min(var(--measure), calc(100% - var(--space-10)));
@@ -327,63 +332,58 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .app-row-year { color: var(--ink-3); }
 
 /* ============================================================
-   Stickers — 紙に貼られた 1 箇所だけの遊び。掴んで動かせる
-   ここだけが紙面の行長を破って広がる
+   Stickers — フッター下端のビニール山。紙全体へつまんで動かせる
+   影を使うのはここだけ。viewport 固定にはしない
    ============================================================ */
 .stickers {
-  width: min(940px, calc(100% - var(--space-10)));
+  width: min(var(--measure), calc(100% - var(--space-10)));
   margin: 0 auto;
-  padding: clamp(24px, 4vw, 40px) 0 clamp(32px, 5vw, 56px);
-  border-top: 1px solid var(--rule);
+  /* ヒント行 + 山が重ならない高さ。スロットは .poster 下端に絶対配置する */
+  min-height: 168px;
+  padding: var(--space-4) 0 0;
 }
-.sticker-band {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  align-items: flex-end;
-  /* 狭い画面では折り返す。帯からはみ出すと紙面が横に伸びてしまう */
-  flex-wrap: wrap;
-  align-content: flex-end;
-  row-gap: var(--space-5);
-  min-height: clamp(210px, 26vw, 272px);
-  padding: clamp(28px, 5vw, 48px) clamp(var(--space-4), 4vw, 48px) var(--space-4);
-  /* ステッカーを置く面。柄は持たせず、罫線と沈んだ地色だけで示す */
-  background: var(--paper-sunken);
-  border: 1px solid var(--rule);
-  border-radius: var(--radius-lg);
-  /* クランプが効かない場合（ドラッグ後のリサイズなど）でも紙面を横に伸ばさない。
-     clip は hidden と違いスクロールコンテナを作らない。 */
-  overflow: clip;
-}
-.sticker-band > * + * { margin-inline-start: clamp(-22px, -1.4vw, -8px); }
 
-/* スロットは通常のフローに留まる（フレックスアイテムとしての幅もここが持つ）。
-   ステッカー本体は transform で動くが、掴んでいる間の跡（ghost）は
-   このスロットの inset:0 に置くことで、元の位置へ正確に重なる。 */
+/* 紙全体を覆う。ヒットはシール自身だけが受け、本文のクリックは通す。
+   z-index は sticky nav (50) より下げ、シールがナビの下へ潜るようにする。 */
+.sticker-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+}
+
+/* スロットは山の初期位置に留まる。本体は transform で動く。
+   跡（ghost）は inset:0 でこのスロットへ重ね、元の位置と一致させる。
+   pointer-events はシール本体だけ auto。空のスロットがフッターを塞がない。 */
 .sticker-slot {
-  position: relative;
-  flex: 0 0 auto;
-  width: clamp(88px, 14vw, 136px);
+  position: absolute;
+  left: calc(50% + var(--pile-x, 0px));
+  bottom: var(--pile-y, -24px);
+  width: clamp(88px, 12vw, 120px);
+  transform: translateX(-50%);
+  pointer-events: none;
 }
 .sticker-ghost {
   position: absolute;
   inset: 0;
   border: 1px dashed var(--rule-strong);
-  border-radius: 14px;
+  border-radius: 22px;
   pointer-events: none;
 }
 
 .sticker {
   position: relative;
-  z-index: 1;
+  z-index: var(--layer, 1);
   display: block;
   width: 100%;
-  padding: 8px 8px 6px;
-  background: var(--paper-raised);
-  border: 1px solid var(--rule-strong);
-  border-radius: 14px;
+  padding: 7px;
+  /* ビニールの台紙はテーマを問わず白。紙面の --paper-raised は使わない */
+  background: #fff;
+  border: 0;
+  border-radius: 22px;
   box-shadow: var(--shadow-sticker);
   cursor: grab;
+  pointer-events: auto;
   /* 縦スクロールはページに譲る。指を縦に動かせば pointercancel が来てドラッグは中止される。
      横から始めたジェスチャだけ受け取るので、主要な操作を奪わない。 */
   touch-action: pan-y;
@@ -395,40 +395,33 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .sticker img {
   width: 100%;
-  border-radius: 8px;
-  pointer-events: none;
-}
-.sticker-name {
-  display: block;
-  margin-top: 6px;
-  font-family: var(--font-display);
-  font-size: 12px;
-  font-weight: 400;
-  text-align: center;
-  color: var(--ink);
+  border-radius: 16px;
   pointer-events: none;
 }
 .sticker-note {
-  display: block;
-  padding: var(--space-4) 0;
+  display: grid;
+  place-items: center;
+  min-height: 88px;
+  padding: var(--space-4) 8px;
   font-family: var(--font-display);
-  font-size: clamp(13px, 1.8vw, 16px);
+  font-size: clamp(14px, 1.8vw, 17px);
   font-weight: 400;
   text-align: center;
-  color: var(--ink-2);
+  /* 台紙は常に白なので、dark の --ink を使わない */
+  color: #1a1814;
   pointer-events: none;
 }
 
 /* ホバーで持ち上がり、傾きが戻る */
 .sticker:hover,
 .sticker:focus-visible {
-  z-index: 3;
+  z-index: calc(var(--layer, 1) + 100);
   box-shadow: var(--shadow-sticker-lift);
   transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px) - 8px)) rotate(0deg) scale(1.04);
 }
 /* 掴んでいる間は追従を遅らせない。--spin は掴み位置に応じて move ごとに更新される。 */
 .sticker.is-held {
-  z-index: 4;
+  z-index: calc(var(--layer, 1) + 200);
   cursor: grabbing;
   transition: box-shadow 0.2s;
   box-shadow: var(--shadow-sticker-lift);
@@ -442,7 +435,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
    slug が一致する）ため、特異性が同じ 3 つのうち最後に書かれたこの規則が常に勝ち、
    掴んだときの傾き演出とホバーの起き上がりが両方とも見えなくなっていた。 */
 .sticker.is-linked:not(:hover):not(:focus-visible):not(.is-held) {
-  z-index: 2;
+  z-index: calc(var(--layer, 1) + 10);
   transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px) - 6px)) rotate(var(--tilt, 0deg));
 }
 
@@ -450,7 +443,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  margin: var(--space-4) 0 0;
   font-size: 13px;
   color: var(--ink-3);
 }
@@ -546,7 +538,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .footer {
   width: min(var(--measure), calc(100% - var(--space-10)));
   margin: 0 auto;
-  padding: var(--space-8) 0 var(--space-10);
+  padding: var(--space-8) 0 var(--space-4);
   border-top: 1px solid var(--rule);
   font-size: 13px;
   color: var(--ink-3);
@@ -612,9 +604,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
   .post { grid-template-columns: 1fr; gap: var(--space-1); }
 
-  /* 5 枚が 1 行に収まらない幅では、傾き込みの外接矩形が帯を超える。 */
   .sticker-slot { width: 84px; }
-  .sticker-note { padding: var(--space-3) 0; }
+  .sticker-note { min-height: 72px; padding: var(--space-3) 6px; }
 }
 
 /* ============================================================

@@ -16,9 +16,10 @@ export function moveOffset(base: Point, start: Point, current: Point): Point {
 }
 
 /**
- * オフセットを帯の内側へ収める。
- * ステッカーが帯より大きい軸は 0 に固定する（動かすと必ずはみ出すため）。
- * これが横スクロールを発生させないための唯一の防波堤。
+ * オフセットを紙（ステージ）の内側へ収める。
+ * ステッカーが紙より大きい軸は 0 に固定する（動かすと必ずはみ出すため）。
+ * 下方向のはみ出しは、呼び出し側が bounds.bottom を広げて許す。
+ * 横スクロールを出さないための第一の防波堤（html の overflow-x: clip が第二）。
  */
 export function clampOffset(offset: Point, rect: Box, bounds: Box): Point {
   return {
