@@ -1,6 +1,6 @@
 # ポスター紙面とフッターのシール山
 
-ステータス: 提案中
+ステータス: Issue #30 実装中
 最終更新日: 2026-09-14
 
 参照: [Drive Capital / The Summer Drive](https://styles.refero.design/style/241ebab6-1f3a-4637-8754-4f6b164ea090)（紙面）、[Inspora: Interactive sticker footer](https://www.inspora.design/posts/sticker-footer)（遊び）

@@ -25,8 +25,9 @@ const privacyContacts: Record<string, { label: string; url: string }> = {
 };
 
 /** 紙面の配色。トークンを変えたらここも合わせる。 */
-const PAPER = { light: "rgb(250, 250, 248)", dark: "rgb(19, 18, 16)" } as const;
-const INK = { light: "rgb(20, 19, 16)", dark: "rgb(242, 240, 234)" } as const;
+const PAPER = { light: "rgb(255, 248, 241)", dark: "rgb(18, 16, 14)" } as const;
+const INK = { light: "rgb(0, 0, 0)", dark: "rgb(255, 248, 241)" } as const;
+const ACCENT = { light: "rgb(0, 102, 238)", dark: "rgb(110, 179, 255)" } as const;
 
 /**
  * 個別ページ (app-page.css) は今回の再設計の対象外で背景に radial-gradient を使う。
@@ -84,6 +85,32 @@ async function exportedIndexRoutes(directory = "out", prefix = ""): Promise<stri
   }
   return routes;
 }
+
+test("ポスター紙面はクリームと電圧ブルーで、Bricolage を使わない", async ({ page }) => {
+  await page.goto("/");
+
+  await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
+  await expect(page.locator("body")).toHaveCSS("color", INK.light);
+
+  const html = await page.content();
+  expect(html.toLowerCase()).not.toContain("bricolage");
+
+  const brandFont = await page.locator(".nav-brand").evaluate((el) => getComputedStyle(el).fontFamily);
+  expect(brandFont.toLowerCase()).toMatch(/newsreader/);
+
+  const cta = page.locator(".cta-btn");
+  await expect(cta).toHaveCSS("color", ACCENT.light);
+  const [background, radius, borderWidth] = await cta.evaluate((el) => {
+    const cs = getComputedStyle(el);
+    return [cs.backgroundColor, parseFloat(cs.borderTopLeftRadius), parseFloat(cs.borderTopWidth)];
+  });
+  expect(background === "rgba(0, 0, 0, 0)" || background === "transparent").toBe(true);
+  expect(radius).toBeGreaterThanOrEqual(30);
+  expect(borderWidth).toBeGreaterThanOrEqual(1);
+
+  await page.getByRole("button", { name: "ダークモードに切り替える" }).click();
+  await expect(page.locator(".cta-btn")).toHaveCSS("color", ACCENT.dark);
+});
 
 test("一覧は行の索引で、検索・フィルタ・モーダルを持たない", async ({ page }) => {
   await page.goto("/");

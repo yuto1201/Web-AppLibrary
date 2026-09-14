@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Inter, JetBrains_Mono } from "next/font/google";
+import { Inter, JetBrains_Mono, Newsreader } from "next/font/google";
 import { SiteStateProvider } from "@/lib/state";
 import project from "../../config/project.json";
 import "./globals.css";
@@ -7,16 +7,16 @@ import "./globals.css";
 // 自己ホストする。外部 CDN への追加リクエストが無くなり、静的出力とも相性がよい。
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700", "800"],
+  weight: ["300", "400", "500", "600", "700", "800"],
   variable: "--font-inter",
   display: "swap",
 });
 
-// 見出し・アプリ名・ワードマーク用。Inter だけだと既定の顔になるため、
-// ラテン部分にだけ性格のある書体を当てる（日本語は OS のゴシックへ落ちる）。
-const bricolage = Bricolage_Grotesque({
+// Latin のワードマーク・英語見出し。日本語は OS のゴシックへ落ちる。
+const newsreader = Newsreader({
   subsets: ["latin"],
-  variable: "--font-bricolage",
+  weight: ["400"],
+  variable: "--font-newsreader",
   display: "swap",
 });
 
@@ -58,7 +58,7 @@ const restoreTheme = `(function(){var h=document.documentElement;h.setAttribute(
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ja" className={`${inter.variable} ${bricolage.variable} ${jetbrainsMono.variable}`}>
+    <html lang="ja" className={`${inter.variable} ${newsreader.variable} ${jetbrainsMono.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: restoreTheme }} />
       </head>

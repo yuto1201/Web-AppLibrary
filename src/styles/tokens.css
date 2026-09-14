@@ -2,10 +2,9 @@
    AppLibrary Design Tokens — 紙 (paper) とインク (ink)
    すべてのページ（共通・個別）で読み込む
 
-   既定は light（紙）。dark は同じ紙面を反転した「濃いインク紙」。
-   ink-2 / ink-3 / accent は paper 上で 4.5:1 以上になる値を選んでいる。
-   axe の color-contrast を実際の配色で検証しているため、
-   明るくする方向へ動かすときは E2E で確認する。
+   既定は light（クリーム紙）。dark は同じ役割の濃いインク紙。
+   サイトの彩色は電圧ブルーだけ。アプリ色はシールと一覧ホバーに限る。
+   ink-2 / ink-3 / accent は paper 上で 4.5:1 以上。axe は実際の配色で判定する。
    ============================================================ */
 
 :root {
@@ -25,26 +24,28 @@
   --radius-sm: 6px;
   --radius: 10px;
   --radius-lg: 18px;
+  --radius-pill: 60px;
   --radius-full: 999px;
 
   /* --- Font --- */
   --font-sans: var(--font-inter), -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
-  /* 見出し・アプリ名・ワードマーク。日本語は OS のゴシックへ落ちる */
-  --font-display: var(--font-bricolage), var(--font-inter), 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+  /* Latin のワードマーク・英語見出し。日本語は OS のゴシックへ落ちる */
+  --font-display: var(--font-newsreader), var(--font-inter), 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
 
-  /* --- Paper / Ink --- */
-  --paper: #fafaf8;        /* 紙面 */
-  --paper-raised: #ffffff; /* 紙面から一段浮いた面 */
-  --paper-sunken: #f2f1ec; /* 押し込んだ面（hover 帯など） */
-  --ink: #141310;          /* 見出し・本文 */
-  --ink-2: #57544d;        /* 副文 */
-  --ink-3: #6b675e;        /* メタ・ラベル（paper 上 5.3:1） */
-  --rule: #e4e1d8;         /* 1px 罫線。構造は影ではなく線で作る */
-  --rule-strong: #c9c5b8;
-  --accent: #c4301c;       /* paper 上 5.3:1。文字にも使える */
+  /* --- Paper / Ink --- Drive Capital 系のポスター紙面 --- */
+  --paper: #fff8f1;        /* クリームのキャンバス */
+  --paper-raised: #fff8f1; /* 紙面と同じ。段差は罫線だけで作る */
+  --paper-sunken: #f3ece4; /* 索引行の hover だけ */
+  --ink: #000000;          /* 本文 */
+  --ink-2: #3f3b36;        /* 副文（paper 上 4.5:1 以上） */
+  --ink-3: #5c574e;        /* メタ・ラベル */
+  --rule: #e2e8f0;         /* 1px 罫線 */
+  --rule-strong: #c9d2dc;
+  /* 操作色。Drive Capital の #006eff はクリーム上 4.27:1 のため、16px UI が 4.5:1 を満たす一歩暗い電圧ブルー */
+  --accent: #0066ee;
 
-  /* --- Shadow --- 紙に置いたものの影だけに使う --- */
+  /* --- Shadow --- 紙に置いたシールだけに使う --- */
   --shadow-sticker: 0 1px 1px rgba(20, 19, 16, 0.10), 0 6px 14px -6px rgba(20, 19, 16, 0.22);
   --shadow-sticker-lift: 0 2px 3px rgba(20, 19, 16, 0.12), 0 20px 34px -12px rgba(20, 19, 16, 0.32);
 
@@ -58,15 +59,16 @@
 }
 
 [data-theme="dark"] {
-  --paper: #131210;
-  --paper-raised: #1b1a17;
-  --paper-sunken: #201e1a;
-  --ink: #f2f0ea;
-  --ink-2: #b5b1a6;
-  --ink-3: #8f8b80;        /* paper 上 5.5:1 */
-  --rule: #302d28;
-  --rule-strong: #45413a;
-  --accent: #ff7a55;       /* paper 上 7.3:1 */
+  --paper: #12100e;
+  --paper-raised: #12100e;
+  --paper-sunken: #1c1916;
+  --ink: #fff8f1;
+  --ink-2: #c8c2b8;
+  --ink-3: #9a948a;
+  --rule: #2e2a26;
+  --rule-strong: #454039;
+  /* #006eff は濃い紙の上で 16px が 4.5:1 を割るため、明るいブルーへ替える */
+  --accent: #6eb3ff;
 
   --shadow-sticker: 0 1px 1px rgba(0, 0, 0, 0.5), 0 6px 14px -6px rgba(0, 0, 0, 0.6);
   --shadow-sticker-lift: 0 2px 3px rgba(0, 0, 0, 0.55), 0 20px 34px -12px rgba(0, 0, 0, 0.7);
