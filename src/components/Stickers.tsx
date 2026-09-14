@@ -26,12 +26,12 @@ const LIFT = [0, -26, -8, -38, -16] as const;
  * 件数はアプリ + 飾り。増えても modulo で回す。
  */
 const PILE = [
-  { x: "-30%", y: "-12px" },
-  { x: "-16%", y: "-40px" },
-  { x: "0%", y: "-6px" },
-  { x: "16%", y: "-48px" },
-  { x: "30%", y: "-18px" },
-  { x: "-6%", y: "-32px" },
+  { x: "-20%", y: "-28px" },
+  { x: "-10%", y: "-56px" },
+  { x: "2%", y: "-18px" },
+  { x: "12%", y: "-64px" },
+  { x: "22%", y: "-34px" },
+  { x: "-4%", y: "-46px" },
 ] as const;
 
 /** アプリ以外の飾りステッカー。装飾なので支援技術からは隠す。 */
@@ -127,12 +127,12 @@ function Sticker({
     "--tilt": `${tilt}deg`,
     "--lift": `${lift}px`,
     "--spin": `${spin}deg`,
-    "--layer": layer,
   } as React.CSSProperties;
 
   const slotStyle = {
     "--pile-x": pileX,
     "--pile-y": pileY,
+    "--layer": layer,
   } as React.CSSProperties;
 
   // リサイズ後は紙の矩形でクランプした値が保証できないため、進行中のドラッグを

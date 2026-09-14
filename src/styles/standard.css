@@ -336,32 +336,38 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
    影を使うのはここだけ。viewport 固定にはしない
    ============================================================ */
 .stickers {
-  width: min(var(--measure), calc(100% - var(--space-10)));
-  margin: 0 auto;
-  /* ヒント行 + 山が重ならない高さ。スロットは .poster 下端に絶対配置する */
-  min-height: 168px;
-  padding: var(--space-4) 0 0;
+  position: relative;
+  z-index: 40;
+  width: 100%;
+  padding: var(--space-4) 0 32px;
 }
 
-/* 紙全体を覆う。ヒットはシール自身だけが受け、本文のクリックは通す。
-   z-index は sticky nav (50) より下げ、シールがナビの下へ潜るようにする。 */
+/* 山の居場所だけ。紙全体を覆うと透明レイヤーが本文のコントラスト判定を壊す。
+   掴んだシールは transform ではみ出して紙の上を動く。 */
 .sticker-stage {
-  position: absolute;
-  inset: 0;
-  z-index: 40;
+  position: relative;
+  height: 140px;
   pointer-events: none;
 }
 
 /* スロットは山の初期位置に留まる。本体は transform で動く。
    跡（ghost）は inset:0 でこのスロットへ重ね、元の位置と一致させる。
-   pointer-events はシール本体だけ auto。空のスロットがフッターを塞がない。 */
+   transform がスタッキング文脈を作るので、重ね順はスロットの --layer で持つ。 */
 .sticker-slot {
   position: absolute;
   left: calc(50% + var(--pile-x, 0px));
   bottom: var(--pile-y, -24px);
   width: clamp(88px, 12vw, 120px);
+  z-index: var(--layer, 1);
   transform: translateX(-50%);
   pointer-events: none;
+}
+.sticker-slot:hover,
+.sticker-slot:focus-within {
+  z-index: calc(var(--layer, 1) + 100);
+}
+.sticker-slot:has(.is-held) {
+  z-index: calc(var(--layer, 1) + 200);
 }
 .sticker-ghost {
   position: absolute;
@@ -373,7 +379,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .sticker {
   position: relative;
-  z-index: var(--layer, 1);
   display: block;
   width: 100%;
   padding: 7px;
@@ -415,13 +420,11 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* ホバーで持ち上がり、傾きが戻る */
 .sticker:hover,
 .sticker:focus-visible {
-  z-index: calc(var(--layer, 1) + 100);
   box-shadow: var(--shadow-sticker-lift);
   transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px) - 8px)) rotate(0deg) scale(1.04);
 }
 /* 掴んでいる間は追従を遅らせない。--spin は掴み位置に応じて move ごとに更新される。 */
 .sticker.is-held {
-  z-index: calc(var(--layer, 1) + 200);
   cursor: grabbing;
   transition: box-shadow 0.2s;
   box-shadow: var(--shadow-sticker-lift);
@@ -435,7 +438,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
    slug が一致する）ため、特異性が同じ 3 つのうち最後に書かれたこの規則が常に勝ち、
    掴んだときの傾き演出とホバーの起き上がりが両方とも見えなくなっていた。 */
 .sticker.is-linked:not(:hover):not(:focus-visible):not(.is-held) {
-  z-index: calc(var(--layer, 1) + 10);
   transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px) - 6px)) rotate(var(--tilt, 0deg));
 }
 
@@ -443,6 +445,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: flex;
   align-items: center;
   gap: var(--space-4);
+  width: min(var(--measure), calc(100% - var(--space-10)));
+  margin: 0 auto var(--space-3);
   font-size: 13px;
   color: var(--ink-3);
 }

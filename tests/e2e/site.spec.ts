@@ -62,6 +62,14 @@ async function expectColorContrast(page: Page, include?: string) {
  * --spin という「値」だけでなく、実際に描画される transform（cascade の勝者）を
  * 見るためのもの。CSS の詳細度勝負で --spin が無視される回帰を検出できる。
  */
+/** 山で重なったシールの下側を掴む。重ね順はスロットのスタッキング文脈で決まる。 */
+async function raiseSticker(sticker: import("@playwright/test").Locator) {
+  await sticker.evaluate((el) => {
+    const slot = el.closest(".sticker-slot");
+    if (slot instanceof HTMLElement) slot.style.zIndex = "1000";
+  });
+}
+
 function rotationDegrees(matrix: string): number {
   const values = matrix.match(/matrix\(([^)]+)\)/u)?.[1]?.split(",").map(Number);
   if (!values || values.length < 4) return 0;
@@ -144,6 +152,7 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
 
   const sticker = page.locator(".sticker").first();
   await sticker.scrollIntoViewIfNeeded();
+  await raiseSticker(sticker);
 
   await expect(page.locator(".sticker-band")).toHaveCount(0);
   await expect(page.locator(".sticker-name")).toHaveCount(0);
@@ -223,9 +232,10 @@ test("シールはフッター下端の山で、Hero までドラッグできる
   expect(spread.bottom).toBeGreaterThan(poster.bottom - 1);
 
   const stagePosition = await page.locator(".sticker-stage").evaluate((el) => getComputedStyle(el).position);
-  expect(stagePosition).toBe("absolute");
+  expect(stagePosition).not.toBe("fixed");
 
   const sticker = page.locator(".sticker").first();
+  await raiseSticker(sticker);
   const before = (await sticker.boundingBox())!;
   await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2);
   await page.waitForTimeout(350);
@@ -243,6 +253,7 @@ test("置いたシールはスクロールしても viewport に張り付かな�
 
   const sticker = page.locator(".sticker").first();
   await sticker.scrollIntoViewIfNeeded();
+  await raiseSticker(sticker);
   const before = (await sticker.boundingBox())!;
   await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2);
   await page.waitForTimeout(350);
@@ -257,9 +268,10 @@ test("置いたシールはスクロールしても viewport に張り付かな�
   });
 
   const scrolled = await page.evaluate(() => {
-    const beforeY = window.scrollY;
-    window.scrollBy(0, -400);
-    return beforeY - window.scrollY;
+    const root = document.documentElement;
+    const beforeY = root.scrollTop;
+    root.scrollTo({ top: Math.max(0, beforeY - 400), behavior: "instant" });
+    return beforeY - root.scrollTop;
   });
   expect(scrolled).toBeGreaterThan(200);
 
@@ -277,6 +289,7 @@ test("ドラッグの後でもキーボードから遷移できる", async ({ pa
 
   const sticker = page.locator(`.sticker[href="/apps/${apps[0]!.slug}/"]`);
   await sticker.scrollIntoViewIfNeeded();
+  await raiseSticker(sticker);
   const box = await sticker.boundingBox();
 
   // 一度ドラッグする。この click 抑止フラグが戻らないと、以降の Enter が死ぬ。
@@ -296,6 +309,7 @@ test("ステッカーは動かさずに離すと個別ページへ移る", async
 
   const sticker = page.locator(`.sticker[href="/apps/${apps[0]!.slug}/"]`);
   await sticker.scrollIntoViewIfNeeded();
+  await raiseSticker(sticker);
   await expect(sticker).toHaveAttribute("aria-label", apps[0]!.name);
   await sticker.click();
   await expect(page).toHaveURL(new RegExp(`/apps/${apps[0]!.slug}/$`, "u"));
@@ -323,6 +337,7 @@ test("一覧行とステッカーが slug で相互にハイライトする", as
 
   // 逆方向：ステッカーにホバー → 対応する行が反応する。
   await sticker.scrollIntoViewIfNeeded();
+  await raiseSticker(sticker);
   await sticker.hover();
   await expect(row).toHaveClass(/\bis-linked\b/u);
 
@@ -337,6 +352,7 @@ test("一覧行とステッカーが slug で相互にハイライトする", as
   // 別のステッカー（装飾・slug 無し）へマウスを乗せて離れても、
   // フォーカス由来のハイライトは消えない。
   const decorative = page.locator('.sticker[aria-hidden="true"]').first();
+  await raiseSticker(decorative);
   await decorative.hover();
   await expect(sticker).toHaveClass(/\bis-linked\b/u);
   await page.mouse.move(0, 0);
@@ -347,6 +363,7 @@ test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間�
   await page.goto("/");
   const sticker = page.locator(".sticker").first();
   await sticker.scrollIntoViewIfNeeded();
+  await raiseSticker(sticker);
   const slot = page.locator(".sticker-slot").first();
 
   // 1 回目のドラッグでステッカー自身が動くため、掴む中心座標は毎回その時点の
@@ -399,6 +416,7 @@ test("画面リサイズがドラッグ中に起きても、掴んだままの�
   const sticker = page.locator(".sticker").first();
   const slot = page.locator(".sticker-slot").first();
   await sticker.scrollIntoViewIfNeeded();
+  await raiseSticker(sticker);
   const box = (await sticker.boundingBox())!;
 
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
