@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSiteState } from "@/lib/state";
 import { posts, profile, social } from "@/lib/site-data";
+import project from "../../config/project.json";
 
 export function Posts() {
   const { t } = useSiteState();
@@ -59,12 +60,30 @@ export function Footer() {
 
   return (
     <footer className="footer">
-      <span>{t.footer_copyright}</span>
-      <span className="footer-links">
-        <Link href="/privacy/">{t.privacy}</Link>
-        <Link href="/terms/">{t.terms}</Link>
-        <span>{profile.name}</span>
-      </span>
+      {/* 既定で閉じている。開いて初めて人格が見える、フッターの奥付。 */}
+      <details className="colophon">
+        <summary>{t.colophon_label}</summary>
+        <div className="colophon-body">
+          <p>{t.colophon_p1}</p>
+          <p>{t.colophon_p2}</p>
+          <a
+            className="colophon-source"
+            href={`https://github.com/${project.repository}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t.colophon_source}
+          </a>
+        </div>
+      </details>
+      <div className="footer-row">
+        <span>{t.footer_copyright}</span>
+        <span className="footer-links">
+          <Link href="/privacy/">{t.privacy}</Link>
+          <Link href="/terms/">{t.terms}</Link>
+          <span>{profile.name}</span>
+        </span>
+      </div>
     </footer>
   );
 }
