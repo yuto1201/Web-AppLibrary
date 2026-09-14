@@ -613,6 +613,15 @@ for (const app of apps) {
   });
 }
 
+test("保存した dark でも個別ページの見出しが電圧ブルーに飲み込まれない", async ({ page }) => {
+  await page.goto("/apps/sublog/");
+  await setStoredState(page, { theme: "dark" });
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator(".app-shell")).toBeVisible();
+  await expect(page.locator(".app-shell .section-title").first()).toHaveCSS("color", "rgb(22, 24, 29)");
+});
+
 test("未生成ルートは 404", async ({ request }) => {
   expect((await request.get("/apps/does-not-exist/")).status()).toBe(404);
 });
