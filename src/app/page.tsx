@@ -1,19 +1,24 @@
 import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
-import { AppLibrarySection } from "@/components/AppLibrarySection";
+import { AppsSection } from "@/components/AppsSection";
+import { Stickers } from "@/components/Stickers";
 import { Posts, Contact, Footer } from "@/components/Sections";
+import { ActivateProvider } from "@/lib/activate";
 
 export default function HomePage() {
   return (
-    <>
-      <Nav />
-      <main className="page">
-        <Hero />
-        <AppLibrarySection />
-        <Posts />
-        <Contact />
-      </main>
-      <Footer />
-    </>
+    <ActivateProvider>
+      <div className="poster">
+        <Nav />
+        <main className="page">
+          <Hero />
+          <AppsSection />
+          <Posts />
+          <Contact />
+        </main>
+        <Footer />
+        <Stickers />
+      </div>
+    </ActivateProvider>
   );
 }

@@ -2,13 +2,15 @@
 
 最終更新日: 2026-09-14
 
-- [ ] [#30](https://github.com/yuto1201/Web-AppLibrary/issues/30) トップをポスター紙面へ寄せる
-- [ ] [#31](https://github.com/yuto1201/Web-AppLibrary/issues/31) シールをフッターの山にし、ページ全体でつまめるようにする
+- [x] [#30](https://github.com/yuto1201/Web-AppLibrary/issues/30) トップをポスター紙面へ寄せる
+- [x] [#31](https://github.com/yuto1201/Web-AppLibrary/issues/31) シールをフッターの山にし、ページ全体でつまめるようにする
 
 仕様: [ポスター紙面とフッターのシール山](superpowers/specs/2026-09-14-poster-sticker-footer-design.md)
 
 ## 直近の完了
 
+- [x] Issue #31 でシールをフッターの山にし、ページ全体でつまめるようにした
+- [x] Issue #30 でトップをクリーム紙と電圧ブルーのポスター紙面へ寄せた
 - [x] Issue #25 で PayCycle の紹介・日英プライバシー・app-ads.txt を追加
 - [x] Issue #23 で一覧行とステッカーの相互ハイライト、掴み位置に応じた傾き、フッターの奥付を追加
 - [x] Issue #21 でトップページを紙とステッカーへ再設計し、検索・フィルタ・モーダル・Liquid Glass・未使用設定を削除

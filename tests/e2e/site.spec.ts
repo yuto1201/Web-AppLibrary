@@ -62,6 +62,14 @@ async function expectColorContrast(page: Page, include?: string) {
  * --spin という「値」だけでなく、実際に描画される transform（cascade の勝者）を
  * 見るためのもの。CSS の詳細度勝負で --spin が無視される回帰を検出できる。
  */
+/** 山で重なったシールの下側を掴む。重ね順はスロットのスタッキング文脈で決まる。 */
+async function raiseSticker(sticker: import("@playwright/test").Locator) {
+  await sticker.evaluate((el) => {
+    const slot = el.closest(".sticker-slot");
+    if (slot instanceof HTMLElement) slot.style.zIndex = "1000";
+  });
+}
+
 function rotationDegrees(matrix: string): number {
   const values = matrix.match(/matrix\(([^)]+)\)/u)?.[1]?.split(",").map(Number);
   if (!values || values.length < 4) return 0;
@@ -144,23 +152,20 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
 
   const sticker = page.locator(".sticker").first();
   await sticker.scrollIntoViewIfNeeded();
+  await raiseSticker(sticker);
 
-  // 初期表示の時点で帯からはみ出していないこと。
+  await expect(page.locator(".sticker-band")).toHaveCount(0);
+  await expect(page.locator(".sticker-name")).toHaveCount(0);
+
+  // 初期表示の時点で紙面は横に伸びていない。
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth))
     .toBe(0);
-  const band = await page.locator(".sticker-band").boundingBox();
-  const spread = await page.locator(".sticker").evaluateAll((nodes) => {
-    const boxes = nodes.map((node) => node.getBoundingClientRect());
-    return { left: Math.min(...boxes.map((b) => b.left)), right: Math.max(...boxes.map((b) => b.right)) };
-  });
-  expect(spread.left).toBeGreaterThanOrEqual(band!.x - 1);
-  expect(spread.right).toBeLessThanOrEqual(band!.x + band!.width + 1);
 
   const before = await sticker.boundingBox();
   expect(before).not.toBeNull();
 
-  // 掴んで大きく動かす。帯の外へ出ようとしてもクランプされる。
+  // 掴んで大きく動かす。紙の外へ出ようとしてもクランプされる。
   await page.mouse.move(before!.x + before!.width / 2, before!.y + before!.height / 2);
   await page.mouse.down();
   await page.mouse.move(before!.x + 400, before!.y - 300, { steps: 12 });
@@ -192,11 +197,99 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
     .toBeLessThan(2);
 });
 
+test("シールはフッター下端の山で、Hero までドラッグできる", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 2400 });
+  await page.goto("/");
+
+  await expect(page.locator(".sticker-band")).toHaveCount(0);
+  await expect(page.locator(".sticker-name")).toHaveCount(0);
+
+  const footer = await page.locator(".footer").boundingBox();
+  const hero = await page.locator(".hero-h1").boundingBox();
+  expect(footer).not.toBeNull();
+  expect(hero).not.toBeNull();
+
+  const spread = await page.locator(".sticker").evaluateAll((nodes) => {
+    const boxes = nodes.map((node) => node.getBoundingClientRect());
+    return {
+      top: Math.min(...boxes.map((box) => box.top)),
+      bottom: Math.max(...boxes.map((box) => box.bottom)),
+      left: Math.min(...boxes.map((box) => box.left)),
+      right: Math.max(...boxes.map((box) => box.right)),
+    };
+  });
+
+  // 山はフッター付近にあり、下端はフッター本文より下へはみ出す。
+  expect(spread.top).toBeGreaterThan(footer!.y - 120);
+  expect(spread.bottom).toBeGreaterThan(footer!.y + footer!.height - 8);
+
+  const poster = await page.locator(".poster").evaluate((el) => {
+    const box = el.getBoundingClientRect();
+    return { left: box.left, right: box.right, bottom: box.bottom };
+  });
+  expect(spread.left).toBeGreaterThanOrEqual(poster.left - 1);
+  expect(spread.right).toBeLessThanOrEqual(poster.right + 1);
+  expect(spread.bottom).toBeGreaterThan(poster.bottom - 1);
+
+  const stagePosition = await page.locator(".sticker-stage").evaluate((el) => getComputedStyle(el).position);
+  expect(stagePosition).not.toBe("fixed");
+
+  const sticker = page.locator(".sticker").first();
+  await raiseSticker(sticker);
+  const before = (await sticker.boundingBox())!;
+  await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2);
+  await page.waitForTimeout(350);
+  await page.mouse.down();
+  await page.mouse.move(hero!.x + hero!.width / 2, hero!.y + hero!.height / 2, { steps: 24 });
+  await page.mouse.up();
+
+  const placed = await sticker.boundingBox();
+  expect(placed).not.toBeNull();
+  expect(placed!.y).toBeLessThan(hero!.y + hero!.height + 120);
+});
+
+test("置いたシールはスクロールしても viewport に張り付かない", async ({ page }) => {
+  await page.goto("/");
+
+  const sticker = page.locator(".sticker").first();
+  await sticker.scrollIntoViewIfNeeded();
+  await raiseSticker(sticker);
+  const before = (await sticker.boundingBox())!;
+  await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2);
+  await page.waitForTimeout(350);
+  await page.mouse.down();
+  // フッターを見ている状態から、ビューポート上端へ引き上げる。
+  await page.mouse.move(before.x + 40, 80, { steps: 16 });
+  await page.mouse.up();
+
+  const placed = await sticker.evaluate((el) => {
+    const box = el.getBoundingClientRect();
+    return { top: box.top, docTop: box.top + window.scrollY };
+  });
+
+  const scrolled = await page.evaluate(() => {
+    const root = document.documentElement;
+    const beforeY = root.scrollTop;
+    root.scrollTo({ top: Math.max(0, beforeY - 400), behavior: "instant" });
+    return beforeY - root.scrollTop;
+  });
+  expect(scrolled).toBeGreaterThan(200);
+
+  const after = await sticker.evaluate((el) => {
+    const box = el.getBoundingClientRect();
+    return { top: box.top, docTop: box.top + window.scrollY };
+  });
+  // 紙に貼ったままスクロールする。fixed なら viewport 上端に張り付き docTop が動く。
+  expect(Math.abs(after.docTop - placed.docTop)).toBeLessThan(2);
+  expect(after.top - placed.top).toBeGreaterThan(200);
+});
+
 test("ドラッグの後でもキーボードから遷移できる", async ({ page }) => {
   await page.goto("/");
 
   const sticker = page.locator(`.sticker[href="/apps/${apps[0]!.slug}/"]`);
   await sticker.scrollIntoViewIfNeeded();
+  await raiseSticker(sticker);
   const box = await sticker.boundingBox();
 
   // 一度ドラッグする。この click 抑止フラグが戻らないと、以降の Enter が死ぬ。
@@ -216,6 +309,7 @@ test("ステッカーは動かさずに離すと個別ページへ移る", async
 
   const sticker = page.locator(`.sticker[href="/apps/${apps[0]!.slug}/"]`);
   await sticker.scrollIntoViewIfNeeded();
+  await raiseSticker(sticker);
   await expect(sticker).toHaveAttribute("aria-label", apps[0]!.name);
   await sticker.click();
   await expect(page).toHaveURL(new RegExp(`/apps/${apps[0]!.slug}/$`, "u"));
@@ -243,6 +337,7 @@ test("一覧行とステッカーが slug で相互にハイライトする", as
 
   // 逆方向：ステッカーにホバー → 対応する行が反応する。
   await sticker.scrollIntoViewIfNeeded();
+  await raiseSticker(sticker);
   await sticker.hover();
   await expect(row).toHaveClass(/\bis-linked\b/u);
 
@@ -257,6 +352,7 @@ test("一覧行とステッカーが slug で相互にハイライトする", as
   // 別のステッカー（装飾・slug 無し）へマウスを乗せて離れても、
   // フォーカス由来のハイライトは消えない。
   const decorative = page.locator('.sticker[aria-hidden="true"]').first();
+  await raiseSticker(decorative);
   await decorative.hover();
   await expect(sticker).toHaveClass(/\bis-linked\b/u);
   await page.mouse.move(0, 0);
@@ -267,6 +363,7 @@ test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間�
   await page.goto("/");
   const sticker = page.locator(".sticker").first();
   await sticker.scrollIntoViewIfNeeded();
+  await raiseSticker(sticker);
   const slot = page.locator(".sticker-slot").first();
 
   // 1 回目のドラッグでステッカー自身が動くため、掴む中心座標は毎回その時点の
@@ -319,6 +416,7 @@ test("画面リサイズがドラッグ中に起きても、掴んだままの�
   const sticker = page.locator(".sticker").first();
   const slot = page.locator(".sticker-slot").first();
   await sticker.scrollIntoViewIfNeeded();
+  await raiseSticker(sticker);
   const box = (await sticker.boundingBox())!;
 
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
@@ -327,7 +425,7 @@ test("画面リサイズがドラッグ中に起きても、掴んだままの�
   await expect(sticker).toHaveClass(/\bis-held\b/u);
   await expect(slot.locator(".sticker-ghost")).toHaveCount(1);
 
-  // 掴んだ時点の帯の矩形は、この時点で無効になる。
+  // 掴んだ時点の紙の矩形は、この時点で無効になる。
   const viewport = page.viewportSize()!;
   await page.setViewportSize({ width: Math.max(360, viewport.width - 200), height: viewport.height });
 

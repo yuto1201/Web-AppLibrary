@@ -1,6 +1,6 @@
 # ポスター紙面とフッターのシール山
 
-ステータス: Issue #30 実装中
+ステータス: 完了（#30 / #31）
 最終更新日: 2026-09-14
 
 参照: [Drive Capital / The Summer Drive](https://styles.refero.design/style/241ebab6-1f3a-4637-8754-4f6b164ea090)（紙面）、[Inspora: Interactive sticker footer](https://www.inspora.design/posts/sticker-footer)（遊び）
@@ -109,8 +109,9 @@ OGP (`public/ogp.png`) は現行どおり別 Issue。
 
 ## 影響
 
-- 変更: `src/styles/tokens.css`、`src/styles/standard.css`、`src/styles/app-page.css`、`src/styles/legal.css`、`src/app/layout.tsx`（フォント）、`src/components/Nav.tsx` / `Hero.tsx` / `AppsSection.tsx` / `Stickers.tsx` / `Sections.tsx` / `AppLibrarySection.tsx`、`src/lib/drag.ts`、`docs/design/top.md`、`docs/TODO.md`。
-- 追加: 薄い activate provider（既存 `activate.ts` を使う）。
+- 変更: `src/styles/standard.css`、`src/components/AppsSection.tsx`、`src/components/Stickers.tsx`、`src/app/page.tsx`、`src/lib/drag.ts`、`docs/design/top.md`、`docs/TODO.md`。
+- 追加: 薄い activate provider（`src/lib/activate.tsx`）。
+- 削除: `src/components/AppLibrarySection.tsx`。シール上の名前。中央の `.sticker-band`。
 - 削除: `--font-display` の Bricolage 接続。シール上の名前。
 - テスト: `tests/drag.test.ts` のクランプ対象。`tests/e2e/site.spec.ts` の帯幅前提（`scrollWidth <= clientWidth` を帯からページへ読み替える）。フッターから Hero 付近までドラッグできること、タップ遷移、リセット、相互ハイライト、`prefers-reduced-motion`。
 - axe の `color-contrast` は実際の配色で判定する。`--accent` を本文に使わない。
@@ -119,23 +120,23 @@ OGP (`public/ogp.png`) は現行どおり別 Issue。
 
 ### Issue A — ポスター紙面（#30）
 
-- [ ] light のキャンバスが `#fff8f1`、本文が黒、サイトの操作色が `#0066ee`。紙面にドロップシャドウがない。
-- [ ] Latin 見出しに Newsreader、UI に Inter 300/400。Bricolage が HTML に出ない。
-- [ ] Hero の CTA と主要ボタンが outlined pill（塗りなし、半径 60px 相当）。
-- [ ] 一覧行から個別ページへ遷移できる。検索・フィルタ・モーダルが無い（現行維持）。
-- [ ] ダークで本文とナビのコントラストが axe `color-contrast` を通る。
-- [ ] 個別アプリページと法務が新しい紙面トークンで破綻しない。詳細ページの `app-shell` 意匠はこの Issue の対象外。
-- [ ] `npm run verify` が通る。
+- [x] light のキャンバスが `#fff8f1`、本文が黒、サイトの操作色が `#0066ee`。紙面にドロップシャドウがない。
+- [x] Latin 見出しに Newsreader、UI に Inter 300/400。Bricolage が HTML に出ない。
+- [x] Hero の CTA と主要ボタンが outlined pill（塗りなし、半径 60px 相当）。
+- [x] 一覧行から個別ページへ遷移できる。検索・フィルタ・モーダルが無い（現行維持）。
+- [x] ダークで本文とナビのコントラストが axe `color-contrast` を通る。
+- [x] 個別アプリページと法務が新しい紙面トークンで破綻しない。詳細ページの `app-shell` 意匠はこの Issue の対象外。
+- [x] `npm run verify` が通る。
 
 ### Issue B — シール山とページ全体ドラッグ（#31）
 
-- [ ] 初期表示でシールがフッター下端に山積みされ、下方向にはみ出す。中央の帯がない。
-- [ ] シールを Hero 付近までドラッグでき、離した位置が紙に残る（スクロールしても viewport に張り付かない）。
-- [ ] 横スクロールが発生しない。
-- [ ] アプリシールはアイコンのビニールで、カード上に名前が無い。タップ / キーボードで個別ページへ行く。
-- [ ] 一覧 ↔ シールの相互ハイライトが、ホバーとフォーカスを混ぜない現行契約のまま動く。
-- [ ] リセットで山に戻る。リサイズで進行中ドラッグが捨てられる。
-- [ ] `npm run verify` が通る。独立レビュー（通常変更: 実装者と別系統）を取る。
+- [x] 初期表示でシールがフッター下端に山積みされ、下方向にはみ出す。中央の帯がない。
+- [x] シールを Hero 付近までドラッグでき、離した位置が紙に残る（スクロールしても viewport に張り付かない）。
+- [x] 横スクロールが発生しない。
+- [x] アプリシールはアイコンのビニールで、カード上に名前が無い。タップ / キーボードで個別ページへ行く。
+- [x] 一覧 ↔ シールの相互ハイライトが、ホバーとフォーカスを混ぜない現行契約のまま動く。
+- [x] リセットで山に戻る。リサイズで進行中ドラッグが捨てられる。
+- [x] `npm run verify` が通る。独立レビュー（通常変更: 実装者と別系統）を取る。
 
 ## 検証
 

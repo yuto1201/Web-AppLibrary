@@ -2,7 +2,7 @@ import { describe, expect, it } from "vitest";
 import { baseBox, clampOffset, isTap, moveOffset, normalizeGrab, ORIGIN, spinFromGrab } from "../src/lib/drag";
 
 const band = { left: 0, top: 0, right: 800, bottom: 300 };
-/** 帯の左上に置いた 100x100 のステッカー。 */
+/** 紙の左上に置いた 100x100 のステッカー。 */
 const sticker = { left: 50, top: 50, right: 150, bottom: 150 };
 
 describe("moveOffset", () => {
@@ -16,7 +16,7 @@ describe("moveOffset", () => {
 });
 
 describe("clampOffset", () => {
-  it("帯の内側では要求どおり動かす", () => {
+  it("紙の内側では要求どおり動かす", () => {
     expect(clampOffset({ x: 120, y: 40 }, sticker, band)).toEqual({ x: 120, y: 40 });
   });
 
@@ -28,13 +28,20 @@ describe("clampOffset", () => {
     expect(clampOffset({ x: 5000, y: 5000 }, sticker, band)).toEqual({ x: 650, y: 150 });
   });
 
-  it("帯より大きい軸は動かさない", () => {
+  it("紙より大きい軸は動かさない", () => {
     const oversized = { left: -20, top: 10, right: 900, bottom: 120 };
     expect(clampOffset({ x: 300, y: 30 }, oversized, band)).toEqual({ x: 0, y: 30 });
   });
 
-  it("帯と同じ大きさなら 0 に固定される", () => {
+  it("紙と同じ大きさなら 0 に固定される", () => {
     expect(clampOffset({ x: 40, y: 40 }, band, band)).toEqual({ x: 0, y: 0 });
+  });
+
+  it("下辺を広げた紙では、フッター山のはみ出しを許す", () => {
+    const page = { left: 0, top: 0, right: 800, bottom: 1000 };
+    const hanging = { left: 50, top: 920, right: 150, bottom: 1020 };
+    expect(clampOffset({ x: 0, y: 0 }, hanging, page)).toEqual({ x: 0, y: -20 });
+    expect(clampOffset({ x: 0, y: 0 }, hanging, { ...page, bottom: 1080 })).toEqual({ x: 0, y: 0 });
   });
 });
 

@@ -25,7 +25,7 @@
 
 **#30:** `src/styles/tokens.css`, `src/app/layout.tsx`, `src/styles/standard.css`, `src/styles/legal.css` (token follow), `tests/e2e/site.spec.ts`, `docs/design/top.md`
 
-**#31:** `src/lib/activate.ts` (provider), `src/app/page.tsx`, `src/components/AppLibrarySection.tsx` (split/remove), `src/components/AppsSection.tsx`, `src/components/Stickers.tsx`, `src/lib/drag.ts` (comments), `src/styles/standard.css`, `tests/drag.test.ts`, `tests/e2e/site.spec.ts`, `docs/design/top.md`
+**#31:** `src/lib/activate.tsx` (provider), `src/app/page.tsx`, `src/components/AppLibrarySection.tsx` (removed), `src/components/AppsSection.tsx`, `src/components/Stickers.tsx`, `src/lib/drag.ts` (comments), `src/styles/standard.css`, `tests/drag.test.ts`, `tests/e2e/site.spec.ts`, `docs/design/top.md`
 
 ### Task 1: Poster tokens, type, home chrome (#30)
 
@@ -37,7 +37,7 @@
 
 ### Task 2: Footer vinyl pile + page-wide drag (#31)
 
-- [ ] Failing tests for pile placement, drag onto hero, no sticker name, page clamp
-- [ ] Activate provider + stickers on page stage
-- [ ] `npm run verify`
-- [ ] Commit, PR, merge #31
+- [x] Failing tests for pile placement, drag onto hero, no sticker name, page clamp
+- [x] Activate provider + stickers on page stage
+- [x] `npm run verify`
+- [x] Commit, PR, merge #31

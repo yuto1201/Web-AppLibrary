@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { apps } from "@/data/registry";
 import { useSiteState } from "@/lib/state";
+import { useActivate, type ActivateSource } from "@/lib/activate";
 import {
   baseBox,
   clampOffset,
@@ -15,14 +16,32 @@ import {
   type Box,
   type Point,
 } from "@/lib/drag";
-import type { ActivateSource } from "@/lib/activate";
 
-/** 傾きと持ち上げ量。並びが機械的に見えないように 1 枚ずつ変える。 */
+/** 傾きと持ち上げ量。山が機械的に見えないように 1 枚ずつ変える。 */
 const TILT = [-7, 4, -3, 9, -5] as const;
 const LIFT = [0, -26, -8, -38, -16] as const;
 
+/**
+ * フッター下端の山。x は紙の中央からの割合、y の負値は紙の下へはみ出す量。
+ * 件数はアプリ + 飾り。増えても modulo で回す。
+ */
+const PILE = [
+  { x: "-20%", y: "-28px" },
+  { x: "-10%", y: "-56px" },
+  { x: "2%", y: "-18px" },
+  { x: "12%", y: "-64px" },
+  { x: "22%", y: "-34px" },
+  { x: "-4%", y: "-46px" },
+] as const;
+
 /** アプリ以外の飾りステッカー。装飾なので支援技術からは隠す。 */
 const NOTES = ["Swift", "Tokyo"] as const;
+
+/**
+ * 初期の山が紙の下へはみ出す分。クランプの下辺だけこの分だけ広げる。
+ * viewport 固定にはしない。置いた位置は紙に貼ったままスクロールする。
+ */
+const STAGE_HANG = 96;
 
 type Drag = {
   pointerId: number;
@@ -39,6 +58,19 @@ function toBox(rect: DOMRect): Box {
   return { left: rect.left, top: rect.top, right: rect.right, bottom: rect.bottom };
 }
 
+/** 紙（.poster）をクランプ先にする。下方向だけ山のはみ出しを許す。 */
+function paperBounds(el: HTMLElement): Box | null {
+  const poster = el.closest(".poster");
+  if (!(poster instanceof HTMLElement)) return null;
+  const rect = poster.getBoundingClientRect();
+  return {
+    left: rect.left,
+    top: rect.top,
+    right: rect.right,
+    bottom: rect.bottom + STAGE_HANG,
+  };
+}
+
 /**
  * 掴んで動かせるステッカー。
  *
@@ -51,7 +83,9 @@ function Sticker({
   offset,
   tilt,
   lift,
-  accent,
+  layer,
+  pileX,
+  pileY,
   held,
   linked,
   resetToken,
@@ -67,7 +101,9 @@ function Sticker({
   offset: Point;
   tilt: number;
   lift: number;
-  accent?: string;
+  layer: number;
+  pileX: string;
+  pileY: string;
   held: boolean;
   linked: boolean;
   /** 値が変わるたびに、進行中のドラッグを強制的に終わらせる（例: 画面リサイズ）。 */
@@ -91,10 +127,15 @@ function Sticker({
     "--tilt": `${tilt}deg`,
     "--lift": `${lift}px`,
     "--spin": `${spin}deg`,
-    ...(accent ? { "--sticker-accent": accent } : {}),
   } as React.CSSProperties;
 
-  // リサイズ後は帯の矩形でクランプした値が保証できないため、進行中のドラッグを
+  const slotStyle = {
+    "--pile-x": pileX,
+    "--pile-y": pileY,
+    "--layer": layer,
+  } as React.CSSProperties;
+
+  // リサイズ後は紙の矩形でクランプした値が保証できないため、進行中のドラッグを
   // 強制終了する。何もしないと、次の move で古い base/bounds を使ってしまう。
   const resetTokenRef = useRef(resetToken);
   useEffect(() => {
@@ -111,8 +152,8 @@ function Sticker({
     // 同じステッカーを 2 本目の指で掴んでも、1 本目の掴み位置を上書きしない。
     if (drag.current) return;
     const el = event.currentTarget;
-    const band = el.parentElement?.parentElement;
-    if (!band) return;
+    const bounds = paperBounds(el);
+    if (!bounds) return;
 
     drag.current = {
       pointerId: event.pointerId,
@@ -120,7 +161,7 @@ function Sticker({
       baseOffset: offset,
       grab: normalizeGrab({ x: event.clientX, y: event.clientY }, toBox(el.getBoundingClientRect())),
       base: baseBox(toBox(el.getBoundingClientRect()), offset),
-      bounds: toBox(band.getBoundingClientRect()),
+      bounds,
     };
     dragged.current = false;
     setSpin(0);
@@ -170,9 +211,9 @@ function Sticker({
   };
 
   return (
-    <span className="sticker-slot">
+    <span className="sticker-slot" style={slotStyle}>
       {/* 掴んでいる間、元の位置に残る跡。ステッカー自身は transform で動くが、
-          このスロットは通常のフローに留まるため inset:0 で正確に重なる。 */}
+          このスロットは山の初期位置に留まるため inset:0 で正確に重なる。 */}
       {held && <span className="sticker-ghost" aria-hidden="true" />}
       {href ? (
         <Link {...handlers} href={href} aria-label={label} draggable={false}>
@@ -187,20 +228,17 @@ function Sticker({
   );
 }
 
-export function Stickers({
-  activeSlug,
-  onActivate,
-}: {
-  /** 一覧行から連動させる slug。null なら誰も連動していない。 */
-  activeSlug: string | null;
-  onActivate: (slug: string | null, source: ActivateSource) => void;
-}) {
+export function Stickers() {
+  const { activeSlug, onActivate } = useActivate();
   const { t } = useSiteState();
   const [offsets, setOffsets] = useState<Record<string, Point>>({});
   // 複数指で別々のステッカーを同時に掴める Set。1 本しか使わない大半の操作でも
   // 型はそのまま Set で通す方が「2 枚同時に掴むと片方の表示が消える」を防げる。
   const [held, setHeld] = useState<ReadonlySet<string>>(() => new Set());
   const [resetToken, setResetToken] = useState(0);
+  // 最後に掴んだ枚を一番上へ。初期値は並び順、掴むたびに繰り上げる。
+  const layerSeq = useRef(0);
+  const [layers, setLayers] = useState<Record<string, number>>({});
 
   const items = [
     ...apps.map((app) => ({
@@ -208,14 +246,10 @@ export function Stickers({
       slug: app.slug as string | undefined,
       href: `/apps/${app.slug}/` as string | undefined,
       label: app.name as string | undefined,
-      accent: app.accent as string | undefined,
       body: (
-        <>
-          {/* 静的出力のため素の img を使う。next/image の最適化は使わない。 */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`/apps/${app.slug}/${app.icon}`} alt="" draggable={false} loading="lazy" />
-          <span className="sticker-name">{app.name}</span>
-        </>
+        // 静的出力のため素の img を使う。next/image の最適化は使わない。
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={`/apps/${app.slug}/${app.icon}`} alt="" draggable={false} loading="lazy" />
       ),
     })),
     ...NOTES.map((note) => ({
@@ -223,15 +257,14 @@ export function Stickers({
       slug: undefined,
       href: undefined,
       label: undefined,
-      accent: undefined,
       body: <span className="sticker-note">{note}</span>,
     })),
   ];
 
   const moved = Object.keys(offsets).length > 0;
 
-  // 掴んだ時点の帯の矩形でクランプしているため、リサイズ後の位置は保証できない。
-  // 古い座標のまま帯の外へ残るより、並びを戻すほうが素直。
+  // 掴んだ時点の紙の矩形でクランプしているため、リサイズ後の位置は保証できない。
+  // 古い座標のまま紙の外へ残るより、山へ戻すほうが素直。
   // resetToken を進めて、進行中のドラッグがあれば各 Sticker 側でも強制終了させる。
   useEffect(() => {
     const onResize = () => {
@@ -247,49 +280,56 @@ export function Stickers({
     <section className="stickers" aria-labelledby="stickers-title">
       <h2 className="visually-hidden" id="stickers-title">{t.stickers_title}</h2>
 
-      <div className="sticker-band">
-        {items.map((item, index) => (
-          <Sticker
-            key={item.key}
-            href={item.href}
-            slug={item.slug}
-            label={item.label}
-            accent={item.accent}
-            tilt={TILT[index % TILT.length]!}
-            lift={LIFT[index % LIFT.length]!}
-            offset={offsets[item.key] ?? ORIGIN}
-            held={held.has(item.key)}
-            linked={item.slug !== undefined && item.slug === activeSlug}
-            resetToken={resetToken}
-            onGrab={() =>
-              setHeld((current) => {
-                const next = new Set(current);
-                next.add(item.key);
-                return next;
-              })
-            }
-            onMove={(offset) => setOffsets((current) => ({ ...current, [item.key]: offset }))}
-            onRelease={() =>
-              setHeld((current) => {
-                if (!current.has(item.key)) return current;
-                const next = new Set(current);
-                next.delete(item.key);
-                return next;
-              })
-            }
-            onActivate={onActivate}
-          >
-            {item.body}
-          </Sticker>
-        ))}
-      </div>
-
       <p className="stickers-foot">
         <span className="stickers-hint">{t.stickers_hint}</span>
         <button className="sticker-reset" type="button" hidden={!moved} onClick={() => setOffsets({})}>
           {t.stickers_reset}
         </button>
       </p>
+
+      <div className="sticker-stage">
+        {items.map((item, index) => {
+          const pile = PILE[index % PILE.length]!;
+          return (
+            <Sticker
+              key={item.key}
+              href={item.href}
+              slug={item.slug}
+              label={item.label}
+              tilt={TILT[index % TILT.length]!}
+              lift={LIFT[index % LIFT.length]!}
+              layer={layers[item.key] ?? index + 1}
+              pileX={pile.x}
+              pileY={pile.y}
+              offset={offsets[item.key] ?? ORIGIN}
+              held={held.has(item.key)}
+              linked={item.slug !== undefined && item.slug === activeSlug}
+              resetToken={resetToken}
+              onGrab={() => {
+                layerSeq.current = Math.max(layerSeq.current, items.length) + 1;
+                setLayers((current) => ({ ...current, [item.key]: layerSeq.current }));
+                setHeld((current) => {
+                  const next = new Set(current);
+                  next.add(item.key);
+                  return next;
+                });
+              }}
+              onMove={(offset) => setOffsets((current) => ({ ...current, [item.key]: offset }))}
+              onRelease={() =>
+                setHeld((current) => {
+                  if (!current.has(item.key)) return current;
+                  const next = new Set(current);
+                  next.delete(item.key);
+                  return next;
+                })
+              }
+              onActivate={onActivate}
+            >
+              {item.body}
+            </Sticker>
+          );
+        })}
+      </div>
     </section>
   );
 }
