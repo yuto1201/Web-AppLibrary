@@ -95,8 +95,8 @@ test("ポスター紙面はクリームと電圧ブルーで、Bricolage を使�
   const html = await page.content();
   expect(html.toLowerCase()).not.toContain("bricolage");
 
-  const brandFont = await page.locator(".nav-brand").evaluate((el) => getComputedStyle(el).fontFamily);
-  expect(brandFont.toLowerCase()).toMatch(/newsreader/);
+  const headingFont = await page.locator(".hero-h1").evaluate((el) => getComputedStyle(el).fontFamily);
+  expect(headingFont.toLowerCase()).toMatch(/newsreader/);
 
   const cta = page.locator(".cta-btn");
   await expect(cta).toHaveCSS("color", ACCENT.light);
