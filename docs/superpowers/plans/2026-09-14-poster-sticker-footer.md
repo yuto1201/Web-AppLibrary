@@ -39,5 +39,5 @@
 
 - [x] Failing tests for pile placement, drag onto hero, no sticker name, page clamp
 - [x] Activate provider + stickers on page stage
-- [ ] `npm run verify`
-- [ ] Commit, PR, merge #31
+- [x] `npm run verify`
+- [x] Commit, PR, merge #31
