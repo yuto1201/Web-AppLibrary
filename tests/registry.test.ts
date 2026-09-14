@@ -6,6 +6,24 @@ import { privacyDocuments } from "@/data/privacy/registry";
 import { appSchema } from "@/data/schema";
 
 describe("apps registry", () => {
+  it("PayCycle はストア公開前の状態を保持する", () => {
+    expect(getApp("pay-cycle")).toMatchObject({
+      status: "alpha", releaseDate: null, appStoreUrl: null,
+    });
+  });
+
+  it("PayCycle の日英ポリシーが広告と購入権利の扱いを保持する", () => {
+    const document = privacyDocuments["pay-cycle"]!;
+    const japanese = document.match(/<section lang="ja">([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    const english = document.match(/<section lang="en">([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    for (const disclosure of ["端末内データベース", "Google AdMob", "Google UMP", "App Tracking Transparency", "publisher first-party ID", "検証した購入権利", "新しい広告要求を行いません", "ローカル通知"]) {
+      expect(japanese).toContain(disclosure);
+    }
+    for (const disclosure of ["on-device database", "Google AdMob", "Google UMP", "App Tracking Transparency", "publisher first-party ID", "Verified purchase entitlements", "No new ad requests", "scheduled locally"]) {
+      expect(english).toContain(disclosure);
+    }
+  });
+
   it("登録された画像が各アプリの公開ディレクトリ内に実在する", () => {
     for (const app of apps) {
       const directory = realpathSync(path.resolve("public/apps", app.slug));
