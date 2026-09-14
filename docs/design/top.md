@@ -1,9 +1,9 @@
 # トップページのデザイン
 
 ステータス: 確定
-最終更新日: 2026-09-09
+最終更新日: 2026-09-14
 
-実装は `src/app/page.tsx` と `src/components/`。意匠は **紙 (paper) の上にステッカーが貼られている**という一枚の見立て。
+実装は `src/app/page.tsx` と `src/components/`。意匠は **クリームのポスター紙面に、ビニールのシールが遊べる** という一枚の見立て。参照は Drive Capital / Summer Drive の紙面と、Wandor の interactive sticker footer。
 
 ## 原則
 
@@ -11,23 +11,27 @@
 - 影を使うのはステッカーだけ。紙に物が置かれている合図に限る。
 - 自動で動くのは **初回訪問の Hero だけ**。スクロール連動の演出は持たない。
 - 色の値は `src/styles/tokens.css` に置き、`standard.css` へ重複させない。
+- サイトの彩色は電圧ブルー 1 色。アプリ色はシールと一覧ホバーに限る。
+- ホーム UI は Inter 300 / 400。Latin 見出しは Newsreader 400。
 
 ## トークン
 
-`tokens.css` が `--paper` / `--paper-raised` / `--paper-sunken` / `--ink` / `--ink-2` / `--ink-3` / `--rule` / `--rule-strong` / `--accent` を持つ。既定は light（紙）で、`[data-theme="dark"]` が同じ役割を濃いインク紙へ差し替える。
+`tokens.css` が `--paper` / `--paper-raised` / `--paper-sunken` / `--ink` / `--ink-2` / `--ink-3` / `--rule` / `--rule-strong` / `--accent` を持つ。既定は light（クリーム `#fff8f1`）で、`[data-theme="dark"]` が同じ役割を濃いインク紙へ差し替える。
 
-`--ink-2` / `--ink-3` / `--accent` は `--paper` 上で 4.5:1 以上になる値を選んでいる。E2E は色を上書きせず**実際の配色**で axe の `color-contrast` を判定するため、明るくする方向へ動かしたら `npm run test:e2e` で確認する。
+`--accent` の light は `#0066ee`。Drive Capital の `#006eff` はクリーム上 4.27:1 のため、16px の操作文字が 4.5:1 を満たす一歩暗い値にしている。dark は `#6eb3ff`（`#006eff` が濃い紙上で 4.5:1 を割るため）。
 
-書体は 3 つ。`--font-sans` (Inter) が本文と UI、`--font-display` (Bricolage Grotesque) が見出し・アプリ名・ワードマーク、`--font-mono` (JetBrains Mono) が日付と件数。display は latin subset なので、日本語は OS のゴシックへ落ちる。
+`--ink-2` / `--ink-3` / `--accent` は `--paper` 上で 4.5:1 以上。E2E は色を上書きせず**実際の配色**で axe の `color-contrast` を判定する。
 
-紙面の行長は `:root` の `--measure` (760px)。`.nav` と `.footer` は `.page` の外にあるため `:root` に置く。
+書体は 3 つ。`--font-sans` (Inter 300/400) が本文と UI、`--font-display` (Newsreader) が Latin のワードマークと英語見出し、`--font-mono` (JetBrains Mono) が日付と件数。display は latin subset なので、日本語は OS のゴシックへ落ちる。Bricolage Grotesque は使わない。
+
+紙面の行長は `:root` の `--measure` (760px)。`.nav` と `.footer` は `.page` の外にあるため `:root` に置く。CTA は `--radius-pill` (60px) の outlined。
 
 ## 画面構成
 
-1. `Nav`: ワードマーク、アンカー、言語・テーマ切替。罫線 1 本で紙面と切る。640px 以下ではアンカーを畳む（本文がすぐ下にあるためメニューは持たない）。
-2. `Hero`: 役割のタグ、見出し、紹介、拠点と技術、一覧への導線。見出しは 1 文字ずつ立ち上がる。
-3. `AppsSection`: 掲載アプリを**行の索引**として並べる。行全体が個別ページへのリンク。hover の色はアプリ自身の `accent` を使う。ステッカー帯と `slug` で相互にハイライトする。
-4. `Stickers`: アプリアイコンを傾いたステッカーとして重ね、掴んで動かせる。ここだけが `--measure` を破って広がる。一覧行と相互にハイライトする。
+1. `Nav`: Newsreader のワードマーク、電圧ブルーのアンカー、outlined の言語・テーマ切替。罫線 1 本で紙面と切る。640px 以下ではアンカーを畳む。
+2. `Hero`: 役割のメタ、巨大見出し（電圧ブルー）、紹介、拠点、outlined pill の CTA。見出しは 1 文字ずつ立ち上がる。
+3. `AppsSection`: 掲載アプリを**行の索引**として並べる。行全体が個別ページへのリンク。hover の色はアプリ自身の `accent` を使う。ステッカーと `slug` で相互にハイライトする。
+4. `Stickers`: アプリアイコンを傾いたステッカーとして重ね、掴んで動かせる。Issue #31 でフッターの山へ移す。
 5. `Posts` / `Contact` / `Footer`: お知らせ、連絡先、法務ページへの導線。フッターは折りたたみ式の「奥付」を持つ。
 
 ## ステッカーの実装
