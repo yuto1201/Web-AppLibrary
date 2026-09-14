@@ -47,6 +47,19 @@ async function expectColorContrast(page: Page, include?: string) {
   expect(results.passes.some(({ id }) => id === "color-contrast")).toBe(true);
 }
 
+/**
+ * CSS の matrix(a, b, c, d, e, f) から回転角度 (deg) を取り出す。
+ * 一様な scale は a・b を同じ倍率で伸ばすだけなので atan2 の比には影響しない。
+ * --spin という「値」だけでなく、実際に描画される transform（cascade の勝者）を
+ * 見るためのもの。CSS の詳細度勝負で --spin が無視される回帰を検出できる。
+ */
+function rotationDegrees(matrix: string): number {
+  const values = matrix.match(/matrix\(([^)]+)\)/u)?.[1]?.split(",").map(Number);
+  if (!values || values.length < 4) return 0;
+  const [a, b] = values;
+  return (Math.atan2(b!, a!) * 180) / Math.PI;
+}
+
 async function setStoredState(page: Page, state: Record<string, string>) {
   await page.evaluate((value) => localStorage.setItem("applibrary_state", value), JSON.stringify(state));
 }
@@ -172,6 +185,148 @@ test("ステッカーは動かさずに離すと個別ページへ移る", async
   await sticker.click();
   await expect(page).toHaveURL(new RegExp(`/apps/${apps[0]!.slug}/$`, "u"));
   await expect(page.getByRole("heading", { level: 1, name: apps[0]!.name, exact: true })).toBeVisible();
+});
+
+test("一覧行とステッカーが slug で相互にハイライトする", async ({ page }) => {
+  await page.goto("/");
+  const target = apps[1]!; // CafLog。先頭以外を選び、初期状態が非活性であることも確認する。
+  const row = page.locator(`.app-row[href="/apps/${target.slug}/"]`);
+  const sticker = page.locator(`.sticker[href="/apps/${target.slug}/"]`);
+
+  await expect(row).not.toHaveClass(/\bis-linked\b/u);
+  await expect(sticker).not.toHaveClass(/\bis-linked\b/u);
+
+  // 行にホバー → 対応するステッカーだけが反応する。
+  await row.hover();
+  await expect(sticker).toHaveClass(/\bis-linked\b/u);
+  const other = page.locator(`.sticker[href="/apps/${apps[0]!.slug}/"]`);
+  await expect(other).not.toHaveClass(/\bis-linked\b/u);
+
+  // locator.hover は途中の要素に遮られると失敗しうるため、低レベルの mouse.move で単に離す。
+  await page.mouse.move(0, 0);
+  await expect(sticker).not.toHaveClass(/\bis-linked\b/u);
+
+  // 逆方向：ステッカーにホバー → 対応する行が反応する。
+  await sticker.scrollIntoViewIfNeeded();
+  await sticker.hover();
+  await expect(row).toHaveClass(/\bis-linked\b/u);
+
+  // フォーカスでも同様に動く（キーボード利用者向け）。
+  // locator.hover は途中の要素に遮られると失敗しうるため、低レベルの mouse.move で単に離す。
+  await page.mouse.move(0, 0);
+  await expect(row).not.toHaveClass(/\bis-linked\b/u);
+  await row.focus();
+  await expect(sticker).toHaveClass(/\bis-linked\b/u);
+
+  // ホバーとフォーカスは別系統。行にキーボードフォーカスが残ったまま
+  // 別のステッカー（装飾・slug 無し）へマウスを乗せて離れても、
+  // フォーカス由来のハイライトは消えない。
+  const decorative = page.locator('.sticker[aria-hidden="true"]').first();
+  await decorative.hover();
+  await expect(sticker).toHaveClass(/\bis-linked\b/u);
+  await page.mouse.move(0, 0);
+  await expect(sticker).toHaveClass(/\bis-linked\b/u);
+});
+
+test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間だけ元の位置に跡が残る", async ({ page }) => {
+  await page.goto("/");
+  const sticker = page.locator(".sticker").first();
+  await sticker.scrollIntoViewIfNeeded();
+  const slot = page.locator(".sticker-slot").first();
+
+  // 1 回目のドラッグでステッカー自身が動くため、掴む中心座標は毎回その時点の
+  // boundingBox から取り直す。使い回すと、動いた後のステッカーから外れて掴めない。
+  async function spinFromEdge(edge: "top" | "bottom"): Promise<{ spin: number; renderedDeg: number }> {
+    const box = (await sticker.boundingBox())!;
+    const cx = box.x + box.width / 2;
+    const grabY = edge === "top" ? box.y + 8 : box.y + box.height - 8;
+    await page.mouse.move(cx, grabY);
+    // マウスを乗せた時点で一覧行との相互ハイライト (is-linked) が発火し、
+    // 0.3s の transform transition で位置が数 px 動く。収まる前に押すと
+    // 掴んだ位置の計算がずれるため、実際のユーザー操作と同じく間を置く。
+    await page.waitForTimeout(350);
+    await page.mouse.down();
+    await page.mouse.move(cx + 80, grabY, { steps: 8 });
+    // ドラッグ中だけ跡（ghost）が現れる。
+    await expect(slot.locator(".sticker-ghost")).toHaveCount(1);
+    const [spin, transform] = await sticker.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return [parseFloat(cs.getPropertyValue("--spin")), cs.transform];
+    });
+    await page.mouse.up();
+    await expect(slot.locator(".sticker-ghost")).toHaveCount(0);
+    return { spin, renderedDeg: rotationDegrees(transform) };
+  }
+
+  const top = await spinFromEdge("top");
+  await sticker.scrollIntoViewIfNeeded(); // 前のドラッグで動いている場合に備える
+  const bottom = await spinFromEdge("bottom");
+
+  // てこの原理：上端と下端を掴んで同じ向きに引くと、回転が逆向きになる。
+  expect(top.spin).toBeGreaterThan(0);
+  expect(bottom.spin).toBeLessThan(0);
+
+  // --spin という「値」だけでなく、実際に描かれた transform（CSS cascade の
+  // 勝者）でも確認する。ドラッグ中は is-held と is-linked が同時に true になり
+  // うる。is-linked が詳細度で勝って --spin を無視する rotate(tilt) 固定へ
+  // 落ちる回帰が実際に一度発生しており、その場合 top/bottom の見た目の角度は
+  // ほぼ同じ（tilt のまま）になるため、はっきり差が付くことを確認する。
+  expect(top.renderedDeg - bottom.renderedDeg).toBeGreaterThan(4);
+
+  // 離した後は 0 へ戻る。
+  await expect
+    .poll(() => sticker.evaluate((el) => parseFloat(getComputedStyle(el).getPropertyValue("--spin"))))
+    .toBe(0);
+});
+
+test("画面リサイズがドラッグ中に起きても、掴んだままの見た目で固着しない", async ({ page }) => {
+  await page.goto("/");
+  const sticker = page.locator(".sticker").first();
+  const slot = page.locator(".sticker-slot").first();
+  await sticker.scrollIntoViewIfNeeded();
+  const box = (await sticker.boundingBox())!;
+
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(box.x + 60, box.y - 40, { steps: 6 });
+  await expect(sticker).toHaveClass(/\bis-held\b/u);
+  await expect(slot.locator(".sticker-ghost")).toHaveCount(1);
+
+  // 掴んだ時点の帯の矩形は、この時点で無効になる。
+  const viewport = page.viewportSize()!;
+  await page.setViewportSize({ width: Math.max(360, viewport.width - 200), height: viewport.height });
+
+  // 古い矩形のまま move/up が来ても破綻しない。掴んだ表示は解ける。
+  await page.mouse.move(box.x + 90, box.y - 20, { steps: 4 });
+  await page.mouse.up();
+
+  await expect(sticker).not.toHaveClass(/\bis-held\b/u);
+  await expect(slot.locator(".sticker-ghost")).toHaveCount(0);
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+    .toBe(true);
+
+  await page.setViewportSize(viewport);
+});
+
+test("フッターの奥付は既定で閉じており、開くと本文とリンクが読める", async ({ page }) => {
+  await page.goto("/");
+  const colophon = page.locator(".colophon");
+  const body = colophon.locator(".colophon-body");
+
+  await expect(colophon).not.toHaveJSProperty("open", true);
+  await expect(body).toBeHidden();
+
+  await colophon.locator("summary").click();
+  await expect(colophon).toHaveJSProperty("open", true);
+  await expect(body).toBeVisible();
+
+  const sourceLink = colophon.getByRole("link");
+  await expect(sourceLink).toHaveAttribute("href", "https://github.com/yuto1201/Web-AppLibrary");
+  await expect(sourceLink).toHaveAttribute("target", "_blank");
+
+  // 既存のフッター（著作権表示・法務リンク）は壊れていない。
+  await expect(page.getByRole("link", { name: "プライバシー", exact: true })).toBeVisible();
 });
 
 test("既定は紙のライトテーマで、light / dark 双方が実配色でコントラストを満たす", async ({ page }) => {
