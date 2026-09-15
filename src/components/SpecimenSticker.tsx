@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import type { App } from "@/data/schema";
 import { deskApp, statusStamp } from "@/lib/sticker-desk";
 import { ORIGIN, type Point } from "@/lib/drag";
@@ -12,7 +12,6 @@ export function SpecimenSticker({ app }: { app: App }) {
   const [offset, setOffset] = useState<Point>(ORIGIN);
   const [held, setHeld] = useState(false);
   const [resetToken, setResetToken] = useState(0);
-  const layerSeq = useRef(1);
 
   useEffect(() => {
     const onResize = () => {
@@ -33,7 +32,7 @@ export function SpecimenSticker({ app }: { app: App }) {
         offset={offset}
         tilt={-6}
         lift={0}
-        layer={layerSeq.current}
+        layer={1}
         held={held}
         linked={false}
         resetToken={resetToken}
