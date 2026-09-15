@@ -380,19 +380,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
    Stickers — 紙の上へ散らしたビニール。つまんで動かせる
    影を使うのはここだけ。viewport 固定にはしない
    ============================================================ */
-.stickers {
-  position: absolute;
-  inset: 0;
-  z-index: 40;
-  pointer-events: none;
-  padding: 0;
-}
-
+/* ステージは塗りもヒットも持たない。inset の透明オーバーレイは
+   axe が本文の color-contrast を bgOverlap にする。display: contents で
+   ボックスを作らず、スロットは .poster（position: relative）を含むブロックにする。 */
+.stickers,
 .sticker-stage {
-  position: absolute;
-  inset: 0;
-  height: auto;
-  pointer-events: none;
+  display: contents;
 }
 
 /* スロットは机の初期位置に留まる。本体は transform で動く。
