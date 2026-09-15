@@ -381,7 +381,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   position: absolute;
   inset: 0;
   border: 1px dashed var(--rule-strong);
-  border-radius: 22px;
+  border-radius: inherit;
   pointer-events: none;
 }
 
@@ -410,6 +410,31 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   width: 100%;
   border-radius: 16px;
   pointer-events: none;
+}
+.sticker[data-shape="round-rect"] { border-radius: 22px; }
+.sticker[data-shape="round-rect"] img { border-radius: 16px; }
+.sticker[data-shape="circle"] { border-radius: 50%; padding: 6px; }
+.sticker[data-shape="circle"] img { border-radius: 50%; }
+.sticker[data-shape="squircle"] { border-radius: 14px; }
+.sticker[data-shape="squircle"] img { border-radius: 8px; }
+.sticker[data-shape="round-lg"] { border-radius: 28px; }
+.sticker[data-shape="round-lg"] img { border-radius: 20px; }
+.sticker[data-shape="word"] { border-radius: 18px; }
+.sticker-stamp {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  color: #1a1814;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  pointer-events: none;
+  box-shadow: var(--shadow-sticker);
 }
 .sticker-note {
   display: grid;

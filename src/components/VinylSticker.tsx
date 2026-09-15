@@ -65,7 +65,7 @@ export function VinylSticker({
   resetToken,
   deskKey,
   shape,
-  stamp: _stamp,
+  stamp,
   caption: _caption,
   href,
   slug,
@@ -77,7 +77,6 @@ export function VinylSticker({
   onActivate,
   children,
 }: VinylStickerProps) {
-  void _stamp;
   void _caption;
   const drag = useRef<Drag | null>(null);
   const dragged = useRef(false);
@@ -158,6 +157,7 @@ export function VinylSticker({
     onMouseLeave: () => onActivate(null, "hover"),
     onBlur: () => onActivate(null, "focus"),
     className: `sticker${held ? " is-held" : ""}${linked ? " is-linked" : ""}`,
+    "data-shape": shape,
     style,
   };
 
@@ -167,10 +167,12 @@ export function VinylSticker({
       {href ? (
         <Link {...handlers} href={href} aria-label={label} draggable={false}>
           {children}
+          {stamp ? <span className="sticker-stamp" aria-hidden="true">{stamp}</span> : null}
         </Link>
       ) : (
         <span {...handlers} aria-hidden="true">
           {children}
+          {stamp ? <span className="sticker-stamp" aria-hidden="true">{stamp}</span> : null}
         </span>
       )}
     </span>

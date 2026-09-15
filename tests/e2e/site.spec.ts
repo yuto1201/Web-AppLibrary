@@ -203,6 +203,26 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
     .toBeLessThan(2);
 });
 
+test("アプリシールの形が違い、beta / alpha に印がある", async ({ page }) => {
+  await page.goto("/");
+  const sublog = page.locator('.sticker[href="/apps/sublog/"]');
+  const caflog = page.locator('.sticker[href="/apps/caflog/"]');
+  const devTools = page.locator('.sticker[href="/apps/dev-tools/"]');
+  const payCycle = page.locator('.sticker[href="/apps/pay-cycle/"]');
+
+  const radius = async (locator: ReturnType<typeof page.locator>) =>
+    locator.evaluate((el) => parseFloat(getComputedStyle(el).borderTopLeftRadius));
+
+  expect(await radius(caflog)).toBeGreaterThan(await radius(sublog) + 10);
+  expect(await radius(devTools)).toBeLessThan(await radius(sublog));
+
+  await expect(sublog.locator(".sticker-stamp")).toHaveCount(0);
+  await expect(caflog.locator(".sticker-stamp")).toHaveCount(0);
+  await expect(devTools.locator(".sticker-stamp")).toHaveText("β");
+  await expect(payCycle.locator(".sticker-stamp")).toHaveText("α");
+  await expect(page.locator(".sticker-name")).toHaveCount(0);
+});
+
 test("初期表示でシールが Hero と一覧見出しに乗っている", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
