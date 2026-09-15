@@ -47,6 +47,33 @@ async function expectColorContrast(page: Page, include?: string) {
   expect(results.passes.some(({ id }) => id === "color-contrast")).toBe(true);
 }
 
+/** 言語 h2 より条項 h3 を一段小さくする。字重はどちらも 400。 */
+async function expectLegalHeadingHierarchy(page: Page) {
+  const h2 = page.locator(".privacy-page h2").first();
+  const h3 = page.locator(".privacy-page h3").first();
+  await expect(h2).toBeVisible();
+  await expect(h3).toBeVisible();
+  await expect(h2).toHaveCSS("font-weight", "400");
+  await expect(h3).toHaveCSS("font-weight", "400");
+  const [h2Size, h3Size, h2Top, h3Top] = await page.evaluate(() => {
+    const heading2 = document.querySelector(".privacy-page h2");
+    const heading3 = document.querySelector(".privacy-page h3");
+    if (!(heading2 instanceof HTMLElement) || !(heading3 instanceof HTMLElement)) {
+      throw new Error("expected app-legal h2 and h3");
+    }
+    const second = getComputedStyle(heading2);
+    const third = getComputedStyle(heading3);
+    return [
+      parseFloat(second.fontSize),
+      parseFloat(third.fontSize),
+      parseFloat(second.marginTop),
+      parseFloat(third.marginTop),
+    ];
+  });
+  expect(h3Size).toBeLessThan(h2Size);
+  expect(h3Top).toBeLessThan(h2Top);
+}
+
 /**
  * CSS の matrix(a, b, c, d, e, f) から回転角度 (deg) を取り出す。
  * 一様な scale は a・b を同じ倍率で伸ばすだけなので atan2 の比には影響しない。
@@ -817,6 +844,20 @@ for (const app of apps) {
       expect(termsHtml).toContain('<meta property="og:title" content="利用規約 — PayCycle"/>');
       expect(termsHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
     }
+    // request.get は HTML / OGP だけ。紙面 CSS は各法務 URL を直接開いて確認する。
+    await page.goto(`/apps/${app.slug}/privacy/`);
+    await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/privacy/$`, "u"));
+    await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
+    await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
+    await expect(page.locator(".app-shell .sticker")).toHaveCount(0);
+    if (app.slug === "pay-cycle") {
+      await expectLegalHeadingHierarchy(page);
+      await page.goto("/apps/pay-cycle/terms/");
+      await expect(page).toHaveURL(/\/apps\/pay-cycle\/terms\/$/u);
+      await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
+      await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
+      await expectLegalHeadingHierarchy(page);
+    }
     await page.goto(`/apps/${app.slug}/`);
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/$`, "u"));
     await expect(page.getByRole("heading", { name: app.name, exact: true, level: 1 })).toBeVisible();
@@ -915,9 +956,7 @@ for (const app of apps) {
       await expectColorContrast(page);
       await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
       await expect(page).toHaveURL(/\/apps\/pay-cycle\/privacy\/$/u);
-      const h3 = page.locator(".privacy-page h3").first();
-      await expect(h3).toBeVisible();
-      await expect(h3).toHaveCSS("font-weight", "400");
+      await expectLegalHeadingHierarchy(page);
     } else {
       await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese only.");
     }

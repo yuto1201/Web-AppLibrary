@@ -9,7 +9,7 @@
 - Hero: 戻るリンク、120px アイコン（グローなし）、名前（インク・字重 400）、タグライン（`--ink-2`、グラデ文字なし）、紹介、プラットフォーム、outlined pill の CTA。行長は `--measure`。左揃え。ホームの `<Nav />` は載せない。Hero 右上にそのアプリの標本ビニールを 1 枚置く（`.specimen-slot`、内側の `.sticker-slot` は 96px でホームの机スロット規則から切り離す）。アイコンが無いアプリには置かない。リンクではない。`aria-hidden`。`src/components/SpecimenSticker.tsx` が `VinylSticker` を `href` なしで載せ、クランプは `.app-shell`（`shellBounds`）。viewport 固定にしない。離した位置に残る。リサイズで机と同様にオフセットを捨てる。法務ページ（アプリ `/privacy/` `/terms/`、サイト `/privacy/` `/terms/`）とトップには置かない。テープ・日付印・手書き合図は置かない。
 - Features: registry の `{ icon, title, description }` を塗りなし・1px 罫線のブロックで表示。白いカード影は持たない。英語見出しは Newsreader 400。
 - Screenshots: `public/apps/<slug>/screenshots/` の実ファイルを registry の順序で表示。flex wrap した各行を中央配置し、lazy loading と alt を付ける。1px 罫線と `--shadow-sticker`。黒ベタ背景は使わない。
-- Footer: `/apps/<slug>/privacy/` とトップへの導線。字重 400。
+- Footer: `/apps/<slug>/privacy/` とトップへの導線。字重 400。アプリ法務の言語見出しは `h2`（20px）、条項は `h3`（16px・上余白も一段小さく）。字重はどちらも 400。
 - CTA: 配布先は電圧ブルーの outlined pill。「機能を見る」はインクの outlined pill。塗りグラデと浮き上がりは持たない。
 
 共通 CSS は `src/styles/app-page.css`、基本トークンは `src/styles/tokens.css`。App Router は遷移後も読み込んだ global CSS を保持するため、アプリ詳細とアプリ別 privacy / terms は `.app-shell` で包み、各コンポーネント規則をその配下へスコープする。例外として、詳細表示中のブラウザ余白とオーバースクロールを同じ紙にする `body:has(.app-shell)` だけを条件付きで使う。`:root` や無条件の `body`、汎用の `.hero` などへアプリ固有の規則を追加しない。`--app-*` / `--glass-*` の既存名を維持する。掲載画像は正方形アイコン（128px 以上）と縦長スクリーンショットを使用する。
