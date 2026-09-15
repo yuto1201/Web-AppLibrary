@@ -371,6 +371,25 @@ test("ステッカーは動かさずに離すと個別ページへ移る", async
   await expect(page.getByRole("heading", { level: 1, name: apps[0]!.name, exact: true })).toBeVisible();
 });
 
+test("個別ページの標本シールはリンクではなく動かせる", async ({ page }) => {
+  await page.goto("/apps/sublog/");
+  const specimen = page.locator(".app-shell .sticker");
+  await expect(specimen).toHaveCount(1);
+  await expect(specimen).not.toHaveAttribute("href");
+  const before = (await specimen.boundingBox())!;
+  await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2);
+  await page.waitForTimeout(350);
+  await page.mouse.down();
+  await page.mouse.move(before.x - 80, before.y + 60, { steps: 10 });
+  await page.mouse.up();
+  const after = (await specimen.boundingBox())!;
+  expect(Math.abs(after.x - before.x) + Math.abs(after.y - before.y)).toBeGreaterThan(20);
+  await expect.poll(() => new URL(page.url()).pathname).toBe("/apps/sublog/");
+
+  await page.goto("/apps/sublog/privacy/");
+  await expect(page.locator(".app-shell .sticker")).toHaveCount(0);
+});
+
 test("一覧行とステッカーが slug で相互にハイライトする", async ({ page }) => {
   await page.goto("/");
   const target = apps[1]!; // CafLog。先頭以外を選び、初期状態が非活性であることも確認する。

@@ -43,9 +43,19 @@ body:has(.app-shell) {
 
 /* ═══ Hero ═══ */
 .app-shell .hero {
+  position: relative;
   max-width: none;
   padding: var(--space-6) var(--space-5) var(--space-12);
 }
+.app-shell .specimen-slot {
+  position: absolute;
+  right: clamp(8px, 6vw, 48px);
+  top: 72px;
+  width: 96px;
+  z-index: 3;
+  pointer-events: none;
+}
+.app-shell .specimen-slot .sticker { pointer-events: auto; }
 .app-shell .hero-nav { max-width: 1040px; margin: 0 auto var(--space-8); }
 .app-shell .nav-back { font-size: 14px; color: var(--app-ink-2); font-weight: 500; }
 .app-shell .hero-inner {
