@@ -622,9 +622,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .post { grid-template-columns: 1fr; gap: var(--space-1); }
 
   .sticker-slot { width: 84px; }
-  .sticker-slot[data-key="sublog"] { left: auto; right: 0; top: 12%; width: 72px; }
-  .sticker-slot[data-key="caflog"] { left: auto; right: 8px; top: auto; bottom: -24px; }
-  .sticker-slot[data-key="dev-tools"] { left: auto; right: 12px; top: 56%; width: 72px; }
+  .sticker-slot[data-key="sublog"] { left: auto; right: 12px; top: 12%; width: 72px; }
+  .sticker-slot[data-key="caflog"] { left: auto; right: 16px; top: auto; bottom: -24px; }
+  .sticker-slot[data-key="dev-tools"] { left: auto; right: 16px; top: 56%; width: 72px; }
   .sticker-slot[data-key="pay-cycle"] { left: 6%; right: auto; top: auto; bottom: -36px; }
   .sticker-slot[data-key="note-Swift"] { left: 28%; right: auto; top: auto; bottom: -36px; }
   .sticker-slot[data-key="note-solo"] { left: 52%; right: auto; top: auto; bottom: -36px; }
