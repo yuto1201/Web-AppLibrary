@@ -166,13 +166,13 @@ export function VinylSticker({
       {href ? (
         <Link {...handlers} href={href} aria-label={label} draggable={false}>
           {children}
-          {stamp ? <span className="sticker-stamp" aria-hidden="true">{stamp}</span> : null}
+          {stamp ? <span className="sticker-stamp" data-mark={stamp} aria-hidden="true" /> : null}
           {caption ? <span className="sticker-caption" lang="ja">{caption}</span> : null}
         </Link>
       ) : (
         <span {...handlers} aria-hidden="true">
           {children}
-          {stamp ? <span className="sticker-stamp" aria-hidden="true">{stamp}</span> : null}
+          {stamp ? <span className="sticker-stamp" data-mark={stamp} aria-hidden="true" /> : null}
           {caption ? <span className="sticker-caption" lang="ja">{caption}</span> : null}
         </span>
       )}

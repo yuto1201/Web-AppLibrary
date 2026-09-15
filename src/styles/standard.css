@@ -404,10 +404,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .sticker-slot[data-key="sublog"] { left: 72%; top: 16%; width: clamp(96px, 12vw, 124px); }
 .sticker-slot[data-key="caflog"] { left: 8%; top: 24%; width: clamp(76px, 10vw, 100px); }
 .sticker-slot[data-key="dev-tools"] { left: 78%; top: 34%; }
-.sticker-slot[data-key="pay-cycle"] { left: 62%; top: auto; bottom: -28px; }
-.sticker-slot[data-key="note-Swift"] { left: 78%; top: auto; bottom: -8px; }
+.sticker-slot[data-key="pay-cycle"] { left: auto; right: 20px; top: auto; bottom: -28px; }
+.sticker-slot[data-key="note-Swift"] { left: auto; right: 168px; top: auto; bottom: -8px; }
 .sticker-slot[data-key="note-Tokyo"] { left: 10%; top: 22%; width: clamp(72px, 9vw, 96px); }
-.sticker-slot[data-key="note-solo"] { left: 48%; top: auto; bottom: -40px; }
+.sticker-slot[data-key="note-solo"] { left: 12px; top: auto; bottom: -40px; }
 .sticker-slot:hover,
 .sticker-slot:focus-within {
   z-index: calc(var(--layer, 1) + 100);
@@ -473,6 +473,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-size: 11px;
   pointer-events: none;
   box-shadow: var(--shadow-sticker);
+}
+/* 1 字の印は axe が shortTextContent で incomplete にする。描画は ::after に寄せる。 */
+.sticker-stamp[data-mark]::after {
+  content: attr(data-mark);
 }
 .sticker-note {
   display: grid;
@@ -709,14 +713,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
   .post { grid-template-columns: 1fr; gap: var(--space-1); }
 
-  .sticker-slot { width: 84px; }
+  .sticker-slot { width: 70px; }
   .sticker-slot[data-key="sublog"] { left: auto; right: 12px; top: 12%; width: 72px; }
-  .sticker-slot[data-key="caflog"] { left: auto; right: 16px; top: auto; bottom: -24px; }
+  .sticker-slot[data-key="caflog"] { left: auto; right: 4px; top: auto; bottom: -24px; width: 64px; }
   .sticker-slot[data-key="dev-tools"] { left: auto; right: 16px; top: 56%; width: 72px; }
-  .sticker-slot[data-key="pay-cycle"] { left: 6%; right: auto; top: auto; bottom: -36px; }
-  .sticker-slot[data-key="note-Swift"] { left: 28%; right: auto; top: auto; bottom: -36px; }
-  .sticker-slot[data-key="note-solo"] { left: 52%; right: auto; top: auto; bottom: -36px; }
-  .sticker-slot[data-key="note-Tokyo"] { left: 4%; top: auto; bottom: -20px; }
+  .sticker-slot[data-key="pay-cycle"] { left: 72px; right: auto; top: auto; bottom: -36px; width: 70px; }
+  .sticker-slot[data-key="note-Swift"] { left: 146px; right: auto; top: auto; bottom: -36px; width: 70px; }
+  .sticker-slot[data-key="note-solo"] { left: 220px; right: auto; top: auto; bottom: -36px; width: 70px; }
+  .sticker-slot[data-key="note-Tokyo"] { left: 4px; top: auto; bottom: -20px; width: 64px; }
+  .stickers-foot { bottom: 5.75rem; }
   .sticker-note { min-height: 72px; padding: var(--space-3) 6px; }
 }
 
