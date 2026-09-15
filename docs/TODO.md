@@ -2,10 +2,9 @@
 
 最終更新日: 2026-09-15
 
-- [x] [#30](https://github.com/yuto1201/Web-AppLibrary/issues/30) トップをポスター紙面へ寄せる
-- [x] [#31](https://github.com/yuto1201/Web-AppLibrary/issues/31) シールをフッターの山にし、ページ全体でつまめるようにする
+- [ ] ポスターの上に机の跡を残して、遊べるサイトにする（仕様レビュー中。Issue は仕様確定後に起票）
 
-仕様: [ポスター紙面とフッターのシール山](superpowers/specs/2026-09-14-poster-sticker-footer-design.md)
+仕様: [ポスターの上に机の跡を残す](superpowers/specs/2026-09-15-desk-play-refresh-design.md)
 
 ## 直近の完了
 
@@ -21,8 +20,8 @@
 
 ## 見送った改善
 
-- OGP 画像 (`public/ogp.png`) が旧 Liquid Glass 意匠のまま。刷新は別 Issue にする。
-- ドラッグで現れる鉛筆注釈、個別ページの標本ステッカー（Issue #23 で Codex / Grok が提案したが見送り）。
-- アプリごとの切り抜きイラスト（#31 は既存アイコンのビニール化に留める）。
+- アプリごとの切り抜きイラスト（机の刷新でも既存アイコンのビニール化に留める）。
+
+OGP・鉛筆メモ・個別ページの標本は [机の跡](superpowers/specs/2026-09-15-desk-play-refresh-design.md) の範囲へ移した。
 
 完了経緯は [設計判断](decisions/README.md)、[完了済み計画](superpowers/completed/)、GitHub の closed Issue / merged PR に保存します。未確認のローカルアプリ名を候補として列挙しません。
