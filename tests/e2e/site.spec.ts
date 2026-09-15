@@ -243,8 +243,8 @@ test("アプリシールの形が違い、beta / alpha に印がある", async (
 
   await expect(sublog.locator(".sticker-stamp")).toHaveCount(0);
   await expect(caflog.locator(".sticker-stamp")).toHaveCount(0);
-  await expect(devTools.locator(".sticker-stamp")).toHaveText("β");
-  await expect(payCycle.locator(".sticker-stamp")).toHaveText("α");
+  await expect(devTools.locator(".sticker-stamp")).toHaveAttribute("data-mark", "β");
+  await expect(payCycle.locator(".sticker-stamp")).toHaveAttribute("data-mark", "α");
   await expect(page.locator(".sticker-name")).toHaveCount(0);
 });
 
