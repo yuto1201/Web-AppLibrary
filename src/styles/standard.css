@@ -332,36 +332,44 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .app-row-year { color: var(--ink-3); }
 
 /* ============================================================
-   Stickers — フッター下端のビニール山。紙全体へつまんで動かせる
+   Stickers — 紙の上へ散らしたビニール。つまんで動かせる
    影を使うのはここだけ。viewport 固定にはしない
    ============================================================ */
 .stickers {
-  position: relative;
+  position: absolute;
+  inset: 0;
   z-index: 40;
-  width: 100%;
-  padding: var(--space-4) 0 32px;
+  pointer-events: none;
+  padding: 0;
 }
 
-/* 山の居場所だけ。紙全体を覆うと透明レイヤーが本文のコントラスト判定を壊す。
-   掴んだシールは transform ではみ出して紙の上を動く。 */
 .sticker-stage {
-  position: relative;
-  height: 140px;
+  position: absolute;
+  inset: 0;
+  height: auto;
   pointer-events: none;
 }
 
-/* スロットは山の初期位置に留まる。本体は transform で動く。
+/* スロットは机の初期位置に留まる。本体は transform で動く。
    跡（ghost）は inset:0 でこのスロットへ重ね、元の位置と一致させる。
    transform がスタッキング文脈を作るので、重ね順はスロットの --layer で持つ。 */
 .sticker-slot {
   position: absolute;
-  left: calc(50% + var(--pile-x, 0px));
-  bottom: var(--pile-y, -24px);
+  left: 0;
+  top: 0;
+  bottom: auto;
   width: clamp(88px, 12vw, 120px);
   z-index: var(--layer, 1);
-  transform: translateX(-50%);
+  transform: none;
   pointer-events: none;
 }
+.sticker-slot[data-key="sublog"] { left: 72%; top: 16%; width: clamp(96px, 12vw, 124px); }
+.sticker-slot[data-key="caflog"] { left: 8%; top: 42%; width: clamp(76px, 10vw, 100px); }
+.sticker-slot[data-key="dev-tools"] { left: 78%; top: 58%; }
+.sticker-slot[data-key="pay-cycle"] { left: 62%; top: auto; bottom: -28px; }
+.sticker-slot[data-key="note-Swift"] { left: 78%; top: auto; bottom: -8px; }
+.sticker-slot[data-key="note-Tokyo"] { left: 10%; top: 22%; width: clamp(72px, 9vw, 96px); }
+.sticker-slot[data-key="note-solo"] { left: 48%; top: auto; bottom: -40px; }
 .sticker-slot:hover,
 .sticker-slot:focus-within {
   z-index: calc(var(--layer, 1) + 100);
@@ -442,11 +450,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .stickers-foot {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  pointer-events: auto;
   display: flex;
   align-items: center;
   gap: var(--space-4);
   width: min(var(--measure), calc(100% - var(--space-10)));
-  margin: 0 auto var(--space-3);
+  margin: 0;
   font-size: 13px;
   color: var(--ink-3);
 }
@@ -609,6 +622,13 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .post { grid-template-columns: 1fr; gap: var(--space-1); }
 
   .sticker-slot { width: 84px; }
+  .sticker-slot[data-key="sublog"] { left: auto; right: -8px; top: 12%; width: 72px; }
+  .sticker-slot[data-key="caflog"] { left: auto; right: 8px; top: auto; bottom: -24px; }
+  .sticker-slot[data-key="dev-tools"] { left: auto; right: 12px; top: 56%; width: 72px; }
+  .sticker-slot[data-key="pay-cycle"],
+  .sticker-slot[data-key="note-Swift"],
+  .sticker-slot[data-key="note-solo"] { top: auto; bottom: -36px; }
+  .sticker-slot[data-key="note-Tokyo"] { left: 4%; top: auto; bottom: -20px; }
   .sticker-note { min-height: 72px; padding: var(--space-3) 6px; }
 }
 

@@ -150,7 +150,7 @@ test("一覧は行の索引で、検索・フィルタ・モーダルを持た�
 test("ステッカーは掴んで動かせて、離すと横スクロールを作らない", async ({ page }) => {
   await page.goto("/");
 
-  const sticker = page.locator(".sticker").first();
+  const sticker = page.locator('.sticker[href="/apps/sublog/"]');
   await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
 
@@ -197,61 +197,65 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
     .toBeLessThan(2);
 });
 
-test("シールはフッター下端の山で、Hero までドラッグできる", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 2400 });
+test("初期表示でシールが Hero と一覧見出しに乗っている", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
 
   await expect(page.locator(".sticker-band")).toHaveCount(0);
   await expect(page.locator(".sticker-name")).toHaveCount(0);
 
-  const footer = await page.locator(".footer").boundingBox();
-  const hero = await page.locator(".hero-h1").boundingBox();
-  expect(footer).not.toBeNull();
-  expect(hero).not.toBeNull();
+  const hero = (await page.locator(".hero-h1").boundingBox())!;
+  const appsHead = (await page.locator("#apps").boundingBox())!;
+  const footer = (await page.locator(".footer").boundingBox())!;
+  const cta = page.locator(".cta-btn");
 
-  const spread = await page.locator(".sticker").evaluateAll((nodes) => {
-    const boxes = nodes.map((node) => node.getBoundingClientRect());
-    return {
-      top: Math.min(...boxes.map((box) => box.top)),
-      bottom: Math.max(...boxes.map((box) => box.bottom)),
-      left: Math.min(...boxes.map((box) => box.left)),
-      right: Math.max(...boxes.map((box) => box.right)),
-    };
-  });
+  const sublog = page.locator('.sticker[href="/apps/sublog/"]');
+  const caflog = page.locator('.sticker[href="/apps/caflog/"]');
+  const devTools = page.locator('.sticker[href="/apps/dev-tools/"]');
+  const payCycle = page.locator('.sticker[href="/apps/pay-cycle/"]');
 
-  // 山はフッター付近にあり、下端はフッター本文より下へはみ出す。
-  expect(spread.top).toBeGreaterThan(footer!.y - 120);
-  expect(spread.bottom).toBeGreaterThan(footer!.y + footer!.height - 8);
+  const sublogBox = (await sublog.boundingBox())!;
+  const caflogBox = (await caflog.boundingBox())!;
+  const devBox = (await devTools.boundingBox())!;
+  const payBox = (await payCycle.boundingBox())!;
 
-  const poster = await page.locator(".poster").evaluate((el) => {
-    const box = el.getBoundingClientRect();
-    return { left: box.left, right: box.right, bottom: box.bottom };
-  });
-  expect(spread.left).toBeGreaterThanOrEqual(poster.left - 1);
-  expect(spread.right).toBeLessThanOrEqual(poster.right + 1);
-  expect(spread.bottom).toBeGreaterThan(poster.bottom - 1);
+  expect(sublogBox.y + sublogBox.height / 2).toBeLessThan(appsHead.y);
+  expect(sublogBox.y).toBeGreaterThan(hero.y - 40);
+  expect(caflogBox.y + caflogBox.height / 2).toBeLessThan(appsHead.y);
+  expect(Math.abs(devBox.y - appsHead.y)).toBeLessThan(120);
+  expect(payBox.y).toBeGreaterThan(footer.y - 160);
+
+  await expect(cta).toBeVisible();
+  const ctaBox = (await cta.boundingBox())!;
+  const hitsCta = [sublogBox, caflogBox].some((box) =>
+    box.x < ctaBox.x + ctaBox.width && box.x + box.width > ctaBox.x &&
+    box.y < ctaBox.y + ctaBox.height && box.y + box.height > ctaBox.y,
+  );
+  expect(hitsCta).toBe(false);
+  await cta.click();
+  await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
 
   const stagePosition = await page.locator(".sticker-stage").evaluate((el) => getComputedStyle(el).position);
   expect(stagePosition).not.toBe("fixed");
+});
 
-  const sticker = page.locator(".sticker").first();
-  await raiseSticker(sticker);
-  const before = (await sticker.boundingBox())!;
-  await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2);
-  await page.waitForTimeout(350);
-  await page.mouse.down();
-  await page.mouse.move(hero!.x + hero!.width / 2, hero!.y + hero!.height / 2, { steps: 24 });
-  await page.mouse.up();
-
-  const placed = await sticker.boundingBox();
-  expect(placed).not.toBeNull();
-  expect(placed!.y).toBeLessThan(hero!.y + hero!.height + 120);
+test("640px で見出しと CTA が押せる", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const heading = page.locator(".hero-h1");
+  await expect(heading).toBeVisible();
+  await expect(page.locator(".cta-btn")).toBeVisible();
+  await page.locator(".cta-btn").click();
+  await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+    .toBe(true);
 });
 
 test("置いたシールはスクロールしても viewport に張り付かない", async ({ page }) => {
   await page.goto("/");
 
-  const sticker = page.locator(".sticker").first();
+  const sticker = page.locator('.sticker[href="/apps/sublog/"]');
   await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
   const before = (await sticker.boundingBox())!;
@@ -361,10 +365,10 @@ test("一覧行とステッカーが slug で相互にハイライトする", as
 
 test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間だけ元の位置に跡が残る", async ({ page }) => {
   await page.goto("/");
-  const sticker = page.locator(".sticker").first();
+  const sticker = page.locator('.sticker[href="/apps/sublog/"]');
   await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
-  const slot = page.locator(".sticker-slot").first();
+  const slot = page.locator(".sticker-slot").filter({ has: sticker });
 
   // 1 回目のドラッグでステッカー自身が動くため、掴む中心座標は毎回その時点の
   // boundingBox から取り直す。使い回すと、動いた後のステッカーから外れて掴めない。
@@ -413,8 +417,8 @@ test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間�
 
 test("画面リサイズがドラッグ中に起きても、掴んだままの見た目で固着しない", async ({ page }) => {
   await page.goto("/");
-  const sticker = page.locator(".sticker").first();
-  const slot = page.locator(".sticker-slot").first();
+  const sticker = page.locator('.sticker[href="/apps/sublog/"]');
+  const slot = page.locator(".sticker-slot").filter({ has: sticker });
   await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
   const box = (await sticker.boundingBox())!;
