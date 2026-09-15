@@ -488,6 +488,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   pointer-events: none;
 }
 .sticker-caption {
+  display: none;
   position: absolute;
   left: 50%;
   top: calc(100% + 6px);
@@ -501,15 +502,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   color: var(--ink-2);
   background: transparent;
   pointer-events: none;
-  opacity: 0;
-  visibility: hidden;
   z-index: 2;
 }
 .sticker:hover .sticker-caption,
 .sticker:focus-visible .sticker-caption,
 .sticker.is-held .sticker-caption {
-  opacity: 1;
-  visibility: visible;
+  display: block;
 }
 
 /* ホバーで持ち上がり、傾きが戻る */
@@ -539,14 +537,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .stickers-foot {
   position: absolute;
   left: 50%;
-  bottom: 24px;
+  bottom: var(--space-4);
   z-index: 300;
   transform: translateX(-50%);
   pointer-events: auto;
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  width: min(var(--measure), calc(100% - var(--space-10)));
+  width: max-content;
+  max-width: min(var(--measure), calc(100% - var(--space-10)));
   margin: 0;
   font-size: 13px;
   color: var(--ink-3);
@@ -643,7 +642,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .footer {
   width: min(var(--measure), calc(100% - var(--space-10)));
   margin: 0 auto;
-  padding: var(--space-8) 0 var(--space-4);
+  /* 下の山とヒントが奥付の文字に乗らないよう、シール分の余白を空ける */
+  padding: var(--space-8) 0 7.5rem;
   border-top: 1px solid var(--rule);
   font-size: 13px;
   color: var(--ink-3);
