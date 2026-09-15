@@ -2,7 +2,7 @@
 
 最終更新日: 2026-09-15
 
-- [ ] ポスターの上に机の跡を残して、遊べるサイトにする（計画済み。Issue はトークンが許すなら起票）
+- [ ] ポスターの上に机の跡を残して、遊べるサイトにする（実装済み。文書合わせと `npm run verify` 進行中。Issue は未起票 — GitHub 起票が 403）
 
 仕様: [ポスターの上に机の跡を残す](superpowers/specs/2026-09-15-desk-play-refresh-design.md)
 計画: [机の跡の実装計画](superpowers/plans/2026-09-15-desk-play-refresh.md)

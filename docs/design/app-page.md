@@ -1,11 +1,11 @@
 # アプリ詳細ページのデザイン
 
 ステータス: 確定
-最終更新日: 2026-09-01
+最終更新日: 2026-09-15
 
 `src/app/apps/[slug]/page.tsx` が registry から `/apps/<slug>/` を静的生成する。HTML やアプリ別の script/style ファイルをコピーしない。
 
-- Hero: 戻るリンク、アイコン、名前、紹介、プラットフォーム、配布先 CTA。
+- Hero: 戻るリンク、アイコン、名前、紹介、プラットフォーム、配布先 CTA。Hero 右上にそのアプリの標本ビニールを 1 枚置く（`.specimen-slot`）。リンクではない。`aria-hidden`。`src/components/SpecimenSticker.tsx` が `VinylSticker` を `href` なしで載せ、クランプは `.app-shell`（`shellBounds`）。viewport 固定にしない。離した位置に残る。リサイズで机と同様にオフセットを捨てる。法務ページ（アプリ `/privacy/`、サイト `/privacy/` `/terms/`）とトップ以外には置かない。詳細ページ全体をポスター型に組み直すのは対象外。
 - Features: registry の `{ icon, title, description }` を共通カードで表示。
 - Screenshots: `public/apps/<slug>/screenshots/` の実ファイルを registry の順序で表示。flex wrap した各行を中央配置し、lazy loading と alt を付ける。
 - Footer: `/apps/<slug>/privacy/` とトップへの導線。
