@@ -335,6 +335,11 @@ test("390px で見出しと CTA が押せる", async ({ page }) => {
   await expect(page.locator(".cta-btn")).toBeVisible();
   expect(await centerHits(page, heading, ".hero-h1")).toBe(true);
   expect(await centerHits(page, page.locator(".cta-btn"), ".cta-btn")).toBe(true);
+  const appsHead = (await page.locator("#apps").boundingBox())!;
+  const firstRow = (await page.locator(".app-row").first().boundingBox())!;
+  const devBox = (await page.locator('.sticker[href="/apps/dev-tools/"]').boundingBox())!;
+  expect(Math.abs(devBox.y - appsHead.y)).toBeLessThan(80);
+  expect(boxesOverlap(devBox, firstRow)).toBe(false);
   await page.locator(".cta-btn").click();
   await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
   await expect
@@ -351,6 +356,12 @@ test("640px で見出しと CTA が押せる", async ({ page }) => {
   await expect(cta).toBeVisible();
   expect(await centerHits(page, heading, ".hero-h1")).toBe(true);
   expect(await centerHits(page, cta, ".cta-btn")).toBe(true);
+  const appsHead = (await page.locator("#apps").boundingBox())!;
+  const firstRow = (await page.locator(".app-row").first().boundingBox())!;
+  const devBox = (await page.locator('.sticker[href="/apps/dev-tools/"]').boundingBox())!;
+  expect(Math.abs(devBox.y - appsHead.y)).toBeLessThan(80);
+  expect(boxesOverlap(devBox, firstRow)).toBe(false);
+
   await cta.click();
   await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
   await expect

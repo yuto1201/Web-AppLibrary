@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { getApp } from "@/data/registry";
 import { useSiteState } from "@/lib/state";
 import { useActivate } from "@/lib/activate";
@@ -53,6 +53,21 @@ export function Stickers() {
   });
 
   const moved = Object.keys(offsets).length > 0;
+
+  useLayoutEffect(() => {
+    const poster = document.querySelector(".poster");
+    const appsHead = document.querySelector("#apps .section-head") ?? document.getElementById("apps");
+    if (!(poster instanceof HTMLElement) || !(appsHead instanceof HTMLElement)) return;
+    const sync = () => {
+      const top = appsHead.getBoundingClientRect().top - poster.getBoundingClientRect().top;
+      poster.style.setProperty("--desk-apps-top", `${Math.round(top)}px`);
+    };
+    sync();
+    const observer = new ResizeObserver(sync);
+    observer.observe(poster);
+    observer.observe(appsHead);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const onResize = () => {

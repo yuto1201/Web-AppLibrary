@@ -64,7 +64,11 @@ body:has(.app-shell) {
   bottom: auto;
   width: 96px;
 }
-.app-shell .specimen-slot .sticker { pointer-events: auto; }
+.app-shell .specimen-slot .sticker {
+  pointer-events: auto;
+  padding: 7px;
+}
+.app-shell .specimen-slot .sticker[data-shape="circle"] { padding: 6px; }
 .app-shell .hero-nav { max-width: 1040px; margin: 0 auto var(--space-8); }
 .app-shell .nav-back { font-size: 14px; color: var(--app-ink-2); font-weight: 500; }
 .app-shell .hero-inner {

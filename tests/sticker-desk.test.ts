@@ -1,3 +1,5 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { apps } from "@/data/registry";
 import { DESK_ITEMS, deskApp, statusStamp } from "@/lib/sticker-desk";
@@ -23,6 +25,13 @@ describe("sticker desk catalog", () => {
     const words = DESK_ITEMS.filter((item) => item.kind === "word").map((item) => item.word);
     expect(words).toEqual(["Swift", "Tokyo", "一人制作"]);
     expect(DESK_ITEMS.find((item) => item.kind === "word" && item.word === "Tokyo")?.anchor).toBe("hero");
+  });
+
+  it("各アプリの data-key に CSS の初期位置がある", () => {
+    const css = readFileSync(join(process.cwd(), "src/styles/standard.css"), "utf8");
+    for (const app of apps) {
+      expect(css).toContain(`.sticker-slot[data-key="${app.slug}"]`);
+    }
   });
 
   it("alpha / beta だけスタンプ文字を返す", () => {

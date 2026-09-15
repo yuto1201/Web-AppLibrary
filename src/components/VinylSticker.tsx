@@ -140,11 +140,17 @@ export function VinylSticker({
     onRelease();
   }
 
+  function handlePointerCancel(event: React.PointerEvent<HTMLElement>) {
+    handlePointerUp(event);
+    // cancel のあとに click は来ない。フラグを残すと次の Enter / AT click まで遷移を止める。
+    dragged.current = false;
+  }
+
   const handlers = {
     onPointerDown: handlePointerDown,
     onPointerMove: handlePointerMove,
     onPointerUp: handlePointerUp,
-    onPointerCancel: handlePointerUp,
+    onPointerCancel: handlePointerCancel,
     onLostPointerCapture: handlePointerUp,
     onClick: (event: React.MouseEvent) => {
       if (!dragged.current) return;
