@@ -21,12 +21,20 @@ except ModuleNotFoundError as error:
 ROOT = Path(__file__).resolve().parent.parent
 OUTPUT = ROOT / "public" / "ogp.png"
 APPS = [
-    ("PayCycle", ROOT / "public" / "apps" / "pay-cycle" / "icon.png"),
-    ("SubLog", ROOT / "public" / "apps" / "sublog" / "icon.png"),
-    ("CafLog", ROOT / "public" / "apps" / "caflog" / "icon.png"),
-    ("Dev-Tools", ROOT / "public" / "apps" / "dev-tools" / "icon.png"),
+    ("PayCycle", ROOT / "public" / "apps" / "pay-cycle" / "icon.png", "round-lg"),
+    ("SubLog", ROOT / "public" / "apps" / "sublog" / "icon.png", "round-rect"),
+    ("CafLog", ROOT / "public" / "apps" / "caflog" / "icon.png", "circle"),
+    ("Dev-Tools", ROOT / "public" / "apps" / "dev-tools" / "icon.png", "squircle"),
 ]
 MAX_OGP_APPS = 6
+CANVAS = (1200, 630)
+PAPER = (255, 248, 241, 255)
+INK = (0, 0, 0, 255)
+INK2 = (63, 59, 54, 255)
+ACCENT = (0, 102, 238, 255)
+VINYL = (255, 255, 255, 255)
+PAD = 11
+SHADOW_OFFSET = (4, 7)
 
 
 def font(size: int) -> ImageFont.FreeTypeFont:
@@ -34,94 +42,78 @@ def font(size: int) -> ImageFont.FreeTypeFont:
     return ImageFont.load_default(size=size)
 
 
-def rounded_icon(path: Path, size: int) -> Image.Image:
+def _radii(size: int, shape: str) -> tuple[int, int]:
+    vinyl_size = size + PAD * 2
+    if shape == "circle":
+        return vinyl_size // 2, size // 2
+    if shape == "squircle":
+        return max(10, vinyl_size // 7), max(6, size // 8)
+    if shape == "round-lg":
+        return max(16, vinyl_size // 4), max(12, size // 5)
+    return max(14, vinyl_size // 5), max(10, size // 6)
+
+
+def rounded_icon(path: Path, size: int, radius: int) -> Image.Image:
     image = Image.open(path).convert("RGBA").resize((size, size), Image.Resampling.LANCZOS)
     mask = Image.new("L", (size, size), 0)
-    ImageDraw.Draw(mask).rounded_rectangle((0, 0, size - 1, size - 1), radius=size // 5, fill=255)
+    ImageDraw.Draw(mask).rounded_rectangle((0, 0, size - 1, size - 1), radius=radius, fill=255)
     image.putalpha(mask)
     return image
 
 
+def vinyl_sticker(path: Path, size: int, shape: str) -> Image.Image:
+    pad_radius, icon_radius = _radii(size, shape)
+    vinyl_size = size + PAD * 2
+    vinyl = Image.new("RGBA", (vinyl_size, vinyl_size), (0, 0, 0, 0))
+    ImageDraw.Draw(vinyl).rounded_rectangle(
+        (0, 0, vinyl_size - 1, vinyl_size - 1),
+        radius=pad_radius,
+        fill=VINYL,
+    )
+    vinyl.alpha_composite(rounded_icon(path, size, icon_radius), (PAD, PAD))
+    return vinyl
+
+
 def icon_layout(count: int) -> list[tuple[int, int, int]]:
-    """Place up to six app icons inside the right side of the glass panel."""
+    """Scatter vinyl top-left origins inside the 1200×630 cream canvas."""
     if count < 1 or count > MAX_OGP_APPS:
         raise ValueError(f"OGP supports 1-{MAX_OGP_APPS} app icons; received {count}")
-    panel_left, panel_width = 680, 420
-    if count <= 2:
-        positions = [(718 + index * 174, 188, 142) for index in range(count)]
-    else:
-        icon_size, gap_x, row_step = 100, 24, 174
-        positions = []
-        for row, start_index in enumerate(range(0, count, 3)):
-            row_count = min(3, count - start_index)
-            row_width = row_count * icon_size + (row_count - 1) * gap_x
-            start_x = panel_left + (panel_width - row_width) // 2
-            for column in range(row_count):
-                positions.append((start_x + column * (icon_size + gap_x), 154 + row * row_step, icon_size))
-
-    if any(x < panel_left or x + size > panel_left + panel_width or y < 140 or y + size + 38 > 485 for x, y, size in positions):
-        raise ValueError("OGP icon layout escaped its reserved panel")
+    # Slight offsets, not a glass-panel grid. Names stay off the vinyl.
+    presets = [
+        (928, 428, 132),
+        (792, 64, 148),
+        (1010, 214, 102),
+        (686, 304, 118),
+        (72, 430, 96),
+        (540, 470, 88),
+    ]
+    positions = presets[:count]
+    width, height = CANVAS
+    for x, y, size in positions:
+        vinyl_size = size + PAD * 2
+        right = x + vinyl_size + SHADOW_OFFSET[0] + 8
+        bottom = y + vinyl_size + SHADOW_OFFSET[1] + 8
+        if x < 0 or y < 0 or right > width or bottom > height:
+            raise ValueError("OGP icon layout escaped the canvas")
     return positions
 
 
 def render() -> Image.Image:
-    width, height = 1200, 630
-    image = Image.new("RGBA", (width, height))
-    pixels = image.load()
-    for y in range(height):
-        for x in range(width):
-            tx = x / (width - 1)
-            ty = y / (height - 1)
-            r = int(28 + 59 * tx + 40 * (1 - ty))
-            g = int(25 + 33 * tx + 16 * ty)
-            b = int(75 + 73 * tx + 45 * ty)
-            pixels[x, y] = (min(r, 255), min(g, 255), min(b, 255), 255)
-
-    glow = Image.new("RGBA", image.size, (0, 0, 0, 0))
-    glow_draw = ImageDraw.Draw(glow)
-    glow_draw.ellipse((-140, -210, 600, 520), fill=(255, 103, 190, 118))
-    glow_draw.ellipse((690, 120, 1390, 820), fill=(71, 193, 255, 112))
-    image = Image.alpha_composite(image, glow.filter(ImageFilter.GaussianBlur(90)))
-
-    panel = Image.new("RGBA", image.size, (0, 0, 0, 0))
-    draw = ImageDraw.Draw(panel)
-    draw.rounded_rectangle((72, 58, 1128, 572), radius=52, fill=(255, 255, 255, 30), outline=(255, 255, 255, 95), width=2)
-    draw.rounded_rectangle((73, 59, 1127, 571), radius=51, outline=(255, 255, 255, 35), width=7)
-    image = Image.alpha_composite(image, panel)
+    width, height = CANVAS
+    image = Image.new("RGBA", (width, height), PAPER)
     draw = ImageDraw.Draw(image)
+    draw.text((88, 96), "AppLibrary", font=font(72), fill=ACCENT)
+    draw.text((92, 190), "Small apps, on the desk.", font=font(28), fill=INK2)
 
-    draw.text((138, 116), "AppLibrary", font=font(72), fill=(255, 255, 255, 255), stroke_width=1, stroke_fill=(255, 255, 255, 90))
-    draw.text((142, 210), "A collection of things I've made.", font=font(30), fill=(238, 235, 255, 235))
-    draw.text((142, 274), "Small tools for iOS, the Web, and beyond.", font=font(22), fill=(231, 227, 255, 210))
-
-    pill_font = font(19)
-    pill_x = 142
-    badges = Image.new("RGBA", image.size, (0, 0, 0, 0))
-    badge_draw = ImageDraw.Draw(badges)
-    badge_labels: list[tuple[int, str]] = []
-    for label in ("Static Next.js", "Vercel", "app.yutodev.com"):
-        box = draw.textbbox((0, 0), label, font=pill_font)
-        pill_width = box[2] - box[0] + 34
-        badge_draw.rounded_rectangle((pill_x, 338, pill_x + pill_width, 382), radius=22, fill=(255, 255, 255, 35), outline=(255, 255, 255, 75), width=1)
-        badge_labels.append((pill_x, label))
-        pill_x += pill_width + 12
-    image = Image.alpha_composite(image, badges)
-    draw = ImageDraw.Draw(image)
-    for label_x, label in badge_labels:
-        draw.text((label_x + 17, 346), label, font=pill_font, fill=(255, 255, 255, 225))
-
-    for (name, path), (icon_x, icon_y, icon_size) in zip(APPS, icon_layout(len(APPS)), strict=True):
-        icon = rounded_icon(path, icon_size)
+    for (_name, path, shape), (icon_x, icon_y, icon_size) in zip(APPS, icon_layout(len(APPS)), strict=True):
+        sticker = vinyl_sticker(path, icon_size, shape)
         shadow = Image.new("RGBA", image.size, (0, 0, 0, 0))
-        shadow.paste((0, 0, 0, 115), (icon_x + 10, icon_y + 16, icon_x + icon_size + 10, icon_y + icon_size + 16), icon.getchannel("A"))
-        image = Image.alpha_composite(image, shadow.filter(ImageFilter.GaussianBlur(18)))
-        image.alpha_composite(icon, (icon_x, icon_y))
-        label_box = draw.textbbox((0, 0), name, font=font(20))
-        label_width = label_box[2] - label_box[0]
-        draw = ImageDraw.Draw(image)
-        draw.text((icon_x + (icon_size - label_width) / 2, icon_y + icon_size + 18), name, font=font(20), fill=(255, 255, 255, 225))
+        alpha = sticker.getchannel("A")
+        sx, sy = icon_x + SHADOW_OFFSET[0], icon_y + SHADOW_OFFSET[1]
+        shadow.paste((20, 19, 16, 70), (sx, sy, sx + sticker.width, sy + sticker.height), alpha)
+        image = Image.alpha_composite(image, shadow.filter(ImageFilter.GaussianBlur(10)))
+        image.alpha_composite(sticker, (icon_x, icon_y))
 
-    draw.text((142, 485), "APP COLLECTION", font=font(18), fill=(255, 255, 255, 175), spacing=4)
     return image.convert("RGB")
 
 
