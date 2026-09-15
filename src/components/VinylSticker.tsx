@@ -53,7 +53,7 @@ type Drag = {
 /**
  * 掴んで動かせるビニール。offset・held・linked は親が持つ。
  * 回転の上乗せ (spin) はドラッグ中だけの見た目で、離せば 0 へ戻る。
- * stamp は型だけ先に受け取り、見た目は後続タスクで載せる。caption は鉛筆メモ。
+ * stamp は alpha / beta の印。caption は鉛筆メモ（飾りには渡さない）。
  */
 export function VinylSticker({
   offset,

@@ -41,7 +41,7 @@ export default async function AppPage({ params }: { params: Promise<{ slug: stri
         <nav className="hero-nav">
           <Link href="/" className="nav-back">← AppLibrary</Link>
         </nav>
-        <SpecimenSticker app={app} />
+        {app.icon ? <SpecimenSticker app={app} /> : null}
         <div className="hero-inner">
           {app.icon && (
             // 静的出力のため素の img を使う。

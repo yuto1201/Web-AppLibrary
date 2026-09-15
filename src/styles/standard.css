@@ -393,21 +393,28 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
    transform がスタッキング文脈を作るので、重ね順はスロットの --layer で持つ。 */
 .sticker-slot {
   position: absolute;
-  left: 0;
-  top: 0;
-  bottom: auto;
+  /* data-key 規則が無い新キーは右下の山へ。Nav の左上に積まない。 */
+  left: auto;
+  right: 24px;
+  top: auto;
+  bottom: -28px;
   width: clamp(88px, 12vw, 120px);
   z-index: var(--layer, 1);
   transform: none;
   pointer-events: none;
 }
-.sticker-slot[data-key="sublog"] { left: 72%; top: 16%; width: clamp(96px, 12vw, 124px); }
-.sticker-slot[data-key="caflog"] { left: 8%; top: 24%; width: clamp(76px, 10vw, 100px); }
-.sticker-slot[data-key="dev-tools"] { left: 78%; top: 34%; }
+.sticker-slot[data-shape="round-rect"] { border-radius: 22px; }
+.sticker-slot[data-shape="circle"] { border-radius: 50%; }
+.sticker-slot[data-shape="squircle"] { border-radius: 14px; }
+.sticker-slot[data-shape="round-lg"] { border-radius: 28px; }
+.sticker-slot[data-shape="word"] { border-radius: 18px; }
+.sticker-slot[data-key="sublog"] { left: 72%; top: 16%; right: auto; bottom: auto; width: clamp(96px, 12vw, 124px); }
+.sticker-slot[data-key="caflog"] { left: 8%; top: 24%; right: auto; bottom: auto; width: clamp(76px, 10vw, 100px); }
+.sticker-slot[data-key="dev-tools"] { left: 78%; top: 34%; right: auto; bottom: auto; }
 .sticker-slot[data-key="pay-cycle"] { left: auto; right: 20px; top: auto; bottom: -28px; }
 .sticker-slot[data-key="note-Swift"] { left: auto; right: 168px; top: auto; bottom: -8px; }
-.sticker-slot[data-key="note-Tokyo"] { left: 10%; top: 22%; width: clamp(72px, 9vw, 96px); }
-.sticker-slot[data-key="note-solo"] { left: 12px; top: auto; bottom: -40px; }
+.sticker-slot[data-key="note-Tokyo"] { left: 36%; top: 28%; right: auto; bottom: auto; width: clamp(72px, 9vw, 96px); }
+.sticker-slot[data-key="note-solo"] { left: auto; right: 96px; top: auto; bottom: -40px; }
 .sticker-slot:hover,
 .sticker-slot:focus-within {
   z-index: calc(var(--layer, 1) + 100);
@@ -498,15 +505,21 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   top: calc(100% + 6px);
   transform: translateX(-50%) rotate(-4deg);
   width: max-content;
-  max-width: 16rem;
+  max-width: min(16rem, calc(100vw - 1.5rem));
   padding: 2px 6px;
   font-family: var(--font-hand, var(--font-sans));
   font-size: 13px;
   font-weight: 400;
   color: var(--ink-2);
-  background: transparent;
+  background: var(--paper);
   pointer-events: none;
   z-index: 2;
+}
+.sticker-slot[data-key="sublog"] .sticker-caption,
+.sticker-slot[data-key="dev-tools"] .sticker-caption {
+  left: auto;
+  right: 0;
+  transform: rotate(-4deg);
 }
 .sticker:hover .sticker-caption,
 .sticker:focus-visible .sticker-caption,
@@ -714,15 +727,27 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .post { grid-template-columns: 1fr; gap: var(--space-1); }
 
   .sticker-slot { width: 70px; }
-  .sticker-slot[data-key="sublog"] { left: auto; right: 12px; top: 12%; width: 72px; }
-  .sticker-slot[data-key="caflog"] { left: auto; right: 4px; top: auto; bottom: -24px; width: 64px; }
-  .sticker-slot[data-key="dev-tools"] { left: auto; right: 16px; top: 56%; width: 72px; }
-  .sticker-slot[data-key="pay-cycle"] { left: 72px; right: auto; top: auto; bottom: -36px; width: 70px; }
-  .sticker-slot[data-key="note-Swift"] { left: 146px; right: auto; top: auto; bottom: -36px; width: 70px; }
-  .sticker-slot[data-key="note-solo"] { left: 220px; right: auto; top: auto; bottom: -36px; width: 70px; }
-  .sticker-slot[data-key="note-Tokyo"] { left: 4px; top: auto; bottom: -20px; width: 64px; }
+  .sticker-slot[data-key="sublog"] { left: auto; right: 12px; top: 12%; bottom: auto; width: 72px; }
+  .sticker-slot[data-key="caflog"] { left: auto; right: 8px; top: auto; bottom: -24px; width: 64px; }
+  .sticker-slot[data-key="dev-tools"] { left: auto; right: 16px; top: 56%; bottom: auto; width: 72px; }
+  .sticker-slot[data-key="pay-cycle"] { left: 8px; right: auto; top: auto; bottom: -36px; width: 70px; }
+  .sticker-slot[data-key="note-Swift"] { left: 82px; right: auto; top: auto; bottom: -36px; width: 70px; }
+  .sticker-slot[data-key="note-solo"] { left: 156px; right: auto; top: auto; bottom: -36px; width: 70px; }
+  .sticker-slot[data-key="note-Tokyo"] { left: 230px; right: auto; top: auto; bottom: -36px; width: 64px; }
+  .sticker-slot[data-key="sublog"] .sticker-caption,
+  .sticker-slot[data-key="dev-tools"] .sticker-caption,
+  .sticker-slot[data-key="caflog"] .sticker-caption {
+    left: auto;
+    right: 0;
+    transform: rotate(-4deg);
+  }
   .stickers-foot { bottom: 5.75rem; }
   .sticker-note { min-height: 72px; padding: var(--space-3) 6px; }
+}
+
+@media (max-width: 380px) {
+  .sticker-slot[data-key="note-Tokyo"] { left: 8px; right: auto; top: auto; bottom: 40px; width: 64px; }
+  .sticker-slot[data-key="caflog"] { left: auto; right: 8px; top: auto; bottom: 40px; width: 64px; }
 }
 
 /* ============================================================

@@ -23,6 +23,8 @@ export function SpecimenSticker({ app }: { app: App }) {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  if (!app.icon) return null;
+
   return (
     <div className="specimen-slot" aria-hidden="true">
       <VinylSticker

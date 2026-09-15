@@ -22,6 +22,8 @@ export type DeskWordItem = {
 export type DeskItem = DeskAppItem | DeskWordItem;
 
 const APP_DESK: Record<string, Pick<DeskAppItem, "shape" | "anchor">> = {
+  // 各 key に src/styles/standard.css の `.sticker-slot[data-key="…"]` が必要。
+  // 無いとデフォルトの右下の山へ落ちる。anchor はカタログ上の役割で、位置は CSS が持つ。
   sublog: { shape: "round-rect", anchor: "hero" },
   caflog: { shape: "circle", anchor: "hero" },
   "dev-tools": { shape: "squircle", anchor: "apps" },

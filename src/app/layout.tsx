@@ -28,12 +28,14 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-// ひらがなを含む単一 TTF を自己ホスト。next/font/google の latin subset では日本語が落ちる。
+// 手書き用。latin subset の Google フォントではひらがなが落ちるため、
+// 必要文字だけ残した woff2 を自己ホストする。preload はホーム以外で使わないので切る。
 const kleeOne = localFont({
-  src: "../fonts/KleeOne-Regular.ttf",
+  src: "../fonts/KleeOne-Regular.woff2",
   weight: "400",
   variable: "--font-klee",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {

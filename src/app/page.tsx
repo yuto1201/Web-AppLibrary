@@ -10,6 +10,8 @@ export default function HomePage() {
     <ActivateProvider>
       <div className="poster">
         <Nav />
+        {/* シールは紙の上に見えるので、フッターの後ではなく Nav の次に置く。 */}
+        <Stickers />
         <main className="page">
           <Hero />
           <AppsSection />
@@ -17,7 +19,6 @@ export default function HomePage() {
           <Contact />
         </main>
         <Footer />
-        <Stickers />
       </div>
     </ActivateProvider>
   );

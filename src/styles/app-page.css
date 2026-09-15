@@ -55,6 +55,15 @@ body:has(.app-shell) {
   z-index: 3;
   pointer-events: none;
 }
+.app-shell .specimen-slot .sticker-slot {
+  position: relative;
+  inset: auto;
+  left: auto;
+  right: auto;
+  top: auto;
+  bottom: auto;
+  width: 96px;
+}
 .app-shell .specimen-slot .sticker { pointer-events: auto; }
 .app-shell .hero-nav { max-width: 1040px; margin: 0 auto var(--space-8); }
 .app-shell .nav-back { font-size: 14px; color: var(--app-ink-2); font-weight: 500; }

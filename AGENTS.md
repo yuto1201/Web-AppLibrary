@@ -92,11 +92,13 @@ tests/                    Vitest / Playwright
 
 1. `public/apps/<slug>/icon.png` を置く（正方形、128x128 以上）
 2. `public/apps/<slug>/screenshots/1.png` 以降を置く（縦長、3〜5 枚推奨）
-3. `src/data/registry.ts` の配列へ 1 件追加する。`features` にアイコン・見出し・説明を 1 件以上設定し、`screenshots` に実ファイル名を並べる
-4. `src/data/privacy/<slug>.ts` を作り、`src/data/privacy/registry.ts` へ同じ slug で登録する
-5. `tools/requirements-ogp.txt` の hash 検証済み固定依存を `.venv-ogp` へ導入し、`tools/generate-ogp.py` の `APPS` を更新して `npm run generate:ogp` で共通 OGP 画像を再生成する
-6. `npm run verify` を通す（詳細ページが持つ privacy リンクの実在も確認）
-7. ブラウザでトップページと個別ページを確認する
+3. `src/data/registry.ts` の配列へ 1 件追加する。`features` にアイコン・見出し・説明を 1 件以上設定し、`screenshots` に実ファイル名を並べる。`stickerNote`（日本語 1〜24 字）も必須
+4. `src/lib/sticker-desk.ts` の `APP_DESK` へ形（`shape`）と役割（`anchor`）を足し、`src/styles/standard.css` に `.sticker-slot[data-key="<slug>"]` の初期位置を書く。規則が無いと右下の山へ落ちる
+5. `src/data/privacy/<slug>.ts` を作り、`src/data/privacy/registry.ts` へ同じ slug で登録する
+6. `tools/requirements-ogp.txt` の hash 検証済み固定依存を `.venv-ogp` へ導入し、`tools/generate-ogp.py` の `APPS` を更新して `npm run generate:ogp` で共通 OGP 画像を再生成する
+7. 鉛筆メモに新しい漢字を足したら `src/fonts/klee-desk-glyphs.txt` を更新し、Klee One の woff2 を作り直す
+8. `npm run verify` を通す（詳細ページが持つ privacy リンクの実在も確認）
+9. ブラウザでトップページと個別ページを確認する
 
 詳細ページはアプリ registry、プライバシーページはアプリ registry と privacy registry から静的生成されます。両 registry の slug はテストで完全一致を要求します。**HTML を手でコピーする運用は廃止しました。**
 

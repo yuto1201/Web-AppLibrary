@@ -32,10 +32,12 @@ export function Stickers() {
         label: app.name,
         caption: app.stickerNote,
         stamp: statusStamp(app.status),
-        body: (
+        body: app.icon ? (
           // 静的出力のため素の img を使う。next/image の最適化は使わない。
           // eslint-disable-next-line @next/next/no-img-element
           <img src={`/apps/${app.slug}/${app.icon}`} alt="" draggable={false} loading="lazy" />
+        ) : (
+          <span className="sticker-note">{app.iconGlyph}</span>
         ),
       };
     }

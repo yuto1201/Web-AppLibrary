@@ -77,6 +77,21 @@ function rotationDegrees(matrix: string): number {
   return (Math.atan2(b!, a!) * 180) / Math.PI;
 }
 
+type Box = { x: number; y: number; width: number; height: number };
+
+function boxesOverlap(a: Box, b: Box): boolean {
+  return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+}
+
+async function centerHits(page: Page, target: ReturnType<typeof page.locator>, selector: string) {
+  const box = await target.boundingBox();
+  expect(box).not.toBeNull();
+  return page.evaluate(
+    ({ x, y, sel }) => Boolean(document.elementFromPoint(x, y)?.closest(sel)),
+    { x: box!.x + box!.width / 2, y: box!.y + box!.height / 2, sel: selector },
+  );
+}
+
 async function setStoredState(page: Page, state: Record<string, string>) {
   await page.evaluate((value) => localStorage.setItem("applibrary_state", value), JSON.stringify(state));
 }
@@ -143,6 +158,16 @@ test("机のテープとスタンプと手書き合図がある", async ({ page 
 
   await page.getByRole("button", { name: "英語に切り替える" }).click();
   await expect(page.locator(".desk-hint")).toHaveText("Pinch one.");
+});
+
+test("Klee One を全ページへ preload しない", async ({ page }) => {
+  for (const route of ["/", "/privacy/", "/apps/sublog/"]) {
+    await page.goto(route);
+    const hrefs = await page.locator('link[rel="preload"][as="font"]').evaluateAll((nodes) =>
+      nodes.map((node) => (node as HTMLLinkElement).href.toLowerCase()),
+    );
+    expect(hrefs.some((href) => href.includes("klee")), route).toBe(false);
+  }
 });
 
 test("一覧は行の索引で、検索・フィルタ・モーダルを持たない", async ({ page }) => {
@@ -245,6 +270,10 @@ test("アプリシールの形が違い、beta / alpha に印がある", async (
   await expect(caflog.locator(".sticker-stamp")).toHaveCount(0);
   await expect(devTools.locator(".sticker-stamp")).toHaveAttribute("data-mark", "β");
   await expect(payCycle.locator(".sticker-stamp")).toHaveAttribute("data-mark", "α");
+  const betaPaint = await devTools.locator(".sticker-stamp").evaluate((el) => getComputedStyle(el, "::after").content);
+  const alphaPaint = await payCycle.locator(".sticker-stamp").evaluate((el) => getComputedStyle(el, "::after").content);
+  expect(betaPaint.replaceAll('"', "")).toBe("β");
+  expect(alphaPaint.replaceAll('"', "")).toBe("α");
   await expect(page.locator(".sticker-name")).toHaveCount(0);
 });
 
@@ -276,6 +305,14 @@ test("初期表示でシールが Hero と一覧見出しに乗っている", as
   expect(Math.abs(devBox.y - appsHead.y)).toBeLessThan(120);
   expect(payBox.y).toBeGreaterThan(footer.y - 160);
 
+  const tokyo = page.locator('.sticker-slot[data-key="note-Tokyo"] .sticker');
+  const tokyoBox = (await tokyo.boundingBox())!;
+  expect(boxesOverlap(caflogBox, tokyoBox)).toBe(false);
+  expect(boxesOverlap(sublogBox, tokyoBox)).toBe(false);
+
+  const firstRow = (await page.locator(".app-row").first().boundingBox())!;
+  expect(boxesOverlap(devBox, firstRow)).toBe(false);
+
   await expect(cta).toBeVisible();
   const ctaBox = (await cta.boundingBox())!;
   const hitsCta = [sublogBox, caflogBox].some((box) =>
@@ -290,13 +327,31 @@ test("初期表示でシールが Hero と一覧見出しに乗っている", as
   expect(stagePosition).not.toBe("fixed");
 });
 
-test("640px で見出しと CTA が押せる", async ({ page }) => {
+test("390px で見出しと CTA が押せる", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
   const heading = page.locator(".hero-h1");
   await expect(heading).toBeVisible();
   await expect(page.locator(".cta-btn")).toBeVisible();
+  expect(await centerHits(page, heading, ".hero-h1")).toBe(true);
+  expect(await centerHits(page, page.locator(".cta-btn"), ".cta-btn")).toBe(true);
   await page.locator(".cta-btn").click();
+  await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+    .toBe(true);
+});
+
+test("640px で見出しと CTA が押せる", async ({ page }) => {
+  await page.setViewportSize({ width: 640, height: 900 });
+  await page.goto("/");
+  const heading = page.locator(".hero-h1");
+  const cta = page.locator(".cta-btn");
+  await expect(heading).toBeVisible();
+  await expect(cta).toBeVisible();
+  expect(await centerHits(page, heading, ".hero-h1")).toBe(true);
+  expect(await centerHits(page, cta, ".cta-btn")).toBe(true);
+  await cta.click();
   await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
   await expect
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
@@ -496,6 +551,10 @@ test("ホバーと掴みで鉛筆メモが出て、飾りには出ない", async
   await raiseSticker(sublog);
   await sublog.hover();
   await expect(caption).toBeVisible();
+  const captionBox = (await caption.boundingBox())!;
+  const viewport = page.viewportSize()!;
+  expect(captionBox.x).toBeGreaterThanOrEqual(0);
+  expect(captionBox.x + captionBox.width).toBeLessThanOrEqual(viewport.width + 1);
   await page.mouse.move(0, 0);
   await expect(caption).not.toBeVisible();
 
@@ -511,6 +570,19 @@ test("ホバーと掴みで鉛筆メモが出て、飾りには出ない", async
   await expect(decorative.locator(".sticker-caption")).toHaveCount(0);
 });
 
+test("390px で右端の鉛筆メモが画面内に収まる", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const sublog = page.locator('.sticker[href="/apps/sublog/"]');
+  const caption = sublog.locator(".sticker-caption");
+  await raiseSticker(sublog);
+  await sublog.hover();
+  await expect(caption).toBeVisible();
+  const captionBox = (await caption.boundingBox())!;
+  expect(captionBox.x).toBeGreaterThanOrEqual(0);
+  expect(captionBox.x + captionBox.width).toBeLessThanOrEqual(391);
+});
+
 test("reduced-motion では掴み中に拡大しない", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
@@ -519,6 +591,7 @@ test("reduced-motion では掴み中に拡大しない", async ({ page }) => {
   const box = (await sublog.boundingBox())!;
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
   await page.mouse.down();
+  await expect(sublog).toHaveClass(/\bis-held\b/u);
   const scale = await sublog.evaluate((el) => {
     const m = getComputedStyle(el).transform;
     const match = m.match(/matrix\(([^)]+)\)/u);

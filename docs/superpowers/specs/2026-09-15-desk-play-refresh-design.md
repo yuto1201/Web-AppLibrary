@@ -101,7 +101,7 @@ alpha / beta だけ、ビニール右下に小さな `α` / `β` のスタンプ
 
 Hero の見出しは現行のまま（「小さなアプリを、丁寧に。」）。初回の文字送りも現行のまま。スクロール連動は持たない。
 
-書体の追加は Klee One 400 だけ（`next/font/google`、自己ホスト）。`--font-hand`。用途は手書き合図と鉛筆メモに限る。本文・ナビ・CTA・ワードマークには使わない。Bricolage は復活させない。
+書体の追加は Klee One 400 だけ。`next/font/google` の latin subset では日本語が落ちるため、Fontworks の Regular を必要文字だけの woff2 に落として `next/font/local` で自己ホストする（`preload: false`）。`--font-hand`。用途は手書き合図と鉛筆メモに限る。本文・ナビ・CTA・ワードマークには使わない。Bricolage は復活させない。
 
 ### 5. 個別ページの標本
 
