@@ -14,6 +14,7 @@ AppLibrary は Next.js の静的出力を Vercel で配信する紹介サイト�
 | `/` | トップページ（Hero / App Library / Notes / Contact） | 静的 |
 | `/apps/<slug>/` | アプリ詳細 | registry から静的生成 |
 | `/apps/<slug>/privacy/` | プライバシーポリシー | registry + 個別本文から静的生成 |
+| `/apps/<slug>/terms/` | 登録済みアプリの固有利用規約 | registry + 承認済み個別本文から静的生成 |
 | `/privacy/` | サイト全体のプライバシーポリシー | 静的 |
 | `/terms/` | サイト全体の利用規約 | 静的 |
 | `/robots.txt` | 全公開ルートのクロール許可と sitemap の場所 | 静的 metadata route |
@@ -33,6 +34,7 @@ src/
     sitemap.ts              sitemap.xml
     apps/[slug]/page.tsx    アプリ詳細
     apps/[slug]/privacy/    プライバシーポリシー
+    apps/[slug]/terms/      登録済みアプリの固有利用規約
     privacy/page.tsx        サイト全体のプライバシーポリシー
     terms/page.tsx          サイト全体の利用規約
   components/
@@ -44,6 +46,8 @@ src/
     registry.ts             掲載アプリの唯一の真実
     privacy/<slug>.ts       アプリ固有の法務文書
     privacy/registry.ts     掲載 slug と法務本文の対応
+    terms/<slug>.ts         承認済みのアプリ固有利用規約
+    terms/registry.ts       利用規約を持つ slug の対応
   lib/
     site-data.ts            プロフィール / お知らせ / SNS / i18n
     state.tsx               設定の永続化

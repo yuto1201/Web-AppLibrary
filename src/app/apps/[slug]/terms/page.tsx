@@ -1,28 +1,27 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { apps, getApp } from "@/data/registry";
-import { privacyDocuments } from "@/data/privacy/registry";
 import { termsDocuments } from "@/data/terms/registry";
 import "@/styles/app-page.css";
 
 export function generateStaticParams() {
-  return apps.filter((app) => privacyDocuments[app.slug]).map((app) => ({ slug: app.slug }));
+  return apps.filter((app) => termsDocuments[app.slug]).map((app) => ({ slug: app.slug }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const app = getApp(slug);
-  if (!app) return {};
-  const title = `プライバシーポリシー — ${app.name}`;
-  const description = `${app.name} におけるユーザー情報の取り扱いについて説明します。`;
+  if (!app || !termsDocuments[slug]) return {};
+  const title = `利用規約 — ${app.name}`;
+  const description = `${app.name} の利用条件について説明します。`;
   return {
     title,
     description,
     robots: { index: true },
     openGraph: {
       type: "website",
-      url: `/apps/${app.slug}/privacy/`,
+      url: `/apps/${app.slug}/terms/`,
       siteName: "AppLibrary",
       title,
       description,
@@ -32,10 +31,10 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
-export default async function PrivacyPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function TermsPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const app = getApp(slug);
-  const content = privacyDocuments[slug];
+  const content = termsDocuments[slug];
   if (!app || !content) notFound();
 
   return (
@@ -46,12 +45,8 @@ export default async function PrivacyPage({ params }: { params: Promise<{ slug: 
       <main className="page privacy-page" dangerouslySetInnerHTML={{ __html: content }} />
       <footer className="page-footer">
         <Link href={`/apps/${app.slug}/`}>{app.name}</Link><span> · </span>
-        {termsDocuments[app.slug] && (
-          <><Link href={`/apps/${app.slug}/terms/`}>利用規約</Link><span> · </span></>
-        )}
-        {app.slug === "pay-cycle" && (
-          <><a href="https://app.yutodev.com/#contact">サポート</a><span> · </span></>
-        )}
+        <Link href={`/apps/${app.slug}/privacy/`}>プライバシーポリシー</Link><span> · </span>
+        <a href="https://app.yutodev.com/#contact">サポート</a><span> · </span>
         <Link href="/">AppLibrary</Link>
       </footer>
     </div>

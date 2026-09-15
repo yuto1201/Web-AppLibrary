@@ -3,6 +3,7 @@ import { readFileSync, realpathSync, statSync } from "node:fs";
 import path from "node:path";
 import { apps, getApp } from "@/data/registry";
 import { privacyDocuments } from "@/data/privacy/registry";
+import { termsDocuments } from "@/data/terms/registry";
 import { appSchema } from "@/data/schema";
 
 describe("apps registry", () => {
@@ -16,12 +17,31 @@ describe("apps registry", () => {
     const document = privacyDocuments["pay-cycle"]!;
     const japanese = document.match(/<section lang="ja">([\s\S]*?)<\/section>/u)?.[1] ?? "";
     const english = document.match(/<section lang="en">([\s\S]*?)<\/section>/u)?.[1] ?? "";
-    for (const disclosure of ["端末内データベース", "Google AdMob", "Google UMP", "App Tracking Transparency", "publisher first-party ID", "検証した購入権利", "新しい広告要求を行いません", "ローカル通知"]) {
+    for (const disclosure of ["端末内データベース", "下4桁", "完全な口座番号", "CloudKit", "同期、エクスポート、バックアップ", "Google AdMob", "Google UMP", "App Tracking Transparency", "publisher first-party ID", "personalization state", "検証した購入権利", "新しい広告要求を行いません", "ローカル通知"]) {
       expect(japanese).toContain(disclosure);
     }
-    for (const disclosure of ["on-device database", "Google AdMob", "Google UMP", "App Tracking Transparency", "publisher first-party ID", "Verified purchase entitlements", "No new ad requests", "scheduled locally"]) {
+    for (const disclosure of ["on-device database", "last four digits", "full bank account numbers", "CloudKit", "sync, export, backup", "Google AdMob", "Google UMP", "App Tracking Transparency", "publisher first-party ID", "personalization state", "Verified purchase entitlements", "No new ad requests", "scheduled locally"]) {
       expect(english).toContain(disclosure);
     }
+    expect(document).not.toContain("共有機能");
+    expect(document).not.toContain("sharing feature");
+  });
+
+  it("PayCycle の日英利用規約が承認済み条件とApple標準EULAを保持する", () => {
+    expect(Object.keys(termsDocuments)).toEqual(["pay-cycle"]);
+    const document = termsDocuments["pay-cycle"]!;
+    const japanese = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    const english = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    for (const term of ["uesugiyuuto", "金融助言", "非消費型", "未成年", "日本法", "東京地方裁判所", "日本語版", "Apple標準EULA"]) {
+      expect(japanese).toContain(term);
+    }
+    for (const term of ["uesugiyuuto", "financial advice", "non-consumable", "minor", "laws of Japan", "Tokyo District Court", "Japanese version", "Apple Standard EULA"]) {
+      expect(english).toContain(term);
+    }
+    expect(document).toContain("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/");
+    expect(document).toContain('href="/apps/pay-cycle/privacy/"');
+    expect(document).toContain("https://app.yutodev.com/#contact");
+    expect(document).not.toMatch(/example\.(?:com|org)|TODO|FIXME|雛形|記入してください/u);
   });
 
   it("登録された画像が各アプリの公開ディレクトリ内に実在する", () => {

@@ -59,6 +59,7 @@ src/
     page.tsx              トップページ
     apps/[slug]/          アプリ詳細（registry から静的生成）
     apps/[slug]/privacy/  プライバシーポリシー
+    apps/[slug]/terms/    登録済みのアプリ固有利用規約
     privacy/              サイト全体のプライバシーポリシー
     terms/                サイト全体の利用規約
   components/             UI コンポーネント
@@ -67,6 +68,8 @@ src/
     registry.ts           掲載アプリの唯一の真実
     privacy/<slug>.ts     アプリ固有の法務文書
     privacy/registry.ts   掲載 slug と法務本文の対応
+    terms/<slug>.ts       承認済みのアプリ固有利用規約
+    terms/registry.ts     利用規約を持つ slug の対応
   lib/
     site-data.ts          プロフィール / お知らせ / SNS / i18n
     state.tsx             テーマ等の設定（localStorage 永続化）
@@ -94,6 +97,7 @@ tests/                    Vitest / Playwright
 2. `public/apps/<slug>/screenshots/1.png` 以降を置く（縦長、3〜5 枚推奨）
 3. `src/data/registry.ts` の配列へ 1 件追加する。`features` にアイコン・見出し・説明を 1 件以上設定し、`screenshots` に実ファイル名を並べる
 4. `src/data/privacy/<slug>.ts` を作り、`src/data/privacy/registry.ts` へ同じ slug で登録する
+   - アプリ固有Termsが必要な場合は `src/data/terms/<slug>.ts` を作り、承認後にterms registryへ登録する
 5. `tools/requirements-ogp.txt` の hash 検証済み固定依存を `.venv-ogp` へ導入し、`tools/generate-ogp.py` の `APPS` を更新して `npm run generate:ogp` で共通 OGP 画像を再生成する
 6. `npm run verify` を通す（詳細ページが持つ privacy リンクの実在も確認）
 7. ブラウザでトップページと個別ページを確認する

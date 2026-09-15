@@ -1,6 +1,6 @@
 # TODO — AppLibrary
 
-最終更新日: 2026-09-14
+最終更新日: 2026-09-15
 
 - [x] [#30](https://github.com/yuto1201/Web-AppLibrary/issues/30) トップをポスター紙面へ寄せる
 - [x] [#31](https://github.com/yuto1201/Web-AppLibrary/issues/31) シールをフッターの山にし、ページ全体でつまめるようにする
@@ -9,6 +9,7 @@
 
 ## 直近の完了
 
+- [x] Issue #34 で PayCycle 固有の日英利用規約、更新済み Privacy Policy、support/privacy/terms 導線を整備
 - [x] Issue #31 でシールをフッターの山にし、ページ全体でつまめるようにした
 - [x] Issue #30 でトップをクリーム紙と電圧ブルーのポスター紙面へ寄せた
 - [x] Issue #25 で PayCycle の紹介・日英プライバシー・app-ads.txt を追加

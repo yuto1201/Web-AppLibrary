@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { apps, getApp } from "@/data/registry";
+import { termsDocuments } from "@/data/terms/registry";
 import "@/styles/app-page.css";
 
 export function generateStaticParams() {
@@ -107,7 +108,13 @@ export default async function AppPage({ params }: { params: Promise<{ slug: stri
       </main>
 
       <footer className="page-footer">
+        {app.slug === "pay-cycle" && (
+          <><a href="https://app.yutodev.com/#contact">サポート</a><span> · </span></>
+        )}
         <Link href={`/apps/${app.slug}/privacy/`}>プライバシーポリシー</Link>
+        {termsDocuments[app.slug] && (
+          <><span> · </span><Link href={`/apps/${app.slug}/terms/`}>利用規約</Link></>
+        )}
         <span> · </span>
         <Link href="/">AppLibrary</Link>
       </footer>

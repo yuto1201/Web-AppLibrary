@@ -613,6 +613,16 @@ for (const app of apps) {
     );
     expect(privacyHtml).toContain(`<meta property="og:title" content="プライバシーポリシー — ${app.name}"/>`);
     expect(privacyHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+    if (app.slug === "pay-cycle") {
+      const termsResponse = await request.get("/apps/pay-cycle/terms/");
+      expect(termsResponse.ok()).toBe(true);
+      const termsHtml = await termsResponse.text();
+      expect(termsHtml).toContain(
+        '<meta property="og:url" content="https://app.yutodev.com/apps/pay-cycle/terms/"/>',
+      );
+      expect(termsHtml).toContain('<meta property="og:title" content="利用規約 — PayCycle"/>');
+      expect(termsHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+    }
     await page.goto(`/apps/${app.slug}/`);
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/$`, "u"));
     await expect(page.getByRole("heading", { name: app.name, exact: true, level: 1 })).toBeVisible();
@@ -658,6 +668,10 @@ for (const app of apps) {
     }
     if (app.slug === "pay-cycle") {
       await expect(page.locator('a[href*="apps.apple.com"]')).toHaveCount(0);
+      await expect(page.getByRole("link", { name: "サポート", exact: true }))
+        .toHaveAttribute("href", "https://app.yutodev.com/#contact");
+      await expect(page.getByRole("link", { name: "利用規約", exact: true }))
+        .toHaveAttribute("href", "/apps/pay-cycle/terms/");
     }
     await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/privacy/$`, "u"));
@@ -671,6 +685,26 @@ for (const app of apps) {
       await expect(englishPolicy).toContainText("StoreKit");
       await expect(englishPolicy.getByRole("link", { name: "developer's contact links", exact: true }))
         .toHaveAttribute("href", "https://app.yutodev.com/#contact");
+      await page.getByRole("link", { name: "利用規約", exact: true }).click();
+      await expect(page).toHaveURL(/\/apps\/pay-cycle\/terms\/$/u);
+      await expect(page.getByRole("heading", { level: 1 })).toContainText("PayCycle 利用規約");
+      await expect(page.locator("section[lang='ja']")).toContainText("東京地方裁判所");
+      await expect(page.locator("section[lang='en']")).toContainText("Apple Standard EULA");
+      await expect(page.getByRole("link", { name: "Apple Standard EULA", exact: true }))
+        .toHaveAttribute("href", "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/");
+      await expect(page.getByRole("link", { name: "サポート", exact: true }))
+        .toHaveAttribute("href", "https://app.yutodev.com/#contact");
+      await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
+        "content",
+        "https://app.yutodev.com/apps/pay-cycle/terms/",
+      );
+      await expect
+        .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+        .toBe(true);
+      await page.addStyleTag({ content: FLATTEN_APP_SHELL });
+      await expectColorContrast(page);
+      await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
+      await expect(page).toHaveURL(/\/apps\/pay-cycle\/privacy\/$/u);
     } else {
       await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese only.");
     }
