@@ -453,6 +453,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   position: absolute;
   left: 50%;
   bottom: 24px;
+  z-index: 300;
   transform: translateX(-50%);
   pointer-events: auto;
   display: flex;
