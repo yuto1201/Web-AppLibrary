@@ -128,6 +128,16 @@ test("机のテープとスタンプと手書き合図がある", async ({ page 
   await expect(hint).toHaveText("つまんでみて");
   const hintFont = await hint.evaluate((el) => getComputedStyle(el).fontFamily);
   expect(hintFont.toLowerCase()).toMatch(/klee/);
+  const kleePaintsJa = await hint.evaluate(async (el) => {
+    const text = el.textContent ?? "";
+    const style = getComputedStyle(el);
+    const primary = style.fontFamily.split(",")[0]?.trim() ?? "";
+    const spec = `${style.fontWeight} ${style.fontSize} ${primary}`;
+    await document.fonts.load(spec, text);
+    await document.fonts.ready;
+    return document.fonts.check(spec, text);
+  });
+  expect(kleePaintsJa).toBe(true);
   const html = await page.content();
   expect(html.toLowerCase()).not.toContain("bricolage");
 

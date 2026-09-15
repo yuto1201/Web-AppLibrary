@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Klee_One, Newsreader } from "next/font/google";
+import localFont from "next/font/local";
+import { Inter, JetBrains_Mono, Newsreader } from "next/font/google";
 import { SiteStateProvider } from "@/lib/state";
 import project from "../../config/project.json";
 import "./globals.css";
@@ -27,9 +28,10 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 });
 
-const kleeOne = Klee_One({
-  subsets: ["latin"],
-  weight: ["400"],
+// ひらがなを含む単一 TTF を自己ホスト。next/font/google の latin subset では日本語が落ちる。
+const kleeOne = localFont({
+  src: "../fonts/KleeOne-Regular.ttf",
+  weight: "400",
   variable: "--font-klee",
   display: "swap",
 });
