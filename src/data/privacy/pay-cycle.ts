@@ -45,6 +45,6 @@ export const html = String.raw`
 <p>Bill reminders are scheduled locally on your device only when you enable notifications. PayCycle uses no remote push, background communication or bank transaction monitoring. The App’s main features remain available if notification permission is denied, and permission can be changed in iOS Settings.</p>
 
 <h3>Contact and updates</h3>
-<p>Please use the <a href="https://app.yutodev.com/#contact" target="_blank" rel="noopener noreferrer">developer’s contact links</a> for questions. Do not include financial details, bank account numbers or card numbers in messages. This policy will be updated when the App’s features or data practices change. See the <a href="/apps/pay-cycle/terms/">PayCycle Terms of Use</a> for conditions of use.</p>
+<p>Please use the <a href="https://app.yutodev.com/#contact" target="_blank" rel="noopener noreferrer">developer&#x27;s contact links</a> for questions. Do not include financial details, bank account numbers or card numbers in messages. This policy will be updated when the App’s features or data practices change. See the <a href="/apps/pay-cycle/terms/">PayCycle Terms of Use</a> for conditions of use.</p>
 </section>
 `;
