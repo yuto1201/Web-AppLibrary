@@ -24,6 +24,7 @@ export function AppsSection() {
   return (
     <section className="section" id="apps">
       <div className="section-head">
+        <span className="desk-tape" aria-hidden="true" />
         <h2 className="section-title">{t.section_apps}</h2>
         <span className="section-count">{apps.length}</span>
       </div>

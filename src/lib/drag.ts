@@ -1,6 +1,6 @@
 /**
  * ステッカーのドラッグ計算。DOM に触らない純粋関数だけを置く。
- * 実際のポインタ処理は src/components/Stickers.tsx が担う。
+ * 実際のポインタ処理は src/components/VinylSticker.tsx が担う。
  */
 
 export type Point = { x: number; y: number };

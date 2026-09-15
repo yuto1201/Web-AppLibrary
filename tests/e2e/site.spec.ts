@@ -27,17 +27,8 @@ const privacyContacts: Record<string, { label: string; url: string }> = {
 /** 紙面の配色。トークンを変えたらここも合わせる。 */
 const PAPER = { light: "rgb(255, 248, 241)", dark: "rgb(18, 16, 14)" } as const;
 const INK = { light: "rgb(0, 0, 0)", dark: "rgb(255, 248, 241)" } as const;
+const INK_2 = { light: "rgb(63, 59, 54)", dark: "rgb(200, 194, 184)" } as const;
 const ACCENT = { light: "rgb(0, 102, 238)", dark: "rgb(110, 179, 255)" } as const;
-
-/**
- * 個別ページ (app-page.css) は今回の再設計の対象外で背景に radial-gradient を使う。
- * axe は gradient の下の色を解決できないため、判定時だけ単色へ倒す。
- * トップと法務ページは単色になったので、この平坦化は不要。
- */
-const FLATTEN_APP_SHELL =
-  ".app-shell{background:#f8fafc!important}.hero-badge{background:#fff!important}" +
-  ".hero-tagline{background:none!important;color:var(--app-accent)!important}" +
-  ".btn-primary{background:var(--app-accent)!important}";
 
 /** アニメーションだけ止める。色は実際の値のまま axe に判定させる。 */
 const FREEZE = "html *, html *::before, html *::after { animation: none !important; transition: none !important; }";
@@ -54,6 +45,41 @@ async function expectColorContrast(page: Page, include?: string) {
   expect(results.violations).toEqual([]);
   expect(results.incomplete.filter(({ id }) => id === "color-contrast")).toEqual([]);
   expect(results.passes.some(({ id }) => id === "color-contrast")).toBe(true);
+}
+
+/** 言語 h2 より条項 h3 を一段小さくし、本文より小さくしない。字重はどちらも 400。 */
+async function expectLegalHeadingHierarchy(page: Page) {
+  const h2 = page.locator(".privacy-page h2").first();
+  const h3 = page.locator(".privacy-page h3").first();
+  await expect(h2).toBeVisible();
+  await expect(h3).toBeVisible();
+  await expect(h2).toHaveCSS("font-weight", "400");
+  await expect(h3).toHaveCSS("font-weight", "400");
+  const [h2Size, h3Size, pSize, h2Top, h3Top] = await page.evaluate(() => {
+    const heading2 = document.querySelector(".privacy-page h2");
+    const heading3 = document.querySelector(".privacy-page h3");
+    const paragraph = document.querySelector(".privacy-page p");
+    if (
+      !(heading2 instanceof HTMLElement)
+      || !(heading3 instanceof HTMLElement)
+      || !(paragraph instanceof HTMLElement)
+    ) {
+      throw new Error("expected app-legal h2, h3, and p");
+    }
+    const second = getComputedStyle(heading2);
+    const third = getComputedStyle(heading3);
+    const body = getComputedStyle(paragraph);
+    return [
+      parseFloat(second.fontSize),
+      parseFloat(third.fontSize),
+      parseFloat(body.fontSize),
+      parseFloat(second.marginTop),
+      parseFloat(third.marginTop),
+    ];
+  });
+  expect(h3Size).toBeLessThan(h2Size);
+  expect(h3Size).toBeGreaterThanOrEqual(pSize);
+  expect(h3Top).toBeLessThan(h2Top);
 }
 
 /**
@@ -75,6 +101,21 @@ function rotationDegrees(matrix: string): number {
   if (!values || values.length < 4) return 0;
   const [a, b] = values;
   return (Math.atan2(b!, a!) * 180) / Math.PI;
+}
+
+type Box = { x: number; y: number; width: number; height: number };
+
+function boxesOverlap(a: Box, b: Box): boolean {
+  return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+}
+
+async function centerHits(page: Page, target: ReturnType<typeof page.locator>, selector: string) {
+  const box = await target.boundingBox();
+  expect(box).not.toBeNull();
+  return page.evaluate(
+    ({ x, y, sel }) => Boolean(document.elementFromPoint(x, y)?.closest(sel)),
+    { x: box!.x + box!.width / 2, y: box!.y + box!.height / 2, sel: selector },
+  );
 }
 
 async function setStoredState(page: Page, state: Record<string, string>) {
@@ -120,6 +161,41 @@ test("ポスター紙面はクリームと電圧ブルーで、Bricolage を使�
   await expect(page.locator(".cta-btn")).toHaveCSS("color", ACCENT.dark);
 });
 
+test("机のテープとスタンプと手書き合図がある", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator(".desk-tape")).toHaveCount(1);
+  await expect(page.locator(".desk-stamp")).toHaveText("TOKYO '26");
+  const hint = page.locator(".desk-hint");
+  await expect(hint).toHaveText("つまんでみて");
+  const hintFont = await hint.evaluate((el) => getComputedStyle(el).fontFamily);
+  expect(hintFont.toLowerCase()).toMatch(/klee/);
+  const kleePaintsJa = await hint.evaluate(async (el) => {
+    const text = el.textContent ?? "";
+    const style = getComputedStyle(el);
+    const primary = style.fontFamily.split(",")[0]?.trim() ?? "";
+    const spec = `${style.fontWeight} ${style.fontSize} ${primary}`;
+    await document.fonts.load(spec, text);
+    await document.fonts.ready;
+    return document.fonts.check(spec, text);
+  });
+  expect(kleePaintsJa).toBe(true);
+  const html = await page.content();
+  expect(html.toLowerCase()).not.toContain("bricolage");
+
+  await page.getByRole("button", { name: "英語に切り替える" }).click();
+  await expect(page.locator(".desk-hint")).toHaveText("Pinch one.");
+});
+
+test("Klee One を全ページへ preload しない", async ({ page }) => {
+  for (const route of ["/", "/privacy/", "/apps/sublog/"]) {
+    await page.goto(route);
+    const hrefs = await page.locator('link[rel="preload"][as="font"]').evaluateAll((nodes) =>
+      nodes.map((node) => (node as HTMLLinkElement).href.toLowerCase()),
+    );
+    expect(hrefs.some((href) => href.includes("klee")), route).toBe(false);
+  }
+});
+
 test("一覧は行の索引で、検索・フィルタ・モーダルを持たない", async ({ page }) => {
   await page.goto("/");
 
@@ -150,7 +226,7 @@ test("一覧は行の索引で、検索・フィルタ・モーダルを持た�
 test("ステッカーは掴んで動かせて、離すと横スクロールを作らない", async ({ page }) => {
   await page.goto("/");
 
-  const sticker = page.locator(".sticker").first();
+  const sticker = page.locator('.sticker[href="/apps/sublog/"]');
   await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
 
@@ -162,6 +238,12 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth))
     .toBe(0);
 
+  const deskPoint = () =>
+    sticker.evaluate((el) => {
+      const box = el.getBoundingClientRect();
+      return { x: box.x + window.scrollX, y: box.y + window.scrollY };
+    });
+  const origin = await deskPoint();
   const before = await sticker.boundingBox();
   expect(before).not.toBeNull();
 
@@ -183,7 +265,7 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
   // ドラッグの終わりのクリックでは遷移しない。
   await expect.poll(() => new URL(page.url()).pathname).toBe("/");
 
-  // ならべ直すと元の位置へ戻る。
+  // ならべ直すと机の位置へ戻る（リセット操作でフッターへスクロールしても文書座標は同じ）。
   const reset = page.getByRole("button", { name: "ならべ直す" });
   await expect(reset).toBeVisible();
   await reset.click();
@@ -191,67 +273,132 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
   // 戻りは transition で補間されるので、収束するまで待つ。
   await expect
     .poll(async () => {
-      const box = await sticker.boundingBox();
-      return Math.round(Math.abs(box!.x - before!.x) + Math.abs(box!.y - before!.y));
+      const now = await deskPoint();
+      return Math.round(Math.abs(now.x - origin.x) + Math.abs(now.y - origin.y));
     })
     .toBeLessThan(2);
 });
 
-test("シールはフッター下端の山で、Hero までドラッグできる", async ({ page }) => {
-  await page.setViewportSize({ width: 1280, height: 2400 });
+test("アプリシールの形が違い、beta / alpha に印がある", async ({ page }) => {
+  await page.goto("/");
+  const sublog = page.locator('.sticker[href="/apps/sublog/"]');
+  const caflog = page.locator('.sticker[href="/apps/caflog/"]');
+  const devTools = page.locator('.sticker[href="/apps/dev-tools/"]');
+  const payCycle = page.locator('.sticker[href="/apps/pay-cycle/"]');
+
+  const radius = async (locator: ReturnType<typeof page.locator>) =>
+    locator.evaluate((el) => parseFloat(getComputedStyle(el).borderTopLeftRadius));
+
+  expect(await radius(caflog)).toBeGreaterThan(await radius(sublog) + 10);
+  expect(await radius(devTools)).toBeLessThan(await radius(sublog));
+
+  await expect(sublog.locator(".sticker-stamp")).toHaveCount(0);
+  await expect(caflog.locator(".sticker-stamp")).toHaveCount(0);
+  await expect(devTools.locator(".sticker-stamp")).toHaveAttribute("data-mark", "β");
+  await expect(payCycle.locator(".sticker-stamp")).toHaveAttribute("data-mark", "α");
+  const betaPaint = await devTools.locator(".sticker-stamp").evaluate((el) => getComputedStyle(el, "::after").content);
+  const alphaPaint = await payCycle.locator(".sticker-stamp").evaluate((el) => getComputedStyle(el, "::after").content);
+  expect(betaPaint.replaceAll('"', "")).toBe("β");
+  expect(alphaPaint.replaceAll('"', "")).toBe("α");
+  await expect(page.locator(".sticker-name")).toHaveCount(0);
+});
+
+test("初期表示でシールが Hero と一覧見出しに乗っている", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
 
   await expect(page.locator(".sticker-band")).toHaveCount(0);
   await expect(page.locator(".sticker-name")).toHaveCount(0);
 
-  const footer = await page.locator(".footer").boundingBox();
-  const hero = await page.locator(".hero-h1").boundingBox();
-  expect(footer).not.toBeNull();
-  expect(hero).not.toBeNull();
+  const hero = (await page.locator(".hero-h1").boundingBox())!;
+  const appsHead = (await page.locator("#apps").boundingBox())!;
+  const footer = (await page.locator(".footer").boundingBox())!;
+  const cta = page.locator(".cta-btn");
 
-  const spread = await page.locator(".sticker").evaluateAll((nodes) => {
-    const boxes = nodes.map((node) => node.getBoundingClientRect());
-    return {
-      top: Math.min(...boxes.map((box) => box.top)),
-      bottom: Math.max(...boxes.map((box) => box.bottom)),
-      left: Math.min(...boxes.map((box) => box.left)),
-      right: Math.max(...boxes.map((box) => box.right)),
-    };
-  });
+  const sublog = page.locator('.sticker[href="/apps/sublog/"]');
+  const caflog = page.locator('.sticker[href="/apps/caflog/"]');
+  const devTools = page.locator('.sticker[href="/apps/dev-tools/"]');
+  const payCycle = page.locator('.sticker[href="/apps/pay-cycle/"]');
 
-  // 山はフッター付近にあり、下端はフッター本文より下へはみ出す。
-  expect(spread.top).toBeGreaterThan(footer!.y - 120);
-  expect(spread.bottom).toBeGreaterThan(footer!.y + footer!.height - 8);
+  const sublogBox = (await sublog.boundingBox())!;
+  const caflogBox = (await caflog.boundingBox())!;
+  const devBox = (await devTools.boundingBox())!;
+  const payBox = (await payCycle.boundingBox())!;
 
-  const poster = await page.locator(".poster").evaluate((el) => {
-    const box = el.getBoundingClientRect();
-    return { left: box.left, right: box.right, bottom: box.bottom };
-  });
-  expect(spread.left).toBeGreaterThanOrEqual(poster.left - 1);
-  expect(spread.right).toBeLessThanOrEqual(poster.right + 1);
-  expect(spread.bottom).toBeGreaterThan(poster.bottom - 1);
+  expect(sublogBox.y + sublogBox.height / 2).toBeLessThan(appsHead.y);
+  expect(sublogBox.y).toBeGreaterThan(hero.y - 40);
+  expect(caflogBox.y + caflogBox.height / 2).toBeLessThan(appsHead.y);
+  expect(Math.abs(devBox.y - appsHead.y)).toBeLessThan(120);
+  expect(payBox.y).toBeGreaterThan(footer.y - 160);
+
+  const tokyo = page.locator('.sticker-slot[data-key="note-Tokyo"] .sticker');
+  const tokyoBox = (await tokyo.boundingBox())!;
+  expect(boxesOverlap(caflogBox, tokyoBox)).toBe(false);
+  expect(boxesOverlap(sublogBox, tokyoBox)).toBe(false);
+
+  const firstRow = (await page.locator(".app-row").first().boundingBox())!;
+  expect(boxesOverlap(devBox, firstRow)).toBe(false);
+
+  await expect(cta).toBeVisible();
+  const ctaBox = (await cta.boundingBox())!;
+  const hitsCta = [sublogBox, caflogBox].some((box) =>
+    box.x < ctaBox.x + ctaBox.width && box.x + box.width > ctaBox.x &&
+    box.y < ctaBox.y + ctaBox.height && box.y + box.height > ctaBox.y,
+  );
+  expect(hitsCta).toBe(false);
+  await cta.click();
+  await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
 
   const stagePosition = await page.locator(".sticker-stage").evaluate((el) => getComputedStyle(el).position);
   expect(stagePosition).not.toBe("fixed");
+});
 
-  const sticker = page.locator(".sticker").first();
-  await raiseSticker(sticker);
-  const before = (await sticker.boundingBox())!;
-  await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2);
-  await page.waitForTimeout(350);
-  await page.mouse.down();
-  await page.mouse.move(hero!.x + hero!.width / 2, hero!.y + hero!.height / 2, { steps: 24 });
-  await page.mouse.up();
+test("390px で見出しと CTA が押せる", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const heading = page.locator(".hero-h1");
+  await expect(heading).toBeVisible();
+  await expect(page.locator(".cta-btn")).toBeVisible();
+  expect(await centerHits(page, heading, ".hero-h1")).toBe(true);
+  expect(await centerHits(page, page.locator(".cta-btn"), ".cta-btn")).toBe(true);
+  const appsHead = (await page.locator("#apps").boundingBox())!;
+  const firstRow = (await page.locator(".app-row").first().boundingBox())!;
+  const devBox = (await page.locator('.sticker[href="/apps/dev-tools/"]').boundingBox())!;
+  expect(Math.abs(devBox.y - appsHead.y)).toBeLessThan(80);
+  expect(boxesOverlap(devBox, firstRow)).toBe(false);
+  await page.locator(".cta-btn").click();
+  await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+    .toBe(true);
+});
 
-  const placed = await sticker.boundingBox();
-  expect(placed).not.toBeNull();
-  expect(placed!.y).toBeLessThan(hero!.y + hero!.height + 120);
+test("640px で見出しと CTA が押せる", async ({ page }) => {
+  await page.setViewportSize({ width: 640, height: 900 });
+  await page.goto("/");
+  const heading = page.locator(".hero-h1");
+  const cta = page.locator(".cta-btn");
+  await expect(heading).toBeVisible();
+  await expect(cta).toBeVisible();
+  expect(await centerHits(page, heading, ".hero-h1")).toBe(true);
+  expect(await centerHits(page, cta, ".cta-btn")).toBe(true);
+  const appsHead = (await page.locator("#apps").boundingBox())!;
+  const firstRow = (await page.locator(".app-row").first().boundingBox())!;
+  const devBox = (await page.locator('.sticker[href="/apps/dev-tools/"]').boundingBox())!;
+  expect(Math.abs(devBox.y - appsHead.y)).toBeLessThan(80);
+  expect(boxesOverlap(devBox, firstRow)).toBe(false);
+
+  await cta.click();
+  await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
+  await expect
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+    .toBe(true);
 });
 
 test("置いたシールはスクロールしても viewport に張り付かない", async ({ page }) => {
   await page.goto("/");
 
-  const sticker = page.locator(".sticker").first();
+  const sticker = page.locator('.sticker[href="/apps/pay-cycle/"]');
   await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
   const before = (await sticker.boundingBox())!;
@@ -316,6 +463,25 @@ test("ステッカーは動かさずに離すと個別ページへ移る", async
   await expect(page.getByRole("heading", { level: 1, name: apps[0]!.name, exact: true })).toBeVisible();
 });
 
+test("個別ページの標本シールはリンクではなく動かせる", async ({ page }) => {
+  await page.goto("/apps/sublog/");
+  const specimen = page.locator(".app-shell .sticker");
+  await expect(specimen).toHaveCount(1);
+  await expect(specimen).not.toHaveAttribute("href");
+  const before = (await specimen.boundingBox())!;
+  await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2);
+  await page.waitForTimeout(350);
+  await page.mouse.down();
+  await page.mouse.move(before.x - 80, before.y + 60, { steps: 10 });
+  await page.mouse.up();
+  const after = (await specimen.boundingBox())!;
+  expect(Math.abs(after.x - before.x) + Math.abs(after.y - before.y)).toBeGreaterThan(20);
+  await expect.poll(() => new URL(page.url()).pathname).toBe("/apps/sublog/");
+
+  await page.goto("/apps/sublog/privacy/");
+  await expect(page.locator(".app-shell .sticker")).toHaveCount(0);
+});
+
 test("一覧行とステッカーが slug で相互にハイライトする", async ({ page }) => {
   await page.goto("/");
   const target = apps[1]!; // CafLog。先頭以外を選び、初期状態が非活性であることも確認する。
@@ -361,10 +527,10 @@ test("一覧行とステッカーが slug で相互にハイライトする", as
 
 test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間だけ元の位置に跡が残る", async ({ page }) => {
   await page.goto("/");
-  const sticker = page.locator(".sticker").first();
+  const sticker = page.locator('.sticker[href="/apps/sublog/"]');
   await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
-  const slot = page.locator(".sticker-slot").first();
+  const slot = page.locator(".sticker-slot").filter({ has: sticker });
 
   // 1 回目のドラッグでステッカー自身が動くため、掴む中心座標は毎回その時点の
   // boundingBox から取り直す。使い回すと、動いた後のステッカーから外れて掴めない。
@@ -411,10 +577,73 @@ test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間�
     .toBe(0);
 });
 
+test("ホバーと掴みで鉛筆メモが出て、飾りには出ない", async ({ page }) => {
+  await page.goto("/");
+  const sublog = page.locator('.sticker[href="/apps/sublog/"]');
+  const caption = sublog.locator(".sticker-caption");
+  await expect(caption).toHaveCount(1);
+  await expect(caption).toHaveText("月の固定費、見えてる？");
+  await expect(caption).not.toBeVisible();
+
+  await raiseSticker(sublog);
+  await sublog.hover();
+  await expect(caption).toBeVisible();
+  const captionBox = (await caption.boundingBox())!;
+  const viewport = page.viewportSize()!;
+  expect(captionBox.x).toBeGreaterThanOrEqual(0);
+  expect(captionBox.x + captionBox.width).toBeLessThanOrEqual(viewport.width + 1);
+  await page.mouse.move(0, 0);
+  await expect(caption).not.toBeVisible();
+
+  const box = (await sublog.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.waitForTimeout(350);
+  await page.mouse.down();
+  await expect(caption).toBeVisible();
+  await page.mouse.up();
+  await expect(caption).not.toBeVisible();
+
+  const decorative = page.locator('.sticker[aria-hidden="true"]').first();
+  await expect(decorative.locator(".sticker-caption")).toHaveCount(0);
+});
+
+test("390px で右端の鉛筆メモが画面内に収まる", async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  const sublog = page.locator('.sticker[href="/apps/sublog/"]');
+  const caption = sublog.locator(".sticker-caption");
+  await raiseSticker(sublog);
+  await sublog.hover();
+  await expect(caption).toBeVisible();
+  const captionBox = (await caption.boundingBox())!;
+  expect(captionBox.x).toBeGreaterThanOrEqual(0);
+  expect(captionBox.x + captionBox.width).toBeLessThanOrEqual(391);
+});
+
+test("reduced-motion では掴み中に拡大しない", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const sublog = page.locator('.sticker[href="/apps/sublog/"]');
+  await raiseSticker(sublog);
+  const box = (await sublog.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  await expect(sublog).toHaveClass(/\bis-held\b/u);
+  const scale = await sublog.evaluate((el) => {
+    const m = getComputedStyle(el).transform;
+    const match = m.match(/matrix\(([^)]+)\)/u);
+    if (!match?.[1]) return 1;
+    const a = Number(match[1].split(",")[0]);
+    return Math.abs(a);
+  });
+  expect(scale).toBeLessThan(1.02);
+  await page.mouse.up();
+});
+
 test("画面リサイズがドラッグ中に起きても、掴んだままの見た目で固着しない", async ({ page }) => {
   await page.goto("/");
-  const sticker = page.locator(".sticker").first();
-  const slot = page.locator(".sticker-slot").first();
+  const sticker = page.locator('.sticker[href="/apps/sublog/"]');
+  const slot = page.locator(".sticker-slot").filter({ has: sticker });
   await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
   const box = (await sticker.boundingBox())!;
@@ -623,10 +852,44 @@ for (const app of apps) {
       expect(termsHtml).toContain('<meta property="og:title" content="利用規約 — PayCycle"/>');
       expect(termsHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
     }
+    // request.get は HTML / OGP だけ。紙面 CSS は各法務 URL を直接開いて確認する。
+    await page.goto(`/apps/${app.slug}/privacy/`);
+    await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/privacy/$`, "u"));
+    await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
+    await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
+    await expect(page.locator(".app-shell .sticker")).toHaveCount(0);
+    if (app.slug === "pay-cycle") {
+      await expectLegalHeadingHierarchy(page);
+      await page.goto("/apps/pay-cycle/terms/");
+      await expect(page).toHaveURL(/\/apps\/pay-cycle\/terms\/$/u);
+      await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
+      await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
+      await expectLegalHeadingHierarchy(page);
+    }
     await page.goto(`/apps/${app.slug}/`);
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/$`, "u"));
     await expect(page.getByRole("heading", { name: app.name, exact: true, level: 1 })).toBeVisible();
-    await expect(page.locator("body")).toHaveCSS("background-color", "rgb(248, 250, 252)");
+    await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
+    await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
+    await expect(page.locator(".hero-title")).toHaveCSS("font-weight", "400");
+    await expect(page.locator(".hero-title")).toHaveCSS("color", INK.light);
+    await expect(page.locator(".hero-tagline")).toHaveCSS("color", INK_2.light);
+    await expect(page.locator(".section-title").first()).toHaveCSS("font-family", /Newsreader/i);
+    await expect(page.locator(".feature-card").first()).toHaveCSS("box-shadow", "none");
+    if (app.slug === "sublog") {
+      const heroInner = await page.locator(".hero-inner").boundingBox();
+      const pageBox = await page.locator(".page").boundingBox();
+      expect(heroInner).not.toBeNull();
+      expect(pageBox).not.toBeNull();
+      expect(Math.abs(heroInner!.x - pageBox!.x)).toBeLessThan(2);
+    }
+    const primary = page.locator(".btn-primary").first();
+    if (await primary.count()) {
+      await expect(primary).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    }
+    await expect
+      .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
+      .toBe(true);
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
       "content",
       `https://app.yutodev.com/apps/${app.slug}/`,
@@ -641,9 +904,6 @@ for (const app of apps) {
       await expect(siteLink).toHaveAttribute("href", app.siteUrl);
       await expect(siteLink).toHaveAttribute("target", "_blank");
     }
-    // 個別ページは今回の再設計の対象外で、背景が radial-gradient のままなので
-    // axe が解決できない面だけ単色へ倒して判定する。
-    await page.addStyleTag({ content: FLATTEN_APP_SHELL });
     await expectColorContrast(page);
     const features = page.locator("#features .feature-card");
     await expect(features).toHaveCount(app.features.length);
@@ -699,12 +959,12 @@ for (const app of apps) {
         "https://app.yutodev.com/apps/pay-cycle/terms/",
       );
       await expect
-        .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+        .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
         .toBe(true);
-      await page.addStyleTag({ content: FLATTEN_APP_SHELL });
       await expectColorContrast(page);
       await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
       await expect(page).toHaveURL(/\/apps\/pay-cycle\/privacy\/$/u);
+      await expectLegalHeadingHierarchy(page);
     } else {
       await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese only.");
     }
@@ -726,9 +986,8 @@ for (const app of apps) {
       `プライバシーポリシー — ${app.name}`,
     );
     await expect
-      .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+      .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
       .toBe(true);
-    await page.addStyleTag({ content: FLATTEN_APP_SHELL });
     await expectColorContrast(page);
     await page.getByRole("link", { name: `← ${app.name}`, exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/$`, "u"));
@@ -751,7 +1010,11 @@ test("保存した dark でも個別ページの見出しが電圧ブルーに�
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator(".app-shell")).toBeVisible();
-  await expect(page.locator(".app-shell .section-title").first()).toHaveCSS("color", "rgb(22, 24, 29)");
+  await expect(page.locator("body")).toHaveCSS("background-color", PAPER.dark);
+  await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.dark);
+  await expect(page.locator(".app-shell .section-title").first()).toHaveCSS("color", INK.dark);
+  await expect(page.locator(".app-shell .hero-title")).toHaveCSS("color", INK.dark);
+  await expectColorContrast(page);
 });
 
 test("未生成ルートは 404", async ({ request }) => {

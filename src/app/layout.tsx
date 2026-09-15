@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
 import { Inter, JetBrains_Mono, Newsreader } from "next/font/google";
 import { SiteStateProvider } from "@/lib/state";
 import project from "../../config/project.json";
@@ -25,6 +26,16 @@ const jetbrainsMono = JetBrains_Mono({
   weight: ["400", "600"],
   variable: "--font-jetbrains-mono",
   display: "swap",
+});
+
+// 手書き用。latin subset の Google フォントではひらがなが落ちるため、
+// 必要文字だけ残した woff2 を自己ホストする。preload はホーム以外で使わないので切る。
+const kleeOne = localFont({
+  src: "../fonts/KleeOne-Regular.woff2",
+  weight: "400",
+  variable: "--font-klee",
+  display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {
@@ -58,7 +69,7 @@ const restoreTheme = `(function(){var h=document.documentElement;h.setAttribute(
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ja" className={`${inter.variable} ${newsreader.variable} ${jetbrainsMono.variable}`}>
+    <html lang="ja" className={`${inter.variable} ${newsreader.variable} ${jetbrainsMono.variable} ${kleeOne.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: restoreTheme }} />
       </head>

@@ -50,6 +50,8 @@ export const appSchema = z.object({
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u, "lowercase kebab-case で指定する"),
   name: z.string().min(1),
   tagline: z.string().min(1),
+  /** シールをつまんだときに出す短い鉛筆メモ。アプリ本文と同じく日本語固定。 */
+  stickerNote: z.string().min(1).max(24),
 
   /** 複数プラットフォーム対応のため配列。少なくとも 1 つ必要。 */
   platforms: z.array(platformSchema).min(1),

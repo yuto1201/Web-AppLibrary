@@ -59,6 +59,7 @@ src/
     page.tsx              トップページ
     apps/[slug]/          アプリ詳細（registry から静的生成）
     apps/[slug]/privacy/  プライバシーポリシー
+    apps/[slug]/terms/    登録済みアプリの固有利用規約
     privacy/              サイト全体のプライバシーポリシー
     terms/                サイト全体の利用規約
   components/             UI コンポーネント
@@ -67,10 +68,14 @@ src/
     registry.ts           掲載アプリの唯一の真実
     privacy/<slug>.ts     アプリ固有の法務文書
     privacy/registry.ts   掲載 slug と法務本文の対応
+    terms/<slug>.ts       承認済みのアプリ固有利用規約
+    terms/registry.ts     利用規約を持つ slug の対応
   lib/
     site-data.ts          プロフィール / お知らせ / SNS / i18n
-    state.tsx             テーマ等の設定（localStorage 永続化）
-    use-reveal.ts         スクロール表示アニメーション
+    state.tsx             テーマと言語の永続化
+    activate.tsx          一覧行とシールの相互ハイライト
+    sticker-desk.ts       机の配置カタログ
+    drag.ts               掴みとクランプ
   styles/                 デザインシステム（tokens / standard / app-page / legal）
 public/
   apps/<slug>/            アイコンとスクリーンショット
@@ -86,17 +91,19 @@ tests/                    Vitest / Playwright
 - `status` は `alpha` / `beta` / `release` / `archived`
 - `features` は `{ icon, title, description }` を 1 件以上持ち、同じアプリ内で `title` を重複させない
 - App Store 未公開なら `appStoreUrl` を `null` にする
-- フィルタのプラットフォーム軸とカテゴリ軸は registry の実データから自動生成される
+- フィルタ UI は持たない。掲載アプリが 10 件を超えたら再検討する
 
 ## 新規アプリ追加手順
 
 1. `public/apps/<slug>/icon.png` を置く（正方形、128x128 以上）
 2. `public/apps/<slug>/screenshots/1.png` 以降を置く（縦長、3〜5 枚推奨）
-3. `src/data/registry.ts` の配列へ 1 件追加する。`features` にアイコン・見出し・説明を 1 件以上設定し、`screenshots` に実ファイル名を並べる
-4. `src/data/privacy/<slug>.ts` を作り、`src/data/privacy/registry.ts` へ同じ slug で登録する
-5. `tools/requirements-ogp.txt` の hash 検証済み固定依存を `.venv-ogp` へ導入し、`tools/generate-ogp.py` の `APPS` を更新して `npm run generate:ogp` で共通 OGP 画像を再生成する
-6. `npm run verify` を通す（詳細ページが持つ privacy リンクの実在も確認）
-7. ブラウザでトップページと個別ページを確認する
+3. `src/data/registry.ts` の配列へ 1 件追加する。`features` にアイコン・見出し・説明を 1 件以上設定し、`screenshots` に実ファイル名を並べる。`stickerNote`（日本語 1〜24 字）も必須
+4. `src/lib/sticker-desk.ts` の `APP_DESK` へ形（`shape`）と役割（`anchor`）を足し、`src/styles/standard.css` に `.sticker-slot[data-key="<slug>"]` の初期位置を書く。規則が無いと右下の山へ落ちる
+5. `src/data/privacy/<slug>.ts` を作り、`src/data/privacy/registry.ts` へ同じ slug で登録する
+6. `tools/requirements-ogp.txt` の hash 検証済み固定依存を `.venv-ogp` へ導入し、`tools/generate-ogp.py` の `APPS` を更新して `npm run generate:ogp` で共通 OGP 画像を再生成する
+7. 鉛筆メモに新しい漢字を足したら `src/fonts/klee-desk-glyphs.txt` を更新し、Klee One の woff2 を作り直す
+8. `npm run verify` を通す（詳細ページが持つ privacy リンクの実在も確認）
+9. ブラウザでトップページと個別ページを確認する
 
 詳細ページはアプリ registry、プライバシーページはアプリ registry と privacy registry から静的生成されます。両 registry の slug はテストで完全一致を要求します。**HTML を手でコピーする運用は廃止しました。**
 
@@ -106,13 +113,12 @@ tests/                    Vitest / Playwright
 
 - `tokens.css` の `--glass-*` などトークン名は変更しない。色味を変える場合は値だけ調整する
 - `standard.css` はトップページ、`app-page.css` は個別ページが使う
-- `.reveal` の表示クラスは **`.in`**。`useReveal` フックが React の状態として付与する
+- スクロール連動の `.reveal` と `GlassFilter` は現行 UI に無い
 - className を DOM へ直接書き込まない。React の再描画で失われる
-- Liquid Glass は `GlassFilter` コンポーネントが SVG フィルタを描画する
 
 ## テーマ設定の永続化
 
-`localStorage` の `applibrary_state` に theme / accent / layout / density / font / lang を保存します。初回描画前の適用は `src/app/layout.tsx` のインラインスクリプトが担当し、以降は `SiteStateProvider` が `<html>` の `data-*` 属性へ反映します。この二重構造は FOUC を防ぐためのもので、片方だけを消さないこと。
+`localStorage` の `applibrary_state` に theme / lang を保存します。accent / layout / density / font は UI から切り替えません。初回描画前の適用は `src/app/layout.tsx` のインラインスクリプトが担当し、以降は `SiteStateProvider` が `<html>` の `data-*` 属性へ反映します。この二重構造は FOUC を防ぐためのもので、片方だけを消さないこと。
 
 ## プライバシーポリシー
 

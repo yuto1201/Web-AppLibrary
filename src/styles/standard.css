@@ -141,6 +141,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
    Hero — 紙面の書き出し。役割はステッカー型のタグで示す
    ============================================================ */
 .hero {
+  position: relative;
   padding: clamp(64px, 12vw, 120px) 0 clamp(48px, 8vw, 88px);
 }
 .hero-tag {
@@ -187,6 +188,35 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   color: var(--ink-3);
 }
 .hero-cta-wrap { margin: 0; }
+.desk-stamp {
+  position: absolute;
+  right: 0;
+  top: 8px;
+  margin: 0;
+  padding: 6px 8px;
+  border: 1px solid var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--ink-3);
+  transform: rotate(12deg);
+  pointer-events: none;
+}
+/* 1280px で見出しと重ならないよう、合図は CTA の下に置く */
+.desk-hint {
+  margin: var(--space-4) 0 0;
+  font-family: var(--font-hand);
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--ink-2);
+  transform: rotate(-8deg);
+  pointer-events: none;
+  width: fit-content;
+}
+@media (max-width: 640px) {
+  .desk-hint { transform: rotate(-4deg); margin: var(--space-4) 0 0; }
+  .desk-stamp { top: auto; bottom: 8px; right: 8px; }
+}
 .cta-btn {
   display: inline-flex;
   align-items: center;
@@ -244,12 +274,27 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-top: 1px solid var(--rule);
 }
 .section-head {
+  position: relative;
   display: flex;
   align-items: baseline;
   gap: var(--space-3);
   margin-bottom: var(--space-6);
+  padding-top: 14px;
+}
+.desk-tape {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 88px;
+  height: 12px;
+  background: color-mix(in srgb, #e4c27a 82%, var(--paper));
+  transform: rotate(-8deg);
+  pointer-events: none;
+  z-index: 0;
 }
 .section-title {
+  position: relative;
+  z-index: 1;
   margin: 0;
   font-family: var(--font-display);
   font-size: clamp(28px, 4vw, 38px);
@@ -332,36 +377,44 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .app-row-year { color: var(--ink-3); }
 
 /* ============================================================
-   Stickers — フッター下端のビニール山。紙全体へつまんで動かせる
+   Stickers — 紙の上へ散らしたビニール。つまんで動かせる
    影を使うのはここだけ。viewport 固定にはしない
    ============================================================ */
-.stickers {
-  position: relative;
-  z-index: 40;
-  width: 100%;
-  padding: var(--space-4) 0 32px;
-}
-
-/* 山の居場所だけ。紙全体を覆うと透明レイヤーが本文のコントラスト判定を壊す。
-   掴んだシールは transform ではみ出して紙の上を動く。 */
+/* ステージは塗りもヒットも持たない。inset の透明オーバーレイは
+   axe が本文の color-contrast を bgOverlap にする。display: contents で
+   ボックスを作らず、スロットは .poster（position: relative）を含むブロックにする。 */
+.stickers,
 .sticker-stage {
-  position: relative;
-  height: 140px;
-  pointer-events: none;
+  display: contents;
 }
 
-/* スロットは山の初期位置に留まる。本体は transform で動く。
+/* スロットは机の初期位置に留まる。本体は transform で動く。
    跡（ghost）は inset:0 でこのスロットへ重ね、元の位置と一致させる。
    transform がスタッキング文脈を作るので、重ね順はスロットの --layer で持つ。 */
 .sticker-slot {
   position: absolute;
-  left: calc(50% + var(--pile-x, 0px));
-  bottom: var(--pile-y, -24px);
+  /* data-key 規則が無い新キーは右下の山へ。Nav の左上に積まない。 */
+  left: auto;
+  right: 24px;
+  top: auto;
+  bottom: -28px;
   width: clamp(88px, 12vw, 120px);
   z-index: var(--layer, 1);
-  transform: translateX(-50%);
+  transform: none;
   pointer-events: none;
 }
+.sticker-slot[data-shape="round-rect"] { border-radius: 22px; }
+.sticker-slot[data-shape="circle"] { border-radius: 50%; }
+.sticker-slot[data-shape="squircle"] { border-radius: 14px; }
+.sticker-slot[data-shape="round-lg"] { border-radius: 28px; }
+.sticker-slot[data-shape="word"] { border-radius: 18px; }
+.sticker-slot[data-key="sublog"] { left: 72%; top: 16%; right: auto; bottom: auto; width: clamp(96px, 12vw, 124px); }
+.sticker-slot[data-key="caflog"] { left: 8%; top: 24%; right: auto; bottom: auto; width: clamp(76px, 10vw, 100px); }
+.sticker-slot[data-key="dev-tools"] { left: 78%; top: calc(var(--desk-apps-top, 34%) - 48px); right: auto; bottom: auto; }
+.sticker-slot[data-key="pay-cycle"] { left: auto; right: 20px; top: auto; bottom: -28px; }
+.sticker-slot[data-key="note-Swift"] { left: auto; right: 168px; top: auto; bottom: -8px; }
+.sticker-slot[data-key="note-Tokyo"] { left: 36%; top: 28%; right: auto; bottom: auto; width: clamp(72px, 9vw, 96px); }
+.sticker-slot[data-key="note-solo"] { left: auto; right: 96px; top: auto; bottom: -40px; }
 .sticker-slot:hover,
 .sticker-slot:focus-within {
   z-index: calc(var(--layer, 1) + 100);
@@ -373,7 +426,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   position: absolute;
   inset: 0;
   border: 1px dashed var(--rule-strong);
-  border-radius: 22px;
+  border-radius: inherit;
   pointer-events: none;
 }
 
@@ -403,6 +456,35 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-radius: 16px;
   pointer-events: none;
 }
+.sticker[data-shape="round-rect"] { border-radius: 22px; }
+.sticker[data-shape="round-rect"] img { border-radius: 16px; }
+.sticker[data-shape="circle"] { border-radius: 50%; padding: 6px; }
+.sticker[data-shape="circle"] img { border-radius: 50%; }
+.sticker[data-shape="squircle"] { border-radius: 14px; }
+.sticker[data-shape="squircle"] img { border-radius: 8px; }
+.sticker[data-shape="round-lg"] { border-radius: 28px; }
+.sticker[data-shape="round-lg"] img { border-radius: 20px; }
+.sticker[data-shape="word"] { border-radius: 18px; }
+.sticker-stamp {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  width: 22px;
+  height: 22px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #fff;
+  color: #1a1814;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  pointer-events: none;
+  box-shadow: var(--shadow-sticker);
+}
+/* 1 字の印は axe が shortTextContent で incomplete にする。描画は ::after に寄せる。 */
+.sticker-stamp[data-mark]::after {
+  content: attr(data-mark);
+}
 .sticker-note {
   display: grid;
   place-items: center;
@@ -415,6 +497,34 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   /* 台紙は常に白なので、dark の --ink を使わない */
   color: #1a1814;
   pointer-events: none;
+}
+.sticker-caption {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  transform: translateX(-50%) rotate(-4deg);
+  width: max-content;
+  max-width: min(16rem, calc(100vw - 1.5rem));
+  padding: 2px 6px;
+  font-family: var(--font-hand, var(--font-sans));
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-2);
+  background: var(--paper);
+  pointer-events: none;
+  z-index: 2;
+}
+.sticker-slot[data-key="sublog"] .sticker-caption,
+.sticker-slot[data-key="dev-tools"] .sticker-caption {
+  left: auto;
+  right: 0;
+  transform: rotate(-4deg);
+}
+.sticker:hover .sticker-caption,
+.sticker:focus-visible .sticker-caption,
+.sticker.is-held .sticker-caption {
+  display: block;
 }
 
 /* ホバーで持ち上がり、傾きが戻る */
@@ -442,11 +552,18 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 
 .stickers-foot {
+  position: absolute;
+  left: 50%;
+  bottom: var(--space-4);
+  z-index: 300;
+  transform: translateX(-50%);
+  pointer-events: auto;
   display: flex;
   align-items: center;
   gap: var(--space-4);
-  width: min(var(--measure), calc(100% - var(--space-10)));
-  margin: 0 auto var(--space-3);
+  width: max-content;
+  max-width: min(var(--measure), calc(100% - var(--space-10)));
+  margin: 0;
   font-size: 13px;
   color: var(--ink-3);
 }
@@ -542,7 +659,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .footer {
   width: min(var(--measure), calc(100% - var(--space-10)));
   margin: 0 auto;
-  padding: var(--space-8) 0 var(--space-4);
+  /* 下の山とヒントが奥付の文字に乗らないよう、シール分の余白を空ける */
+  padding: var(--space-8) 0 7.5rem;
   border-top: 1px solid var(--rule);
   font-size: 13px;
   color: var(--ink-3);
@@ -608,8 +726,33 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
   .post { grid-template-columns: 1fr; gap: var(--space-1); }
 
-  .sticker-slot { width: 84px; }
+  .sticker-slot { width: 70px; }
+  .sticker-slot[data-key="sublog"] { left: auto; right: 12px; top: 12%; bottom: auto; width: 72px; }
+  .sticker-slot[data-key="caflog"] { left: auto; right: 8px; top: auto; bottom: -24px; width: 64px; }
+  .sticker-slot[data-key="dev-tools"] { left: auto; right: 16px; top: calc(var(--desk-apps-top, 56%) - 12px); bottom: auto; width: 56px; }
+  .sticker-slot[data-key="pay-cycle"] { left: 8px; right: auto; top: auto; bottom: -36px; width: 70px; }
+  .sticker-slot[data-key="note-Swift"] { left: 82px; right: auto; top: auto; bottom: -36px; width: 70px; }
+  .sticker-slot[data-key="note-solo"] { left: 156px; right: auto; top: auto; bottom: -36px; width: 70px; }
+  .sticker-slot[data-key="note-Tokyo"] { left: 230px; right: auto; top: auto; bottom: -36px; width: 64px; }
+  .sticker-slot[data-key="sublog"] .sticker-caption,
+  .sticker-slot[data-key="dev-tools"] .sticker-caption,
+  .sticker-slot[data-key="caflog"] .sticker-caption {
+    left: auto;
+    right: 0;
+    transform: rotate(-4deg);
+  }
+  .sticker-slot[data-key="pay-cycle"] .sticker-caption {
+    left: 0;
+    right: auto;
+    transform: rotate(-4deg);
+  }
+  .stickers-foot { bottom: 5.75rem; }
   .sticker-note { min-height: 72px; padding: var(--space-3) 6px; }
+}
+
+@media (max-width: 380px) {
+  .sticker-slot[data-key="note-Tokyo"] { left: 8px; right: auto; top: auto; bottom: 40px; width: 64px; }
+  .sticker-slot[data-key="caflog"] { left: auto; right: 8px; top: auto; bottom: 40px; width: 64px; }
 }
 
 /* ============================================================
@@ -626,6 +769,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .sticker:hover,
   .sticker:focus-visible {
     transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px))) rotate(var(--tilt, 0deg));
+  }
+  .sticker.is-held {
+    transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px))) rotate(calc(var(--tilt, 0deg) * 0.4 + var(--spin, 0deg)));
   }
   .social-link:hover { transform: none; }
 }

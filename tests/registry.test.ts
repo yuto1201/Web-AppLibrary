@@ -189,4 +189,20 @@ describe("apps registry", () => {
     expect(getApp("sublog")?.name).toBe("SubLog");
     expect(getApp("does-not-exist")).toBeUndefined();
   });
+
+  it("各アプリが短い鉛筆メモを持つ", () => {
+    expect(getApp("sublog")?.stickerNote).toBe("月の固定費、見えてる？");
+    expect(getApp("caflog")?.stickerNote).toBe("今日、何杯目？");
+    expect(getApp("dev-tools")?.stickerNote).toBe("ブラウザで足りる");
+    expect(getApp("pay-cycle")?.stickerNote).toBe("次の給料日まで");
+    for (const app of apps) {
+      expect(app.stickerNote.length).toBeGreaterThanOrEqual(1);
+      expect(app.stickerNote.length).toBeLessThanOrEqual(24);
+    }
+  });
+
+  it("空の鉛筆メモを拒否する", () => {
+    const source = apps[0]!;
+    expect(() => appSchema.parse({ ...source, stickerNote: "" })).toThrow();
+  });
 });
