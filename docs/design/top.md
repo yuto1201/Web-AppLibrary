@@ -31,7 +31,7 @@
 1. `Nav`: Newsreader のワードマーク、電圧ブルーのアンカー、outlined の言語・テーマ切替。罫線 1 本で紙面と切る。640px 以下ではアンカーを畳む。Nav の z-index は初期配置のシールより上。
 2. `Hero`: 役割のメタ、巨大見出し（電圧ブルー）、紹介、拠点、outlined pill の CTA。見出しは 1 文字ずつ立ち上がる。机の印として、右上付近に JetBrains Mono の枠文字 `TOKYO '26`（`.desk-stamp`、`aria-hidden`、Nav を覆わない）と、CTA 下の手書き合図「つまんでみて」/ `Pinch one.`（`.desk-hint`、Klee One、本文サイズで 4.5:1）を置く。どちらもドラッグしない。
 3. `AppsSection`: 掲載アプリを**行の索引**として並べる。行全体が個別ページへのリンク。hover の色はアプリ自身の `accent` を使う。ステッカーと `slug` で相互にハイライトする。見出しの**上**に CSS のマスキングテープ（`.desk-tape`）が少し回転して覗く。見出し文字の背面には置かず、コントラストを落とさない。
-4. `Stickers`: 既存アイコンを白フチのビニールとして、**最初の画面から紙に乗せる**。配置カタログは `src/lib/sticker-desk.ts` の `DESK_ITEMS`。読み込みごとに乱さない。`page.tsx` では Nav の直後（`main` より前）に置き、最初の画面に見えるシールへキーボード順を寄せる。位置は CSS の `%` で `.poster` 全体に対して取る（ページが長くなると Hero との相対がずれる）。`anchor` はカタログ上の役割で、レイアウト計算には使わない。
+4. `Stickers`: 既存アイコンを白フチのビニールとして、**最初の画面から紙に乗せる**。配置カタログは `src/lib/sticker-desk.ts` の `DESK_ITEMS`。読み込みごとに乱さない。`page.tsx` では Nav の直後（`main` より前）に置き、最初の画面に見えるシールへキーボード順を寄せる。位置は CSS の `%` で `.poster` 全体に対して取る（ページが長くなると Hero との相対がずれる）。Dev-Tools だけは例外で、`#apps .section-head` を測って `.poster` に `--desk-apps-top` を書く（`setProperty`。React は `.poster` の style を持たないので消えない）。`anchor` はカタログ上の役割で、他のスロットのレイアウト計算には使わない。
 5. `Posts` / `Contact` / `Footer`: お知らせ、連絡先、法務ページへの導線。フッターは折りたたみ式の「奥付」を持つ。「ならべ直す」はフッター付近に残し、この机の配置へ戻す。
 
 ### 初期配置
@@ -90,7 +90,7 @@ desktop（641px 以上）:
 
 - `held` は `Set<string>`。2 本指で別々のステッカーを同時に掴んでも、片方の `is-held` と跡が消えない。
 - 同じステッカーへの 2 本目の `pointerdown` は無視する（`drag.current` が残っていれば早期 return）。1 本目の掴み位置を上書きしない。
-- `pointercancel` / `lostpointercapture` は `pointerup` と同じ後始末をする。
+- `lostpointercapture` は `pointerup` と同じ後始末をする。`pointercancel` はそれに加え `dragged` を戻す（次の Enter を止めない）。他ポインタの cancel では触らない。
 - リサイズは `offsets` と `held` を戻したうえで `resetToken` を進め、進行中のドラッグがあれば各 `VinylSticker` 側でも `drag.current` を捨てる。掴んだ時点の紙の矩形は無効になっているため、そのまま move/up を処理させない。
 
 **E2E を書く際の注意。** ステッカーへマウスを乗せると、上記の相互ハイライトが `is-linked` を発火させ、0.3s の `transform` transition で位置が数 px 動く。この収束を待たずに `mouse.down()` すると、掴んだ位置の計算がずれて回転の符号まで変わることがある（実機のユーザー操作では発生しない、機械的な自動操作特有のタイミング問題）。`tests/e2e/site.spec.ts` はホバー後に transition 分だけ待ってから押している。

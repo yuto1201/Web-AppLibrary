@@ -66,6 +66,7 @@ body:has(.app-shell) {
 }
 .app-shell .specimen-slot .sticker {
   pointer-events: auto;
+  /* .app-shell * { padding:0 } がビニールの白フチを潰すので戻す */
   padding: 7px;
 }
 .app-shell .specimen-slot .sticker[data-shape="circle"] { padding: 6px; }
