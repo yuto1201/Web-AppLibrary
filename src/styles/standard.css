@@ -364,8 +364,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   pointer-events: none;
 }
 .sticker-slot[data-key="sublog"] { left: 72%; top: 16%; width: clamp(96px, 12vw, 124px); }
-.sticker-slot[data-key="caflog"] { left: 8%; top: 42%; width: clamp(76px, 10vw, 100px); }
-.sticker-slot[data-key="dev-tools"] { left: 78%; top: 58%; }
+.sticker-slot[data-key="caflog"] { left: 8%; top: 24%; width: clamp(76px, 10vw, 100px); }
+.sticker-slot[data-key="dev-tools"] { left: 78%; top: 34%; }
 .sticker-slot[data-key="pay-cycle"] { left: 62%; top: auto; bottom: -28px; }
 .sticker-slot[data-key="note-Swift"] { left: 78%; top: auto; bottom: -8px; }
 .sticker-slot[data-key="note-Tokyo"] { left: 10%; top: 22%; width: clamp(72px, 9vw, 96px); }
@@ -622,12 +622,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .post { grid-template-columns: 1fr; gap: var(--space-1); }
 
   .sticker-slot { width: 84px; }
-  .sticker-slot[data-key="sublog"] { left: auto; right: -8px; top: 12%; width: 72px; }
+  .sticker-slot[data-key="sublog"] { left: auto; right: 0; top: 12%; width: 72px; }
   .sticker-slot[data-key="caflog"] { left: auto; right: 8px; top: auto; bottom: -24px; }
   .sticker-slot[data-key="dev-tools"] { left: auto; right: 12px; top: 56%; width: 72px; }
-  .sticker-slot[data-key="pay-cycle"],
-  .sticker-slot[data-key="note-Swift"],
-  .sticker-slot[data-key="note-solo"] { top: auto; bottom: -36px; }
+  .sticker-slot[data-key="pay-cycle"] { left: 6%; right: auto; top: auto; bottom: -36px; }
+  .sticker-slot[data-key="note-Swift"] { left: 28%; right: auto; top: auto; bottom: -36px; }
+  .sticker-slot[data-key="note-solo"] { left: 52%; right: auto; top: auto; bottom: -36px; }
   .sticker-slot[data-key="note-Tokyo"] { left: 4%; top: auto; bottom: -20px; }
   .sticker-note { min-height: 72px; padding: var(--space-3) 6px; }
 }

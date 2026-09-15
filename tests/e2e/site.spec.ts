@@ -162,6 +162,12 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
     .poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth))
     .toBe(0);
 
+  const deskPoint = () =>
+    sticker.evaluate((el) => {
+      const box = el.getBoundingClientRect();
+      return { x: box.x + window.scrollX, y: box.y + window.scrollY };
+    });
+  const origin = await deskPoint();
   const before = await sticker.boundingBox();
   expect(before).not.toBeNull();
 
@@ -183,7 +189,7 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
   // ドラッグの終わりのクリックでは遷移しない。
   await expect.poll(() => new URL(page.url()).pathname).toBe("/");
 
-  // ならべ直すと元の位置へ戻る。
+  // ならべ直すと机の位置へ戻る（リセット操作でフッターへスクロールしても文書座標は同じ）。
   const reset = page.getByRole("button", { name: "ならべ直す" });
   await expect(reset).toBeVisible();
   await reset.click();
@@ -191,8 +197,8 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
   // 戻りは transition で補間されるので、収束するまで待つ。
   await expect
     .poll(async () => {
-      const box = await sticker.boundingBox();
-      return Math.round(Math.abs(box!.x - before!.x) + Math.abs(box!.y - before!.y));
+      const now = await deskPoint();
+      return Math.round(Math.abs(now.x - origin.x) + Math.abs(now.y - origin.y));
     })
     .toBeLessThan(2);
 });
@@ -255,7 +261,7 @@ test("640px で見出しと CTA が押せる", async ({ page }) => {
 test("置いたシールはスクロールしても viewport に張り付かない", async ({ page }) => {
   await page.goto("/");
 
-  const sticker = page.locator('.sticker[href="/apps/sublog/"]');
+  const sticker = page.locator('.sticker[href="/apps/pay-cycle/"]');
   await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
   const before = (await sticker.boundingBox())!;
