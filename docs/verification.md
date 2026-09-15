@@ -18,7 +18,7 @@ Vercel は Node/npm の minor/patch を固定できないため、install/build 
 
 CI は Linux の `Repository checks` と `Browser checks` を実行し、ブラウザ失敗時にレポート・trace を保存する。`Repository checks` は commit SHA で固定した setup-python と `.python-version` を使い、システム Python を変更しない。通常モーションを既定とし、reduced-motion は専用テストで確認する。iPhone 15 相当の viewport を Chromium で確認するものであり、Safari / 実機検証を意味しない。
 
-グラデーションと半透明カードでは axe が背景色を解決できないため、トップと法務ページの E2E は本文・リンクの色を実装値のまま保ち、テーマごとの不利な背景を保守的な不透明色で近似して測る。dark は最も明るい領域を使い、上層の遮光グラデーションを橙色へ合成した `#4b3932` と、その上の 12% ガラス面に相当する `#61504b` を使う。light は最も暗い紫の領域 `#e0c4ff`、30% ガラス面 `#e9d6ff`、45% 法務カード `#eedfff` を使う。light の faint text は不透明度 0.7、Hero アクセントは停止色のうち最も不利な `#0062cc` として測る。CTA も実装の明るい停止色 `#0062cc` を使い、テストだけ暗い色へ置き換えない。検索入力の label、リンク名、ボタン名、通常テキストに加えて、絞り込み中の表示も検査する。`color-contrast` が `incomplete` の場合や pass が 0 件の場合も失敗させる。アプリページ用 CSS は遷移後もブラウザに残るため、各詳細・privacy を直接ロードし、詳細表示中の body 背景と、トップとサイト法務ページへ戻った後の `.app-shell` 不在・body 配色を検証する。
+トップ、サイト法務、個別ページ、アプリ法務は紙面トークンの単色キャンバスを使う。E2E の axe `color-contrast` は実装値のまま判定し、背景を単色へ倒さない。`color-contrast` が `incomplete` の場合や pass が 0 件の場合も失敗させる。アプリページ用 CSS は遷移後もブラウザに残るため、各詳細・privacy を直接ロードし、詳細表示中の body 背景と、トップとサイト法務ページへ戻った後の `.app-shell` 不在・body 配色を検証する。
 
 リンク検証はローカル Markdown のファイル実在を確認する。外部 URL と見出し anchor の内容は検証しない。`docs/decisions/` と `docs/superpowers/completed/` は旧実装を説明する履歴のため対象外。現行文書の壊れた参照は対象外にせず修正する。
 
