@@ -19,7 +19,7 @@
 - Site `/privacy/` `/terms/` and `src/styles/legal.css` are out of scope
 - `npm run verify` must pass; axe `color-contrast` on real colors (no `FLATTEN_APP_SHELL`)
 - Touching `specs/product.md` and `docs/verification.md` makes the PR high-risk: OpenAI and Anthropic independent read-only reviews
-- 1 Issue / 1 branch / 1 PR (`cursor/app-page-poster-03db`). Create the GitHub Issue if the token allows; if 403, leave the number blank
+- 1 Issue / 1 branch / 1 PR (`cursor/app-page-poster-03db`, Issue #38)
 - Do not merge to `main` without explicit user approval of that exact target
 - This branch sits on the desk-play Head. Do not re-implement desk-play
 

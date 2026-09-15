@@ -200,7 +200,7 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
 
   // 初期表示の時点で紙面は横に伸びていない。
   await expect
-    .poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth))
+    .poll(() => page.evaluate(() => document.body.scrollWidth - document.body.clientWidth))
     .toBe(0);
 
   const deskPoint = () =>
@@ -224,7 +224,7 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
 
   // 動かした後も紙面は横に伸びない。
   await expect
-    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+    .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
     .toBe(true);
 
   // ドラッグの終わりのクリックでは遷移しない。
@@ -334,7 +334,7 @@ test("390px で見出しと CTA が押せる", async ({ page }) => {
   await page.locator(".cta-btn").click();
   await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
   await expect
-    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+    .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
     .toBe(true);
 });
 
@@ -356,7 +356,7 @@ test("640px で見出しと CTA が押せる", async ({ page }) => {
   await cta.click();
   await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
   await expect
-    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+    .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
     .toBe(true);
 });
 
@@ -630,7 +630,7 @@ test("画面リサイズがドラッグ中に起きても、掴んだままの�
   await expect(sticker).not.toHaveClass(/\bis-held\b/u);
   await expect(slot.locator(".sticker-ghost")).toHaveCount(0);
   await expect
-    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+    .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
     .toBe(true);
 
   await page.setViewportSize(viewport);
@@ -827,12 +827,19 @@ for (const app of apps) {
     await expect(page.locator(".hero-tagline")).toHaveCSS("color", INK_2.light);
     await expect(page.locator(".section-title").first()).toHaveCSS("font-family", /Newsreader/i);
     await expect(page.locator(".feature-card").first()).toHaveCSS("box-shadow", "none");
+    if (app.slug === "sublog") {
+      const heroInner = await page.locator(".hero-inner").boundingBox();
+      const pageBox = await page.locator(".page").boundingBox();
+      expect(heroInner).not.toBeNull();
+      expect(pageBox).not.toBeNull();
+      expect(Math.abs(heroInner!.x - pageBox!.x)).toBeLessThan(2);
+    }
     const primary = page.locator(".btn-primary").first();
     if (await primary.count()) {
       await expect(primary).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
     }
     await expect
-      .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+      .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
       .toBe(true);
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
       "content",
@@ -903,11 +910,14 @@ for (const app of apps) {
         "https://app.yutodev.com/apps/pay-cycle/terms/",
       );
       await expect
-        .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+        .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
         .toBe(true);
       await expectColorContrast(page);
       await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
       await expect(page).toHaveURL(/\/apps\/pay-cycle\/privacy\/$/u);
+      const h3 = page.locator(".privacy-page h3").first();
+      await expect(h3).toBeVisible();
+      await expect(h3).toHaveCSS("font-weight", "400");
     } else {
       await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese only.");
     }
@@ -929,7 +939,7 @@ for (const app of apps) {
       `プライバシーポリシー — ${app.name}`,
     );
     await expect
-      .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+      .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
       .toBe(true);
     await expectColorContrast(page);
     await page.getByRole("link", { name: `← ${app.name}`, exact: true }).click();
@@ -957,6 +967,7 @@ test("保存した dark でも個別ページの見出しが電圧ブルーに�
   await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.dark);
   await expect(page.locator(".app-shell .section-title").first()).toHaveCSS("color", INK.dark);
   await expect(page.locator(".app-shell .hero-title")).toHaveCSS("color", INK.dark);
+  await expectColorContrast(page);
 });
 
 test("未生成ルートは 404", async ({ request }) => {

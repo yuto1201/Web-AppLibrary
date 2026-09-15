@@ -2,7 +2,7 @@
 
 最終更新日: 2026-09-15
 
-- [ ] 個別ページをポスター紙面へ揃える
+- [ ] 個別ページをポスター紙面へ揃える（Issue #38）
 
 仕様: [個別ページをポスター紙面へ揃える](superpowers/specs/2026-09-15-app-page-poster-design.md)
 計画: [個別ページのポスター化](superpowers/plans/2026-09-15-app-page-poster.md)

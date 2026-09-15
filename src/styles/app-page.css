@@ -66,7 +66,12 @@ body:has(.app-shell) {
 }
 .app-shell .specimen-slot .sticker[data-shape="circle"] { padding: 6px; }
 .app-shell .hero-nav,
-.app-shell .hero-inner,
+.app-shell .hero-inner {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+  text-align: left;
+}
 .app-shell .page,
 .app-shell .page-footer,
 .app-shell .privacy-nav {
@@ -157,7 +162,6 @@ body:has(.app-shell) {
   color: var(--app-ink);
   border-color: var(--app-ink);
 }
-.app-shell .btn-primary[aria-disabled="true"] { opacity: 0.55; cursor: not-allowed; }
 .app-shell .btn-ghost {
   color: var(--app-ink);
   border-color: var(--app-ink);
@@ -245,6 +249,7 @@ body:has(.app-shell) {
 .app-shell .privacy-page .meta { margin-bottom: 0; color: var(--app-ink-2); }
 .app-shell .privacy-page .legal-language { margin-top: var(--space-2); margin-bottom: var(--space-8); font-size: 14px; }
 .app-shell .privacy-page h2 { margin: var(--space-8) 0 var(--space-3); font-size: 20px; font-weight: 400; color: var(--app-ink); }
+.app-shell .privacy-page h3 { margin: var(--space-8) 0 var(--space-3); font-size: 20px; font-weight: 400; color: var(--app-ink); }
 .app-shell .privacy-page p,
 .app-shell .privacy-page ul { margin-top: var(--space-3); }
 .app-shell .privacy-page ul { padding-left: 1.4em; }
