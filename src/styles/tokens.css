@@ -32,6 +32,7 @@
   --font-mono: var(--font-jetbrains-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   /* Latin のワードマーク・英語見出し。日本語は OS のゴシックへ落ちる */
   --font-display: var(--font-newsreader), var(--font-inter), 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+  --font-hand: var(--font-klee), 'Klee One', 'Hiragino Mincho ProN', serif;
 
   /* --- Paper / Ink --- Drive Capital 系のポスター紙面 --- */
   --paper: #fff8f1;        /* クリームのキャンバス */

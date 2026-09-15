@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono, Newsreader } from "next/font/google";
+import { Inter, JetBrains_Mono, Klee_One, Newsreader } from "next/font/google";
 import { SiteStateProvider } from "@/lib/state";
 import project from "../../config/project.json";
 import "./globals.css";
@@ -24,6 +24,13 @@ const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin"],
   weight: ["400", "600"],
   variable: "--font-jetbrains-mono",
+  display: "swap",
+});
+
+const kleeOne = Klee_One({
+  subsets: ["latin"],
+  weight: ["400"],
+  variable: "--font-klee",
   display: "swap",
 });
 
@@ -58,7 +65,7 @@ const restoreTheme = `(function(){var h=document.documentElement;h.setAttribute(
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ja" className={`${inter.variable} ${newsreader.variable} ${jetbrainsMono.variable}`}>
+    <html lang="ja" className={`${inter.variable} ${newsreader.variable} ${jetbrainsMono.variable} ${kleeOne.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: restoreTheme }} />
       </head>

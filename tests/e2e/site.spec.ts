@@ -120,6 +120,21 @@ test("ポスター紙面はクリームと電圧ブルーで、Bricolage を使�
   await expect(page.locator(".cta-btn")).toHaveCSS("color", ACCENT.dark);
 });
 
+test("机のテープとスタンプと手書き合図がある", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator(".desk-tape")).toHaveCount(1);
+  await expect(page.locator(".desk-stamp")).toHaveText("TOKYO '26");
+  const hint = page.locator(".desk-hint");
+  await expect(hint).toHaveText("つまんでみて");
+  const hintFont = await hint.evaluate((el) => getComputedStyle(el).fontFamily);
+  expect(hintFont.toLowerCase()).toMatch(/klee/);
+  const html = await page.content();
+  expect(html.toLowerCase()).not.toContain("bricolage");
+
+  await page.getByRole("button", { name: "英語に切り替える" }).click();
+  await expect(page.locator(".desk-hint")).toHaveText("Pinch one.");
+});
+
 test("一覧は行の索引で、検索・フィルタ・モーダルを持たない", async ({ page }) => {
   await page.goto("/");
 

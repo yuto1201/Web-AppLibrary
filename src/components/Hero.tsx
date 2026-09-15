@@ -41,6 +41,8 @@ export function Hero() {
       <p className="hero-cta-wrap">
         <a className="cta-btn" href="#apps">{t.hero_cta}</a>
       </p>
+      <p className="desk-stamp" aria-hidden="true">TOKYO '26</p>
+      <p className="desk-hint">{t.desk_hint}</p>
     </section>
   );
 }

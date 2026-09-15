@@ -49,6 +49,7 @@ type Dict = {
   hero_h1_b: string;
   hero_note: string;
   hero_cta: string;
+  desk_hint: string;
   stickers_title: string;
   stickers_hint: string;
   stickers_reset: string;
@@ -82,6 +83,7 @@ export const i18n: Record<Lang, Dict> = {
     hero_h1_b: "丁寧に。",
     hero_note: "東京で、Swift と SwiftUI でつくっています。",
     hero_cta: "アプリを見る",
+    desk_hint: "つまんでみて",
     stickers_title: "Stickers",
     stickers_hint: "つまんで動かせます。",
     stickers_reset: "ならべ直す",
@@ -113,6 +115,7 @@ export const i18n: Record<Lang, Dict> = {
     hero_h1_b: "made with care.",
     hero_note: "Made in Tokyo with Swift and SwiftUI.",
     hero_cta: "Browse apps",
+    desk_hint: "Pinch one.",
     stickers_title: "Stickers",
     stickers_hint: "Grab them and move them around.",
     stickers_reset: "Tidy up",
