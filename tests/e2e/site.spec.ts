@@ -27,17 +27,8 @@ const privacyContacts: Record<string, { label: string; url: string }> = {
 /** 紙面の配色。トークンを変えたらここも合わせる。 */
 const PAPER = { light: "rgb(255, 248, 241)", dark: "rgb(18, 16, 14)" } as const;
 const INK = { light: "rgb(0, 0, 0)", dark: "rgb(255, 248, 241)" } as const;
+const INK_2 = { light: "rgb(63, 59, 54)", dark: "rgb(200, 194, 184)" } as const;
 const ACCENT = { light: "rgb(0, 102, 238)", dark: "rgb(110, 179, 255)" } as const;
-
-/**
- * 個別ページ (app-page.css) は今回の再設計の対象外で背景に radial-gradient を使う。
- * axe は gradient の下の色を解決できないため、判定時だけ単色へ倒す。
- * トップと法務ページは単色になったので、この平坦化は不要。
- */
-const FLATTEN_APP_SHELL =
-  ".app-shell{background:#f8fafc!important}.hero-badge{background:#fff!important}" +
-  ".hero-tagline{background:none!important;color:var(--app-accent)!important}" +
-  ".btn-primary{background:var(--app-accent)!important}";
 
 /** アニメーションだけ止める。色は実際の値のまま axe に判定させる。 */
 const FREEZE = "html *, html *::before, html *::after { animation: none !important; transition: none !important; }";
@@ -831,6 +822,18 @@ for (const app of apps) {
     await expect(page.getByRole("heading", { name: app.name, exact: true, level: 1 })).toBeVisible();
     await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
     await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
+    await expect(page.locator(".hero-title")).toHaveCSS("font-weight", "400");
+    await expect(page.locator(".hero-title")).toHaveCSS("color", INK.light);
+    await expect(page.locator(".hero-tagline")).toHaveCSS("color", INK_2.light);
+    await expect(page.locator(".section-title").first()).toHaveCSS("font-family", /Newsreader/i);
+    await expect(page.locator(".feature-card").first()).toHaveCSS("box-shadow", "none");
+    const primary = page.locator(".btn-primary").first();
+    if (await primary.count()) {
+      await expect(primary).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+    }
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+      .toBe(true);
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
       "content",
       `https://app.yutodev.com/apps/${app.slug}/`,
@@ -845,9 +848,6 @@ for (const app of apps) {
       await expect(siteLink).toHaveAttribute("href", app.siteUrl);
       await expect(siteLink).toHaveAttribute("target", "_blank");
     }
-    // 個別ページは今回の再設計の対象外で、背景が radial-gradient のままなので
-    // axe が解決できない面だけ単色へ倒して判定する。
-    await page.addStyleTag({ content: FLATTEN_APP_SHELL });
     await expectColorContrast(page);
     const features = page.locator("#features .feature-card");
     await expect(features).toHaveCount(app.features.length);
@@ -905,7 +905,6 @@ for (const app of apps) {
       await expect
         .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
         .toBe(true);
-      await page.addStyleTag({ content: FLATTEN_APP_SHELL });
       await expectColorContrast(page);
       await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
       await expect(page).toHaveURL(/\/apps\/pay-cycle\/privacy\/$/u);
@@ -932,7 +931,6 @@ for (const app of apps) {
     await expect
       .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
       .toBe(true);
-    await page.addStyleTag({ content: FLATTEN_APP_SHELL });
     await expectColorContrast(page);
     await page.getByRole("link", { name: `← ${app.name}`, exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/$`, "u"));
