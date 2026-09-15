@@ -34,8 +34,8 @@ Claude はローカル作業、Git 操作、ローカル検証、`gh` による 
 
 Next.js 移行時に実際に発生した不具合です。同じ轍を踏まないこと。
 
-- **`.reveal` の表示クラスは `.in`**。`is-visible` ではありません
-- **className を DOM へ直接書き込まない**。React の再描画で失われます。`useReveal` フックを使います
+- **スクロール連動の `.reveal` / `useReveal` は使わない**
+- **className を DOM へ直接書き込まない**。React の再描画で失われます
 - **`<html>` の `data-*` 属性は初回訪問でも必ず適用する**。`layout.tsx` のインラインスクリプトは保存値がある場合しか属性を付けないため、`SiteStateProvider` 側の適用を消さないこと
 - **静的出力は絶対パスを使う**。サブディレクトリ配信はできません
 - **Cloudflare の `app` レコードは DNS only を維持**。プロキシを有効にすると壊れます

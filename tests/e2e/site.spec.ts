@@ -47,7 +47,7 @@ async function expectColorContrast(page: Page, include?: string) {
   expect(results.passes.some(({ id }) => id === "color-contrast")).toBe(true);
 }
 
-/** 言語 h2 より条項 h3 を一段小さくする。字重はどちらも 400。 */
+/** 言語 h2 より条項 h3 を一段小さくし、本文より小さくしない。字重はどちらも 400。 */
 async function expectLegalHeadingHierarchy(page: Page) {
   const h2 = page.locator(".privacy-page h2").first();
   const h3 = page.locator(".privacy-page h3").first();
@@ -55,22 +55,30 @@ async function expectLegalHeadingHierarchy(page: Page) {
   await expect(h3).toBeVisible();
   await expect(h2).toHaveCSS("font-weight", "400");
   await expect(h3).toHaveCSS("font-weight", "400");
-  const [h2Size, h3Size, h2Top, h3Top] = await page.evaluate(() => {
+  const [h2Size, h3Size, pSize, h2Top, h3Top] = await page.evaluate(() => {
     const heading2 = document.querySelector(".privacy-page h2");
     const heading3 = document.querySelector(".privacy-page h3");
-    if (!(heading2 instanceof HTMLElement) || !(heading3 instanceof HTMLElement)) {
-      throw new Error("expected app-legal h2 and h3");
+    const paragraph = document.querySelector(".privacy-page p");
+    if (
+      !(heading2 instanceof HTMLElement)
+      || !(heading3 instanceof HTMLElement)
+      || !(paragraph instanceof HTMLElement)
+    ) {
+      throw new Error("expected app-legal h2, h3, and p");
     }
     const second = getComputedStyle(heading2);
     const third = getComputedStyle(heading3);
+    const body = getComputedStyle(paragraph);
     return [
       parseFloat(second.fontSize),
       parseFloat(third.fontSize),
+      parseFloat(body.fontSize),
       parseFloat(second.marginTop),
       parseFloat(third.marginTop),
     ];
   });
   expect(h3Size).toBeLessThan(h2Size);
+  expect(h3Size).toBeGreaterThanOrEqual(pSize);
   expect(h3Top).toBeLessThan(h2Top);
 }
 

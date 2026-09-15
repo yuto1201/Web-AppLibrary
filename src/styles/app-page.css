@@ -251,7 +251,7 @@ body:has(.app-shell) {
 .app-shell .privacy-page .meta { margin-bottom: 0; color: var(--app-ink-2); }
 .app-shell .privacy-page .legal-language { margin-top: var(--space-2); margin-bottom: var(--space-8); font-size: 14px; }
 .app-shell .privacy-page h2 { margin: var(--space-8) 0 var(--space-3); font-size: 20px; font-weight: 400; color: var(--app-ink); }
-.app-shell .privacy-page h3 { margin: var(--space-5) 0 var(--space-2); font-size: 16px; font-weight: 400; color: var(--app-ink); }
+.app-shell .privacy-page h3 { margin: var(--space-5) 0 var(--space-2); font-size: 18px; font-weight: 400; color: var(--app-ink); }
 .app-shell .privacy-page p,
 .app-shell .privacy-page ul { margin-top: var(--space-3); }
 .app-shell .privacy-page ul { padding-left: 1.4em; }
