@@ -279,13 +279,14 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   align-items: baseline;
   gap: var(--space-3);
   margin-bottom: var(--space-6);
+  padding-top: 14px;
 }
 .desk-tape {
   position: absolute;
-  left: -12px;
-  top: 10px;
+  left: 0;
+  top: 0;
   width: 88px;
-  height: 14px;
+  height: 12px;
   background: color-mix(in srgb, #e4c27a 82%, var(--paper));
   transform: rotate(-8deg);
   pointer-events: none;
