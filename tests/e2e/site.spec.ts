@@ -200,7 +200,7 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
 
   // 初期表示の時点で紙面は横に伸びていない。
   await expect
-    .poll(() => page.evaluate(() => document.body.scrollWidth - document.body.clientWidth))
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth))
     .toBe(0);
 
   const deskPoint = () =>
@@ -224,7 +224,7 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
 
   // 動かした後も紙面は横に伸びない。
   await expect
-    .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
     .toBe(true);
 
   // ドラッグの終わりのクリックでは遷移しない。
@@ -334,7 +334,7 @@ test("390px で見出しと CTA が押せる", async ({ page }) => {
   await page.locator(".cta-btn").click();
   await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
   await expect
-    .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
     .toBe(true);
 });
 
@@ -356,7 +356,7 @@ test("640px で見出しと CTA が押せる", async ({ page }) => {
   await cta.click();
   await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
   await expect
-    .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
     .toBe(true);
 });
 
@@ -630,7 +630,7 @@ test("画面リサイズがドラッグ中に起きても、掴んだままの�
   await expect(sticker).not.toHaveClass(/\bis-held\b/u);
   await expect(slot.locator(".sticker-ghost")).toHaveCount(0);
   await expect
-    .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
+    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
     .toBe(true);
 
   await page.setViewportSize(viewport);
