@@ -10,6 +10,7 @@ const entries = [
     slug: "sublog",
     name: "SubLog",
     tagline: "毎月のサブスクを、ひと目で。",
+    stickerNote: "月の固定費、見えてる？",
 
     platforms: ["iOS"],
     status: "release",
@@ -69,6 +70,7 @@ const entries = [
     slug: "caflog",
     name: "CafLog",
     tagline: "カフェインとの付き合いを、見える化。",
+    stickerNote: "今日、何杯目？",
 
     platforms: ["iOS"],
     status: "release",
@@ -128,6 +130,7 @@ const entries = [
     slug: "dev-tools",
     name: "Dev-Tools",
     tagline: "開発に使う小さな道具を、ひとつに。",
+    stickerNote: "ブラウザで足りる",
 
     platforms: ["Web"],
     status: "beta",
@@ -187,6 +190,7 @@ const entries = [
     "slug": "pay-cycle",
     "name": "PayCycle",
     "tagline": "給料日から、次の支払いまでを見通す。",
+    "stickerNote": "次の給料日まで",
     "platforms": [
       "iOS",
       "iPadOS"
