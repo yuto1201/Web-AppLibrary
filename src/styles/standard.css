@@ -449,6 +449,30 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   color: #1a1814;
   pointer-events: none;
 }
+.sticker-caption {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 6px);
+  transform: translateX(-50%) rotate(-4deg);
+  width: max-content;
+  max-width: 16rem;
+  padding: 2px 6px;
+  font-family: var(--font-hand, var(--font-sans));
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--ink-2);
+  background: transparent;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  z-index: 2;
+}
+.sticker:hover .sticker-caption,
+.sticker:focus-visible .sticker-caption,
+.sticker.is-held .sticker-caption {
+  opacity: 1;
+  visibility: visible;
+}
 
 /* ホバーで持ち上がり、傾きが戻る */
 .sticker:hover,
@@ -672,6 +696,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .sticker:hover,
   .sticker:focus-visible {
     transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px))) rotate(var(--tilt, 0deg));
+  }
+  .sticker.is-held {
+    transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px))) rotate(calc(var(--tilt, 0deg) * 0.4 + var(--spin, 0deg)));
   }
   .social-link:hover { transform: none; }
 }

@@ -441,6 +441,51 @@ test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間�
     .toBe(0);
 });
 
+test("ホバーと掴みで鉛筆メモが出て、飾りには出ない", async ({ page }) => {
+  await page.goto("/");
+  const sublog = page.locator('.sticker[href="/apps/sublog/"]');
+  const caption = sublog.locator(".sticker-caption");
+  await expect(caption).toHaveCount(1);
+  await expect(caption).toHaveText("月の固定費、見えてる？");
+  await expect(caption).not.toBeVisible();
+
+  await raiseSticker(sublog);
+  await sublog.hover();
+  await expect(caption).toBeVisible();
+  await page.mouse.move(0, 0);
+  await expect(caption).not.toBeVisible();
+
+  const box = (await sublog.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.waitForTimeout(350);
+  await page.mouse.down();
+  await expect(caption).toBeVisible();
+  await page.mouse.up();
+  await expect(caption).not.toBeVisible();
+
+  const decorative = page.locator('.sticker[aria-hidden="true"]').first();
+  await expect(decorative.locator(".sticker-caption")).toHaveCount(0);
+});
+
+test("reduced-motion では掴み中に拡大しない", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  const sublog = page.locator('.sticker[href="/apps/sublog/"]');
+  await raiseSticker(sublog);
+  const box = (await sublog.boundingBox())!;
+  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  await page.mouse.down();
+  const scale = await sublog.evaluate((el) => {
+    const m = getComputedStyle(el).transform;
+    const match = m.match(/matrix\(([^)]+)\)/u);
+    if (!match?.[1]) return 1;
+    const a = Number(match[1].split(",")[0]);
+    return Math.abs(a);
+  });
+  expect(scale).toBeLessThan(1.02);
+  await page.mouse.up();
+});
+
 test("画面リサイズがドラッグ中に起きても、掴んだままの見た目で固着しない", async ({ page }) => {
   await page.goto("/");
   const sticker = page.locator('.sticker[href="/apps/sublog/"]');

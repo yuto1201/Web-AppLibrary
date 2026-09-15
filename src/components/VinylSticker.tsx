@@ -53,7 +53,7 @@ type Drag = {
 /**
  * 掴んで動かせるビニール。offset・held・linked は親が持つ。
  * 回転の上乗せ (spin) はドラッグ中だけの見た目で、離せば 0 へ戻る。
- * stamp / caption は型だけ先に受け取り、見た目は後続タスクで載せる。
+ * stamp は型だけ先に受け取り、見た目は後続タスクで載せる。caption は鉛筆メモ。
  */
 export function VinylSticker({
   offset,
@@ -66,7 +66,7 @@ export function VinylSticker({
   deskKey,
   shape,
   stamp,
-  caption: _caption,
+  caption,
   href,
   slug,
   label,
@@ -77,7 +77,6 @@ export function VinylSticker({
   onActivate,
   children,
 }: VinylStickerProps) {
-  void _caption;
   const drag = useRef<Drag | null>(null);
   const dragged = useRef(false);
   const [spin, setSpin] = useState(0);
@@ -168,11 +167,13 @@ export function VinylSticker({
         <Link {...handlers} href={href} aria-label={label} draggable={false}>
           {children}
           {stamp ? <span className="sticker-stamp" aria-hidden="true">{stamp}</span> : null}
+          {caption ? <span className="sticker-caption" lang="ja">{caption}</span> : null}
         </Link>
       ) : (
         <span {...handlers} aria-hidden="true">
           {children}
           {stamp ? <span className="sticker-stamp" aria-hidden="true">{stamp}</span> : null}
+          {caption ? <span className="sticker-caption" lang="ja">{caption}</span> : null}
         </span>
       )}
     </span>
