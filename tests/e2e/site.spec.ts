@@ -829,7 +829,8 @@ for (const app of apps) {
     await page.goto(`/apps/${app.slug}/`);
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/$`, "u"));
     await expect(page.getByRole("heading", { name: app.name, exact: true, level: 1 })).toBeVisible();
-    await expect(page.locator("body")).toHaveCSS("background-color", "rgb(248, 250, 252)");
+    await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
+    await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
       "content",
       `https://app.yutodev.com/apps/${app.slug}/`,
@@ -954,7 +955,10 @@ test("保存した dark でも個別ページの見出しが電圧ブルーに�
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator(".app-shell")).toBeVisible();
-  await expect(page.locator(".app-shell .section-title").first()).toHaveCSS("color", "rgb(22, 24, 29)");
+  await expect(page.locator("body")).toHaveCSS("background-color", PAPER.dark);
+  await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.dark);
+  await expect(page.locator(".app-shell .section-title").first()).toHaveCSS("color", INK.dark);
+  await expect(page.locator(".app-shell .hero-title")).toHaveCSS("color", INK.dark);
 });
 
 test("未生成ルートは 404", async ({ request }) => {

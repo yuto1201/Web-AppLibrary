@@ -2,33 +2,28 @@
    App Page — 個別アプリ紹介ページの共通骨格
    App Router の client-side navigation 後にも CSS は残るため、
    全規則を .app-shell 配下へ閉じ込める。
-   ─── 既定トークン（必要なアプリだけ .app-shell で上書き） ───
-   --app-bg-1, --app-bg-2     背景グラデーション色
-   --app-ink, --app-ink-2     テキスト色（メイン / セカンダリ）
-   --app-accent, --app-accent-2 アクセント色（リンク / ハイライト）
-   --app-bg-base              ページ最下層の背景色
+   --app-* の名前は維持し、値は紙面トークンへ寄せる。
+   --app-bg-1, --app-bg-2, --app-bg-base → --paper
+   --app-ink / --app-ink-2 → --ink / --ink-2
+   --app-accent / --app-accent-2 → --accent
    ============================================================ */
 
-/* 詳細ページの余白・オーバースクロールにも同じ明色背景を適用する。 */
+/* 詳細ページの余白・オーバースクロールにも同じ紙を適用する。 */
 body:has(.app-shell) {
-  background: #f8fafc;
-  color-scheme: light;
+  background: var(--paper);
 }
 
 .app-shell {
-  --app-bg-1: #eef2ff;
-  --app-bg-2: #fdf2f8;
-  --app-ink: #16181d;
-  --app-ink-2: #4b5563;
-  --app-accent: #5b4fc6;
-  --app-accent-2: #2563eb;
-  --app-bg-base: #f8fafc;
+  --app-bg-1: var(--paper);
+  --app-bg-2: var(--paper);
+  --app-ink: var(--ink);
+  --app-ink-2: var(--ink-2);
+  --app-accent: var(--accent);
+  --app-accent-2: var(--accent);
+  --app-bg-base: var(--paper);
   font-family: var(--font-sans);
   color: var(--app-ink);
-  background:
-    radial-gradient(1200px 700px at 10% -10%, var(--app-bg-1), transparent 70%),
-    radial-gradient(900px 600px at 110% 20%, var(--app-bg-2), transparent 70%),
-    var(--app-bg-base);
+  background: var(--paper);
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   line-height: 1.7;
