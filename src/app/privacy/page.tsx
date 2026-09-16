@@ -26,7 +26,11 @@ export default function SitePrivacyPage() {
       <article className="legal-card">
         <p className="legal-eyebrow">AppLibrary</p>
         <h1>プライバシーポリシー</h1>
-        <p className="legal-meta">制定日: <time dateTime="2026-09-01">2026年9月1日</time></p>
+        <p className="legal-meta">
+          制定日: <time dateTime="2026-09-01">2026年9月1日</time>
+          {" · "}
+          最終更新: <time dateTime="2026-09-16">2026年9月16日</time>
+        </p>
         <p className="legal-language">本ページは日本語で提供しています。 <span lang="en">This page is available in Japanese only.</span></p>
 
         <p>
@@ -38,12 +42,11 @@ export default function SitePrivacyPage() {
         <p>
           本サイトにはアカウント、送信フォーム、コメント、アクセス解析、広告、トラッキング機能がなく、
           運営者が閲覧者の個人情報を直接収集する機能はありません。本サイトの実装は Cookie を使用しません。
-          一覧の検索入力は端末内で処理され、入力内容はサーバーへ送信されません。
         </p>
 
         <h2>2. 端末内に保存する設定</h2>
         <p>
-          テーマ、表示密度、言語などの表示設定を維持するため、ブラウザの localStorage に
+          テーマと言語の表示設定を維持するため、ブラウザの localStorage に
           <code>applibrary_state</code> を保存します。また、冒頭アニメーションの再生済み状態を
           sessionStorage に保存します。これらは閲覧者の端末内だけで使用され、本サイトへ送信されません。
           ブラウザのサイトデータを削除すると消去できます。

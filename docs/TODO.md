@@ -1,17 +1,18 @@
 # TODO — AppLibrary
 
-最終更新日: 2026-09-15
+最終更新日: 2026-09-16
 
-- [ ] Hero 本文・CTA とシールが重ならないようにする（Issue #39）
-- [ ] 個別ページを同じ紙面の続きとして揃える（Issue #40）
 - [ ] サイト privacy を現実装へ同期する（Issue #41）
+- [ ] 個別ページを同じ紙面の続きとして揃える（Issue #40）
+
+- [x] Hero 本文・CTA とシールが重ならないようにする（Issue #39 / PR #42）
 
 - [x] 個別ページをポスター紙面へ揃える（Issue #38 / PR #37）
 
 仕様: [個別ページをポスター紙面へ揃える](superpowers/specs/2026-09-15-app-page-poster-design.md)
 計画: [個別ページのポスター化](superpowers/plans/2026-09-15-app-page-poster.md)
 
-- [x] ポスターの上に机の跡を残して、遊べるサイトにする（`npm run verify` 通過。PR #36。本番 squash は PAT が 403 のため未反映）
+- [x] ポスターの上に机の跡を残して、遊べるサイトにする（Issue #33 / #36、PR #37 で本番へ）
 
 仕様: [ポスターの上に机の跡を残す](superpowers/specs/2026-09-15-desk-play-refresh-design.md)
 計画: [机の跡の実装計画](superpowers/plans/2026-09-15-desk-play-refresh.md)
