@@ -31,7 +31,7 @@
 1. `Nav`: Newsreader のワードマーク、電圧ブルーのアンカー、outlined の言語・テーマ切替。罫線 1 本で紙面と切る。640px 以下ではアンカーを畳む。Nav の z-index は初期配置のシールより上。
 2. `Hero`: 役割のメタ、巨大見出し（電圧ブルー）、紹介、拠点、outlined pill の CTA。見出しは 1 文字ずつ立ち上がる。机の印として、右上付近に JetBrains Mono の枠文字 `TOKYO '26`（`.desk-stamp`、`aria-hidden`、Nav を覆わない）と、CTA 下の手書き合図「つまんでみて」/ `Pinch one.`（`.desk-hint`、Klee One、本文サイズで 4.5:1）を置く。どちらもドラッグしない。
 3. `AppsSection`: 掲載アプリを**行の索引**として並べる。行全体が個別ページへのリンク。hover の色はアプリ自身の `accent` を使う。ステッカーと `slug` で相互にハイライトする。見出しの**上**に CSS のマスキングテープ（`.desk-tape`）が少し回転して覗く。見出し文字の背面には置かず、コントラストを落とさない。
-4. `Stickers`: 既存アイコンを白フチのビニールとして、**最初の画面から紙に乗せる**。配置カタログは `src/lib/sticker-desk.ts` の `DESK_ITEMS`。読み込みごとに乱さない。`page.tsx` では Nav の直後（`main` より前）に置き、最初の画面に見えるシールへキーボード順を寄せる。位置は CSS の `%` で `.poster` 全体に対して取る（ページが長くなると Hero との相対がずれる）。Dev-Tools だけは例外で、`#apps .section-head` を測って `.poster` に `--desk-apps-top` を書く（`setProperty`。React は `.poster` の style を持たないので消えない）。`anchor` はカタログ上の役割で、他のスロットのレイアウト計算には使わない。
+4. `Stickers`: 既存アイコンを白フチのビニールとして、**最初の画面から紙に乗せる**。配置カタログは `src/lib/sticker-desk.ts` の `DESK_ITEMS`。読み込みごとに乱さない。`page.tsx` では Nav の直後（`main` より前）に置き、最初の画面に見えるシールへキーボード順を寄せる。計測前は右下の山（または 640px 以下の Peek）へ置き、`useLayoutEffect` が見出し・拠点メモ・CTA・`#apps .section-head` を測って `.poster` に `--desk-h1-right` / `--desk-h1-top` / `--desk-note-right` / `--desk-note-top` / `--desk-cta-bottom` / `--desk-apps-top` を書き、`data-desk="ready"` を付ける（`setProperty`。React は `.poster` の style / data-desk を持たないので消えない）。言語切替でも測り直す。`anchor` はカタログ上の役割で、他のスロットのレイアウト計算には使わない。
 5. `Posts` / `Contact` / `Footer`: お知らせ、連絡先、法務ページへの導線。フッターは折りたたみ式の「奥付」を持つ。「ならべ直す」はフッター付近に残し、この机の配置へ戻す。
 
 ### 初期配置
@@ -40,15 +40,15 @@ desktop（641px 以上）:
 
 | シール | 初期位置 |
 |---|---|
-| SubLog | Hero 見出しの右マージン。文字の読みを消さない |
-| CafLog | Hero 本文〜 CTA の左下。CTA のヒット領域は覆わない |
+| SubLog | Hero 見出しの右外。文字の読みを消さない |
+| CafLog | 1024px 以上だけ Hero 左ガター。CTA の下端＋ lift 分。641–1023 は左下の山（PayCycle の右下山と重ねない）。本文・CTA・拠点メモ・手書き合図は覆わない |
 | Dev-Tools | App Library の見出し罫線上。文鎮。最初の索引行は覆わない |
 | PayCycle | 右下の小さな山（紙の下へはみ出してよい） |
 | Swift | 右下の山 |
-| Tokyo | Hero の拠点メモ付近 |
+| Tokyo | 1024px 以上だけ拠点メモの右外。それ未満は山。文字は覆わない |
 | 一人制作 | 右下の山 |
 
-640px 以下ではアプリシール 1 枚だけ Hero 右端から覗き（見出しグリフと CTA を覆わない）、1 枚は App Library 見出しの脇、残りは画面下の小さな山。横スクロールは出さない。
+640px 以下ではアプリシール 1 枚だけ Nav 下・Hero 右端から覗き（見出しグリフと CTA を覆わない）、1 枚は App Library 見出しの脇、残りは画面下の小さな山。横スクロールは出さない。
 
 ## ステッカーの実装
 

@@ -395,6 +395,54 @@ test("640px で見出しと CTA が押せる", async ({ page }) => {
     .toBe(true);
 });
 
+test("初期配置のシールは Hero の文字と CTA を覆わない", async ({ page }) => {
+  for (const width of [390, 641, 768, 834, 1023, 1024, 1280] as const) {
+    await page.setViewportSize({ width, height: width >= 800 ? 900 : 844 });
+    await page.goto("/");
+    await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+    const heading = page.locator(".hero-h1");
+    const cta = page.locator(".cta-btn");
+    const protectedBoxes = {
+      h1: (await heading.boundingBox())!,
+      bio: (await page.locator(".hero-bio").boundingBox())!,
+      note: (await page.locator(".hero-note").boundingBox())!,
+      hint: (await page.locator(".desk-hint").boundingBox())!,
+      cta: (await cta.boundingBox())!,
+    };
+    const stickers = page.locator(".sticker-slot .sticker");
+    const count = await stickers.count();
+    for (let index = 0; index < count; index += 1) {
+      const painted = (await stickers.nth(index).boundingBox())!;
+      const key = await stickers.nth(index).evaluate((el) => el.closest(".sticker-slot")?.getAttribute("data-key"));
+      for (const [name, target] of Object.entries(protectedBoxes)) {
+        expect(boxesOverlap(painted, target), `${width}px ${key} × ${name}`).toBe(false);
+      }
+    }
+    expect(await centerHits(page, heading, ".hero-h1"), `${width}px heading center`).toBe(true);
+    expect(await centerHits(page, cta, ".cta-btn"), `${width}px cta center`).toBe(true);
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+      .toBe(true);
+  }
+
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/");
+  await page.getByRole("button", { name: "英語に切り替える" }).click();
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  const enHeading = page.locator(".hero-h1");
+  const enCta = page.locator(".cta-btn");
+  expect(await centerHits(page, enHeading, ".hero-h1")).toBe(true);
+  expect(await centerHits(page, enCta, ".cta-btn")).toBe(true);
+  const enCtaBox = (await enCta.boundingBox())!;
+  const enStickers = page.locator(".sticker-slot .sticker");
+  const enCount = await enStickers.count();
+  for (let index = 0; index < enCount; index += 1) {
+    const painted = (await enStickers.nth(index).boundingBox())!;
+    expect(boxesOverlap(painted, enCtaBox), `1280en sticker ${index} × cta`).toBe(false);
+  }
+});
+
 test("置いたシールはスクロールしても viewport に張り付かない", async ({ page }) => {
   await page.goto("/");
 
