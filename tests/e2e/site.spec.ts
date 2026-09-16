@@ -396,7 +396,7 @@ test("640px で見出しと CTA が押せる", async ({ page }) => {
 });
 
 test("初期配置のシールは Hero の文字と CTA を覆わない", async ({ page }) => {
-  for (const width of [390, 641, 768, 834, 1024, 1280] as const) {
+  for (const width of [390, 641, 768, 834, 1023, 1024, 1280] as const) {
     await page.setViewportSize({ width, height: width >= 800 ? 900 : 844 });
     await page.goto("/");
     await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");

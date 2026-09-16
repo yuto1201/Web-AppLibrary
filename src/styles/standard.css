@@ -417,8 +417,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   width: clamp(88px, 10vw, 112px);
 }
 .sticker-slot[data-key="caflog"] {
-  left: auto;
-  right: 20px;
+  left: 12px;
+  right: auto;
   top: auto;
   bottom: -28px;
   width: clamp(76px, 10vw, 100px);
@@ -769,9 +769,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .post { grid-template-columns: 1fr; gap: var(--space-1); }
 
   .sticker-slot { width: 70px; }
-  .hero-h1,
-  .hero-bio { padding-right: 72px; }
-  .sticker-slot[data-key="sublog"] { left: auto; right: 8px; top: 64px; bottom: auto; width: 56px; }
+  .sticker-slot[data-key="sublog"] { left: auto; right: 8px; top: 78px; bottom: auto; width: 56px; }
   .sticker-slot[data-key="caflog"] { left: auto; right: 8px; top: auto; bottom: -24px; width: 64px; }
   .sticker-slot[data-key="dev-tools"] { left: auto; right: 16px; top: calc(var(--desk-apps-top, 56%) - 12px); bottom: auto; width: 56px; }
   .sticker-slot[data-key="pay-cycle"] { left: 8px; right: auto; top: auto; bottom: -36px; width: 70px; }
