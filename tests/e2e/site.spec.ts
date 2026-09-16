@@ -923,7 +923,7 @@ test("reduced-motion ではシールも呼吸しない", async ({ page }) => {
   expect(await slot.evaluate((el) => getComputedStyle(el).animationName)).toMatch(/^(?:none)?$/u);
   const transform = await slot.evaluate((el) => getComputedStyle(el).transform);
   expect(transform === "none" || transform === "matrix(1, 0, 0, 1, 0, 0)").toBe(true);
-}););
+});
 
 for (const app of apps) {
   test(`${app.slug}: 詳細とプライバシーの直接ロード、往復、画像、runtime エラー`, async ({ page, request }) => {
