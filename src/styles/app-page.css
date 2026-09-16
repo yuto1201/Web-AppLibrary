@@ -53,10 +53,8 @@ body:has(.app-shell) {
 .app-shell .hero-copy { min-width: 0; flex: 1; }
 .app-shell .specimen-slot {
   position: relative;
-  right: auto;
-  top: auto;
   width: 120px;
-  flex: 0 0 120px;
+  flex: 0 0 auto;
   z-index: 3;
   pointer-events: none;
 }
@@ -271,6 +269,7 @@ body:has(.app-shell) {
     justify-content: space-between;
     align-items: flex-start;
   }
+  .app-shell .specimen-slot { flex: 0 0 120px; }
 }
 
 @media (max-width: 479px) {

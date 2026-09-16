@@ -3,6 +3,8 @@ import { expect, test, type Page } from "@playwright/test";
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { apps } from "../../src/data/registry";
+import { statusLabel } from "../../src/lib/labels";
+import { i18n } from "../../src/lib/site-data";
 
 test("AdMob の公開 seller ファイルを正しい形式で配信する", async ({ request }) => {
   const response = await request.get("/app-ads.txt");
@@ -934,10 +936,11 @@ for (const app of apps) {
     await expect(page.locator(".hero-icon")).toHaveCount(0);
     await expect(page.locator(".feature-icon")).toHaveCount(0);
     await expect(page.locator(".feature-row").first()).toHaveCSS("box-shadow", "none");
+    await expect(page.locator(".feature-row").first()).toHaveCSS("border-bottom-width", "1px");
     if (app.status === "release") {
       await expect(page.locator(".hero-status")).toHaveCount(0);
     } else {
-      await expect(page.locator(".hero-status")).toHaveText(app.status === "alpha" ? "α 開発中" : "β テスト中");
+      await expect(page.locator(".hero-status")).toHaveText(statusLabel(app.status, i18n.ja));
     }
     if (app.slug === "sublog") {
       const heroInner = await page.locator(".hero-inner").boundingBox();
