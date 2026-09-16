@@ -395,6 +395,32 @@ test("640px で見出しと CTA が押せる", async ({ page }) => {
     .toBe(true);
 });
 
+test("初期配置のシールは Hero の文字と CTA を覆わない", async ({ page }) => {
+  for (const width of [390, 768, 834, 1024, 1280] as const) {
+    await page.setViewportSize({ width, height: width >= 800 ? 900 : 844 });
+    await page.goto("/");
+    await expect.poll(() => page.locator(".poster").evaluate((el) => getComputedStyle(el).getPropertyValue("--desk-h1-right").trim())).not.toBe("");
+    const protectedBoxes = {
+      h1: (await page.locator(".hero-h1").boundingBox())!,
+      bio: (await page.locator(".hero-bio").boundingBox())!,
+      note: (await page.locator(".hero-note").boundingBox())!,
+      cta: (await page.locator(".cta-btn").boundingBox())!,
+    };
+    const slots = page.locator(".sticker-slot");
+    const count = await slots.count();
+    for (let index = 0; index < count; index += 1) {
+      const slot = (await slots.nth(index).boundingBox())!;
+      const key = await slots.nth(index).getAttribute("data-key");
+      for (const [name, target] of Object.entries(protectedBoxes)) {
+        expect(boxesOverlap(slot, target), `${width}px ${key} × ${name}`).toBe(false);
+      }
+    }
+    await expect
+      .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
+      .toBe(true);
+  }
+});
+
 test("置いたシールはスクロールしても viewport に張り付かない", async ({ page }) => {
   await page.goto("/");
 

@@ -2,7 +2,11 @@
 
 最終更新日: 2026-09-15
 
-- [ ] 個別ページをポスター紙面へ揃える（Issue #38）
+- [ ] Hero 本文・CTA とシールが重ならないようにする（Issue #39）
+- [ ] 個別ページを同じ紙面の続きとして揃える（Issue #40）
+- [ ] サイト privacy を現実装へ同期する（Issue #41）
+
+- [x] 個別ページをポスター紙面へ揃える（Issue #38 / PR #37）
 
 仕様: [個別ページをポスター紙面へ揃える](superpowers/specs/2026-09-15-app-page-poster-design.md)
 計画: [個別ページのポスター化](superpowers/plans/2026-09-15-app-page-poster.md)

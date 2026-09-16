@@ -40,8 +40,8 @@ desktop（641px 以上）:
 
 | シール | 初期位置 |
 |---|---|
-| SubLog | Hero 見出しの右マージン。文字の読みを消さない |
-| CafLog | Hero 本文〜 CTA の左下。CTA のヒット領域は覆わない |
+| SubLog | Hero 見出しの右外。文字の読みを消さない |
+| CafLog | Hero 左余白。本文・CTA・拠点メモのヒット領域は覆わない |
 | Dev-Tools | App Library の見出し罫線上。文鎮。最初の索引行は覆わない |
 | PayCycle | 右下の小さな山（紙の下へはみ出してよい） |
 | Swift | 右下の山 |

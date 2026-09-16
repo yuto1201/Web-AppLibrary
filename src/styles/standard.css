@@ -408,8 +408,20 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .sticker-slot[data-shape="squircle"] { border-radius: 14px; }
 .sticker-slot[data-shape="round-lg"] { border-radius: 28px; }
 .sticker-slot[data-shape="word"] { border-radius: 18px; }
-.sticker-slot[data-key="sublog"] { left: 72%; top: 16%; right: auto; bottom: auto; width: clamp(96px, 12vw, 124px); }
-.sticker-slot[data-key="caflog"] { left: 8%; top: 24%; right: auto; bottom: auto; width: clamp(76px, 10vw, 100px); }
+.sticker-slot[data-key="sublog"] {
+  left: min(calc(var(--desk-h1-right, 72%) + 12px), calc(100% - 124px));
+  top: var(--desk-h1-top, 16%);
+  right: auto;
+  bottom: auto;
+  width: clamp(88px, 10vw, 112px);
+}
+.sticker-slot[data-key="caflog"] {
+  left: 12px;
+  top: calc(var(--desk-cta-bottom, 36%) + 12px);
+  right: auto;
+  bottom: auto;
+  width: clamp(76px, 10vw, 100px);
+}
 .sticker-slot[data-key="dev-tools"] { left: 78%; top: calc(var(--desk-apps-top, 34%) - 48px); right: auto; bottom: auto; }
 .sticker-slot[data-key="pay-cycle"] { left: auto; right: 20px; top: auto; bottom: -28px; }
 .sticker-slot[data-key="note-Swift"] { left: auto; right: 168px; top: auto; bottom: -8px; }
@@ -727,7 +739,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .post { grid-template-columns: 1fr; gap: var(--space-1); }
 
   .sticker-slot { width: 70px; }
-  .sticker-slot[data-key="sublog"] { left: auto; right: 12px; top: 12%; bottom: auto; width: 72px; }
+  .hero-h1,
+  .hero-bio { padding-right: 72px; }
+  .sticker-slot[data-key="sublog"] { left: auto; right: 8px; top: 64px; bottom: auto; width: 56px; }
   .sticker-slot[data-key="caflog"] { left: auto; right: 8px; top: auto; bottom: -24px; width: 64px; }
   .sticker-slot[data-key="dev-tools"] { left: auto; right: 16px; top: calc(var(--desk-apps-top, 56%) - 12px); bottom: auto; width: 56px; }
   .sticker-slot[data-key="pay-cycle"] { left: 8px; right: auto; top: auto; bottom: -36px; width: 70px; }

@@ -57,15 +57,31 @@ export function Stickers() {
   useLayoutEffect(() => {
     const poster = document.querySelector(".poster");
     const appsHead = document.querySelector("#apps .section-head") ?? document.getElementById("apps");
+    const heading = document.querySelector(".hero-h1");
+    const cta = document.querySelector(".cta-btn");
     if (!(poster instanceof HTMLElement) || !(appsHead instanceof HTMLElement)) return;
     const sync = () => {
-      const top = appsHead.getBoundingClientRect().top - poster.getBoundingClientRect().top;
-      poster.style.setProperty("--desk-apps-top", `${Math.round(top)}px`);
+      const origin = poster.getBoundingClientRect();
+      poster.style.setProperty(
+        "--desk-apps-top",
+        `${Math.round(appsHead.getBoundingClientRect().top - origin.top)}px`,
+      );
+      if (heading instanceof HTMLElement) {
+        const box = heading.getBoundingClientRect();
+        poster.style.setProperty("--desk-h1-right", `${Math.round(box.right - origin.left)}px`);
+        poster.style.setProperty("--desk-h1-top", `${Math.round(box.top - origin.top)}px`);
+      }
+      if (cta instanceof HTMLElement) {
+        const box = cta.getBoundingClientRect();
+        poster.style.setProperty("--desk-cta-bottom", `${Math.round(box.bottom - origin.top)}px`);
+      }
     };
     sync();
     const observer = new ResizeObserver(sync);
     observer.observe(poster);
     observer.observe(appsHead);
+    if (heading instanceof HTMLElement) observer.observe(heading);
+    if (cta instanceof HTMLElement) observer.observe(cta);
     return () => observer.disconnect();
   }, []);
 
