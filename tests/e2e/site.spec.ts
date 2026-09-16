@@ -98,7 +98,10 @@ async function expectLegalHeadingHierarchy(page: Page) {
 async function raiseSticker(sticker: import("@playwright/test").Locator) {
   await sticker.evaluate((el) => {
     const slot = el.closest(".sticker-slot");
-    if (slot instanceof HTMLElement) slot.style.zIndex = "1000";
+    if (!(slot instanceof HTMLElement)) return;
+    slot.style.zIndex = "1000";
+    // 呼吸中は bounding box が毎フレーム動くので、Playwright の hover 安定待ちが終わらない。
+    slot.style.animationPlayState = "paused";
   });
 }
 
@@ -903,11 +906,30 @@ test("ホームのシールは呼吸し、個別の標本は静止する", async
   expect(Number.parseFloat(amp)).toBeGreaterThan(0);
   expect(Number.parseFloat(amp)).toBeLessThanOrEqual(1.5);
 
+  for (const key of ["sublog", "caflog", "note-Tokyo"] as const) {
+    const slot = page.locator(`.poster .sticker-slot[data-key="${key}"]`);
+    expect(await slot.evaluate((el) => getComputedStyle(el).getPropertyValue("--breathe-amp-r").trim())).toBe("0deg");
+    expect(Number.parseFloat(await slot.evaluate((el) => getComputedStyle(el).getPropertyValue("--breathe-amp-y")))).toBeLessThanOrEqual(1);
+  }
+
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-hero-opening", "off");
   await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
   const again = page.locator(".poster .sticker-slot").first();
   await expect.poll(() => again.evaluate((el) => getComputedStyle(el).animationName)).toBe("vinyl-breathe");
+  const moved = await again.evaluate((el) => {
+    const anim = el.getAnimations().find((item) => item instanceof CSSAnimation && item.animationName === "vinyl-breathe");
+    if (!(anim instanceof CSSAnimation) || !(anim.effect instanceof KeyframeEffect)) return 0;
+    const duration = anim.effect.getComputedTiming().duration;
+    const length = typeof duration === "number" ? duration : 11_000;
+    anim.pause();
+    anim.currentTime = 0;
+    const start = Number.parseFloat(getComputedStyle(el).getPropertyValue("--breathe-y"));
+    anim.currentTime = length / 2;
+    const mid = Number.parseFloat(getComputedStyle(el).getPropertyValue("--breathe-y"));
+    return Math.abs(mid - start);
+  });
+  expect(moved).toBeGreaterThanOrEqual(0.5);
 
   await page.goto("/apps/pay-cycle/");
   const specimen = page.locator(".specimen-slot .sticker-slot");

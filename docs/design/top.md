@@ -62,7 +62,7 @@ desktop（641px 以上）:
 - 掴んでいる間だけ少し大きくする（おおよそ `scale(1.06)`）。`prefers-reduced-motion` では拡大しない。傾きとドラッグ自体は残す。
 - アプリシールをホバー / フォーカス / 掴んでいる間、近くに短い鉛筆メモ（`.sticker-caption`、`stickerNote`、`lang="ja"`、Klee One、`pointer-events: none`）を出す。離すと消える。英語 UI でも日本語のまま。飾りシールには出さない。
 - 最後に掴んだ枚の `--layer` を上げて一番上へ残す。
-- ホームの `.sticker-slot` だけ、`--breathe-y` / `--breathe-r` で常時わずかに呼吸する（振幅 1.5px 以下。Hero 隣接の SubLog / CafLog / Tokyo は縦だけ）。本体の `--dx` / `--tilt` / `--spin` は触らない。掴み中は `animation-play-state: paused`。初回の `data-hero-opening="play"` のときだけ、同じスロットが一度着地する。`prefers-reduced-motion` では `animation: none` と変数 0。個別ページの標本スロットは静止。
+- ホームの `.sticker-slot` だけ、`--breathe-y` / `--breathe-r` で常時わずかに呼吸する（平行移動 1.5px 以下、回転 0.35deg 以下。Hero 隣接の SubLog / CafLog / Tokyo は縦だけ）。本体の `--dx` / `--tilt` / `--spin` は触らない。着地の stagger は不変の `--settle-order`。掴み中は呼吸だけ pause。初回の `data-hero-opening="play"` のときだけ、同じスロットが一度着地する。自動モーションを止める手段は `prefers-reduced-motion`（`animation: none` と変数 0）。個別ページの標本スロットは静止。
 
 レビューで判明した制約と対処。
 

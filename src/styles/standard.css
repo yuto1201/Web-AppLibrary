@@ -485,12 +485,15 @@ html[data-hero-opening="play"] .poster .sticker-slot {
   animation-direction: normal, alternate;
   animation-fill-mode: both, none;
   animation-delay:
-    calc(var(--settle-base) + (var(--layer, 1) - 1) * var(--settle-stagger)),
-    calc(var(--settle-base) + var(--settle-duration) + (var(--layer, 1) - 1) * var(--settle-stagger));
+    calc(var(--settle-base) + (var(--settle-order, 1) - 1) * var(--settle-stagger)),
+    calc(var(--settle-base) + var(--settle-duration) + (var(--settle-order, 1) - 1) * var(--settle-stagger) + var(--breathe-phase));
 }
-/* 掴んでいる間はスロットを止め、本体のポインタ追従だけにする */
+/* 掴んでいる間は呼吸を止め、本体のポインタ追従だけにする。着地は --settle-order が不変なので巻き戻さない */
 .poster .sticker-slot:has(.is-held) {
   animation-play-state: paused;
+}
+html[data-hero-opening="play"] .poster .sticker-slot:has(.is-held) {
+  animation-play-state: running, paused;
 }
 .sticker-slot[data-shape="round-rect"] { border-radius: 22px; }
 .sticker-slot[data-shape="circle"] { border-radius: 50%; }

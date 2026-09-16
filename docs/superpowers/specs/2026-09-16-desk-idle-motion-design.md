@@ -18,10 +18,10 @@
 - 実装は CSS。`@property` で `--breathe-y` / `--breathe-r` / `--settle-*` を動かす。
 - `.sticker` の `transform`（`--dx` / `--dy` / `--tilt` / `--lift` / `--spin`）は `@keyframes` で奪わない。
 - Hero 本文・CTA・Nav、一覧行、個別ページの標本は動かさない。
-- 振幅は 1.5px 以下。Hero 隣接（SubLog / CafLog / Tokyo）は縦だけ、回転 0。
-- 周期はシールごとに変え、同期させない。
-- 掴み中はスロットを `animation-play-state: paused`。
-- `prefers-reduced-motion` は `animation: none` と変数 0。既存の 0.01ms 短縮だけに頼らない。
+- 平行移動は 1.5px 以下、回転は 0.35deg 以下。Hero 隣接（SubLog / CafLog / Tokyo）は縦だけ、回転 0。
+- 周期はシールごとに変え、同期させない。着地の stagger は `--layer` ではなく不変の `--settle-order`。
+- 掴み中は呼吸だけ pause。着地中に掴んでも delay は巻き戻さない。
+- 自動モーションを止める手段は `prefers-reduced-motion`（`animation: none` と変数 0）。既存の 0.01ms 短縮だけに頼らない。
 
 ## 入れない
 

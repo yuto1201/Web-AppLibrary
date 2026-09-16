@@ -24,6 +24,7 @@ export type VinylStickerProps = {
   held: boolean;
   linked: boolean;
   resetToken: number;
+  order?: number;
   deskKey: string;
   shape: StickerShape | "word";
   stamp?: "α" | "β" | null;
@@ -63,6 +64,7 @@ export function VinylSticker({
   held,
   linked,
   resetToken,
+  order = 1,
   deskKey,
   shape,
   stamp,
@@ -91,6 +93,7 @@ export function VinylSticker({
 
   const slotStyle = {
     "--layer": layer,
+    "--settle-order": order,
   } as React.CSSProperties;
 
   const resetTokenRef = useRef(resetToken);
