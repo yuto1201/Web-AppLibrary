@@ -57,6 +57,44 @@
   --hero-letter-easing: cubic-bezier(0.16, 1, 0.3, 1);
   --hero-letter-base: 150ms;
   --hero-letter-stagger: 24ms;
+
+  /* --- Desk idle (ホームのスロットだけ。本体の --dx は触らない) --- */
+  --breathe-amp-y: 1.5px;
+  --breathe-amp-r: 0.35deg;
+  --breathe-period: 11s;
+  --breathe-phase: 0s;
+  --settle-from: 4px;
+  --settle-rot: 0.9deg;
+  --settle-duration: 0.42s;
+  --settle-base: 700ms;
+  --settle-stagger: 70ms;
+}
+
+/* スロットの呼吸・着地。@keyframes で .sticker の transform を奪わない */
+@property --breathe-y {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --breathe-r {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@property --settle-y {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+@property --settle-r {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+@property --settle-s {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 1;
 }
 
 [data-theme="dark"] {

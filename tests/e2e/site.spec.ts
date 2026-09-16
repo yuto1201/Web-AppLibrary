@@ -35,6 +35,10 @@ const ACCENT = { light: "rgb(0, 102, 238)", dark: "rgb(110, 179, 255)" } as cons
 /** アニメーションだけ止める。色は実際の値のまま axe に判定させる。 */
 const FREEZE = "html *, html *::before, html *::after { animation: none !important; transition: none !important; }";
 
+async function freezeMotion(page: Page) {
+  await page.addStyleTag({ content: FREEZE });
+}
+
 /**
  * 実際に描かれている配色でコントラストを検証する。
  * 半透明パネルをやめて背景が解決できるようになったため、色の上書きは行わない。
@@ -308,6 +312,8 @@ test("アプリシールの形が違い、beta / alpha に印がある", async (
 test("初期表示でシールが Hero と一覧見出しに乗っている", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
+  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  await freezeMotion(page);
 
   await expect(page.locator(".sticker-band")).toHaveCount(0);
   await expect(page.locator(".sticker-name")).toHaveCount(0);
@@ -358,6 +364,8 @@ test("初期表示でシールが Hero と一覧見出しに乗っている", as
 test("390px で見出しと CTA が押せる", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
+  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  await freezeMotion(page);
   const heading = page.locator(".hero-h1");
   await expect(heading).toBeVisible();
   await expect(page.locator(".cta-btn")).toBeVisible();
@@ -378,6 +386,8 @@ test("390px で見出しと CTA が押せる", async ({ page }) => {
 test("640px で見出しと CTA が押せる", async ({ page }) => {
   await page.setViewportSize({ width: 640, height: 900 });
   await page.goto("/");
+  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  await freezeMotion(page);
   const heading = page.locator(".hero-h1");
   const cta = page.locator(".cta-btn");
   await expect(heading).toBeVisible();
@@ -402,6 +412,7 @@ test("初期配置のシールは Hero の文字と CTA を覆わない", async 
     await page.setViewportSize({ width, height: width >= 800 ? 900 : 844 });
     await page.goto("/");
     await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+    await freezeMotion(page);
     const heading = page.locator(".hero-h1");
     const cta = page.locator(".cta-btn");
     const protectedBoxes = {
@@ -432,6 +443,7 @@ test("初期配置のシールは Hero の文字と CTA を覆わない", async 
   await page.getByRole("button", { name: "英語に切り替える" }).click();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  await freezeMotion(page);
   const enHeading = page.locator(".hero-h1");
   const enCta = page.locator(".cta-btn");
   expect(await centerHits(page, enHeading, ".hero-h1")).toBe(true);
@@ -880,6 +892,38 @@ test("reduced-motion では初回でも Hero を再生しない", async ({ page 
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-hero-opening", "off");
 });
+
+test("ホームのシールは呼吸し、個別の標本は静止する", async ({ page }) => {
+  await page.goto("/");
+  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  const home = page.locator(".poster .sticker-slot").first();
+  await expect.poll(() => home.evaluate((el) => getComputedStyle(el).animationName)).toContain("vinyl-breathe");
+  await expect.poll(() => home.evaluate((el) => getComputedStyle(el).animationName)).toContain("sticker-settle");
+  const amp = await home.evaluate((el) => getComputedStyle(el).getPropertyValue("--breathe-amp-y").trim());
+  expect(Number.parseFloat(amp)).toBeGreaterThan(0);
+  expect(Number.parseFloat(amp)).toBeLessThanOrEqual(1.5);
+
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-hero-opening", "off");
+  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  const again = page.locator(".poster .sticker-slot").first();
+  await expect.poll(() => again.evaluate((el) => getComputedStyle(el).animationName)).toBe("vinyl-breathe");
+
+  await page.goto("/apps/pay-cycle/");
+  const specimen = page.locator(".specimen-slot .sticker-slot");
+  await expect(specimen).toHaveCount(1);
+  expect(await specimen.evaluate((el) => getComputedStyle(el).animationName)).toMatch(/^(?:none)?$/u);
+});
+
+test("reduced-motion ではシールも呼吸しない", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  const slot = page.locator(".poster .sticker-slot").first();
+  expect(await slot.evaluate((el) => getComputedStyle(el).animationName)).toMatch(/^(?:none)?$/u);
+  const transform = await slot.evaluate((el) => getComputedStyle(el).transform);
+  expect(transform === "none" || transform === "matrix(1, 0, 0, 1, 0, 0)").toBe(true);
+}););
 
 for (const app of apps) {
   test(`${app.slug}: 詳細とプライバシーの直接ロード、往復、画像、runtime エラー`, async ({ page, request }) => {
