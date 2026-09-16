@@ -100,7 +100,10 @@ async function raiseSticker(sticker: import("@playwright/test").Locator) {
     const poster = el.closest(".poster") ?? document.querySelector(".poster");
     if (poster) {
       for (const slot of poster.querySelectorAll(".sticker-slot")) {
-        if (slot instanceof HTMLElement) slot.style.animationPlayState = "paused";
+        if (slot instanceof HTMLElement) {
+          // play-state: paused だと初回着地の from 姿勢で固まる。none なら静止位置。
+          slot.style.animation = "none";
+        }
       }
     }
     const slot = el.closest(".sticker-slot");
@@ -914,6 +917,13 @@ test("ホームのシールは呼吸し、個別の標本は静止する", async
     const slot = page.locator(`.poster .sticker-slot[data-key="${key}"]`);
     expect(await slot.evaluate((el) => getComputedStyle(el).getPropertyValue("--breathe-amp-r").trim())).toBe("0deg");
     expect(Number.parseFloat(await slot.evaluate((el) => getComputedStyle(el).getPropertyValue("--breathe-amp-y")))).toBeLessThanOrEqual(1);
+  }
+  const allSlots = page.locator(".poster .sticker-slot");
+  const count = await allSlots.count();
+  for (let index = 0; index < count; index += 1) {
+    const slot = allSlots.nth(index);
+    expect(Number.parseFloat(await slot.evaluate((el) => getComputedStyle(el).getPropertyValue("--breathe-amp-y")))).toBeLessThanOrEqual(1.5);
+    expect(Number.parseFloat(await slot.evaluate((el) => getComputedStyle(el).getPropertyValue("--breathe-amp-r")))).toBeLessThanOrEqual(0.35);
   }
 
   await page.reload();
