@@ -236,7 +236,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   border-color: var(--ink);
 }
 
-/* --- Hero の初回演出 --- 自動で動くのはここだけ --- */
+/* --- Hero の初回演出 --- 常時の動きは机のスロット呼吸だけ。ここは初回の文字送り --- */
 @keyframes hero-fade-up {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: none; }
@@ -390,6 +390,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* スロットは机の初期位置に留まる。本体は transform で動く。
    跡（ghost）は inset:0 でこのスロットへ重ね、元の位置と一致させる。
+   ホームだけスロットが呼吸する。本体の --dx / --tilt は触らない。
    transform がスタッキング文脈を作るので、重ね順はスロットの --layer で持つ。 */
 .sticker-slot {
   position: absolute;
@@ -402,6 +403,97 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   z-index: var(--layer, 1);
   transform: none;
   pointer-events: none;
+}
+@keyframes vinyl-breathe {
+  from {
+    --breathe-y: calc(-1 * var(--breathe-amp-y));
+    --breathe-r: calc(-1 * var(--breathe-amp-r));
+  }
+  to {
+    --breathe-y: var(--breathe-amp-y);
+    --breathe-r: var(--breathe-amp-r);
+  }
+}
+@keyframes sticker-settle {
+  from {
+    --settle-y: var(--settle-from);
+    --settle-r: var(--settle-rot);
+    --settle-s: 0.985;
+  }
+  to {
+    --settle-y: 0px;
+    --settle-r: 0deg;
+    --settle-s: 1;
+  }
+}
+.poster .sticker-slot {
+  transform:
+    translateY(calc(var(--settle-y) + var(--breathe-y)))
+    rotate(calc(var(--settle-r) + var(--breathe-r)))
+    scale(var(--settle-s));
+  animation: vinyl-breathe var(--breathe-period) ease-in-out var(--breathe-phase) infinite alternate;
+}
+.poster .sticker-slot[data-key="sublog"] {
+  --breathe-amp-y: 1px;
+  --breathe-amp-r: 0deg;
+  --breathe-period: 9.5s;
+  --breathe-phase: -2.4s;
+  --settle-from: 3px;
+  --settle-rot: 0deg;
+}
+.poster .sticker-slot[data-key="caflog"] {
+  --breathe-amp-y: 1px;
+  --breathe-amp-r: 0deg;
+  --breathe-period: 11s;
+  --breathe-phase: -6s;
+  --settle-from: 3px;
+  --settle-rot: 0deg;
+}
+.poster .sticker-slot[data-key="dev-tools"] {
+  --breathe-period: 12.5s;
+  --breathe-phase: -3.1s;
+}
+.poster .sticker-slot[data-key="pay-cycle"] {
+  --breathe-period: 10.5s;
+  --breathe-phase: -7.8s;
+}
+.poster .sticker-slot[data-key="note-Swift"] {
+  --breathe-amp-y: 1px;
+  --breathe-amp-r: 0.25deg;
+  --breathe-period: 13s;
+  --breathe-phase: -1.2s;
+}
+.poster .sticker-slot[data-key="note-Tokyo"] {
+  --breathe-amp-y: 1px;
+  --breathe-amp-r: 0deg;
+  --breathe-period: 14s;
+  --breathe-phase: -8.5s;
+  --settle-from: 3px;
+  --settle-rot: 0deg;
+}
+.poster .sticker-slot[data-key="note-solo"] {
+  --breathe-amp-y: 1px;
+  --breathe-amp-r: 0.25deg;
+  --breathe-period: 11.5s;
+  --breathe-phase: -4.6s;
+}
+html[data-hero-opening="play"] .poster .sticker-slot {
+  animation-name: sticker-settle, vinyl-breathe;
+  animation-duration: var(--settle-duration), var(--breathe-period);
+  animation-timing-function: var(--hero-letter-easing), ease-in-out;
+  animation-iteration-count: 1, infinite;
+  animation-direction: normal, alternate;
+  animation-fill-mode: both, none;
+  animation-delay:
+    calc(var(--settle-base) + (var(--settle-order, 1) - 1) * var(--settle-stagger)),
+    calc(var(--settle-base) + var(--settle-duration) + (var(--settle-order, 1) - 1) * var(--settle-stagger) + var(--breathe-phase));
+}
+/* 掴んでいる間は呼吸を止め、本体のポインタ追従だけにする。着地は --settle-order が不変なので巻き戻さない */
+.poster .sticker-slot:has(.is-held) {
+  animation-play-state: paused;
+}
+html[data-hero-opening="play"] .poster .sticker-slot:has(.is-held) {
+  animation-play-state: running, paused;
 }
 .sticker-slot[data-shape="round-rect"] { border-radius: 22px; }
 .sticker-slot[data-shape="circle"] { border-radius: 50%; }
@@ -814,6 +906,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   }
   .sticker.is-held {
     transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px))) rotate(calc(var(--tilt, 0deg) * 0.4 + var(--spin, 0deg)));
+  }
+  .poster .sticker-slot {
+    animation: none !important;
+    --breathe-y: 0px;
+    --breathe-r: 0deg;
+    --settle-y: 0px;
+    --settle-r: 0deg;
+    --settle-s: 1;
+    transform: none;
   }
   .social-link:hover { transform: none; }
 }

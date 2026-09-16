@@ -2,20 +2,14 @@
 
 最終更新日: 2026-09-16
 
-- [ ] 個別ページを同じ紙面の続きとして揃える（Issue #40）
+- [ ] 机のシールに、主張しすぎない呼吸を足す（Issue #45）
 
-- [x] サイト privacy を現実装へ同期する（Issue #41 / PR #43）
 - [x] Hero 本文・CTA とシールが重ならないようにする（Issue #39 / PR #42）
-
+- [x] 個別ページを同じ紙面の続きとして揃える（Issue #40 / PR #44）
+- [x] サイト privacy を現実装へ同期する（Issue #41 / PR #43）
 - [x] 個別ページをポスター紙面へ揃える（Issue #38 / PR #37）
 
-仕様: [個別ページをポスター紙面へ揃える](superpowers/specs/2026-09-15-app-page-poster-design.md)
-計画: [個別ページのポスター化](superpowers/plans/2026-09-15-app-page-poster.md)
-
-- [x] ポスターの上に机の跡を残して、遊べるサイトにする（Issue #33 / #36、PR #37 で本番へ）
-
-仕様: [ポスターの上に机の跡を残す](superpowers/specs/2026-09-15-desk-play-refresh-design.md)
-計画: [机の跡の実装計画](superpowers/plans/2026-09-15-desk-play-refresh.md)
+仕様: [机のシールの呼吸](superpowers/specs/2026-09-16-desk-idle-motion-design.md)
 
 ## 直近の完了
 
@@ -32,6 +26,7 @@
 ## 見送った改善
 
 - アプリごとの切り抜きイラスト（机の刷新でも既存アイコンのビニール化に留める）。
+- マスキングテープの常時モーション、鉛筆合図の点滅、個別ページ標本の idle、ドラッグ後のオーバーシュート（Issue #45 の諮問で見送り）。
 
 OGP・鉛筆メモ・個別ページの標本は [机の跡](superpowers/specs/2026-09-15-desk-play-refresh-design.md) の範囲へ移した。
 

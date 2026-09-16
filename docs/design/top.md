@@ -1,7 +1,7 @@
 # トップページのデザイン
 
 ステータス: 確定
-最終更新日: 2026-09-15
+最終更新日: 2026-09-16
 
 実装は `src/app/page.tsx` と `src/components/`。意匠は **クリームのポスターを机に置いたまま**。印刷はきれいだが、その上にビニールとテープと鉛筆が乗っている。参照は Drive Capital / Summer Drive の紙面と、Wandor の interactive sticker footer。#31 の「初期配置はフッターの山だけ」は、机の跡の仕様が上書きする。
 
@@ -9,7 +9,7 @@
 
 - 構造は影とぼかしではなく **1px の罫線と余白** で作る。
 - 影を使うのはステッカーだけ。紙に物が置かれている合図に限る。
-- 自動で動くのは **初回訪問の Hero だけ**。スクロール連動の演出は持たない。
+- 自動で動くのは **初回訪問の Hero 文字送り** と、ホーム机のスロットがする **ごく小さい呼吸**（と初回だけの着地）だけ。スクロール連動の演出は持たない。Hero 本文・CTA・Nav は動かさない。
 - 色の値は `src/styles/tokens.css` に置き、`standard.css` へ重複させない。
 - サイトの彩色は電圧ブルー 1 色。アプリ色はシールと一覧ホバーに限る。
 - ホーム UI は Inter 300 / 400。Latin 見出しは Newsreader 400。手書きは Klee One 400 だけ。
@@ -62,6 +62,7 @@ desktop（641px 以上）:
 - 掴んでいる間だけ少し大きくする（おおよそ `scale(1.06)`）。`prefers-reduced-motion` では拡大しない。傾きとドラッグ自体は残す。
 - アプリシールをホバー / フォーカス / 掴んでいる間、近くに短い鉛筆メモ（`.sticker-caption`、`stickerNote`、`lang="ja"`、Klee One、`pointer-events: none`）を出す。離すと消える。英語 UI でも日本語のまま。飾りシールには出さない。
 - 最後に掴んだ枚の `--layer` を上げて一番上へ残す。
+- ホームの `.sticker-slot` だけ、`--breathe-y` / `--breathe-r` で常時わずかに呼吸する（平行移動 1.5px 以下、回転 0.35deg 以下。Hero 隣接の SubLog / CafLog / Tokyo は縦だけ）。本体の `--dx` / `--tilt` / `--spin` は触らない。着地の stagger は不変の `--settle-order`。掴み中は呼吸だけ pause。初回の `data-hero-opening="play"` のときだけ、同じスロットが一度着地する。自動モーションを止める手段は `prefers-reduced-motion`（`animation: none` と変数 0）。個別ページの標本スロットは静止。
 
 レビューで判明した制約と対処。
 

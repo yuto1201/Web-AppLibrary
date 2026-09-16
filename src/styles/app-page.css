@@ -66,6 +66,8 @@ body:has(.app-shell) {
   top: auto;
   bottom: auto;
   width: 120px;
+  animation: none;
+  transform: none;
 }
 .app-shell .specimen-slot .sticker {
   pointer-events: auto;

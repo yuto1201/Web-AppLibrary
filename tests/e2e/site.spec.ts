@@ -35,6 +35,10 @@ const ACCENT = { light: "rgb(0, 102, 238)", dark: "rgb(110, 179, 255)" } as cons
 /** アニメーションだけ止める。色は実際の値のまま axe に判定させる。 */
 const FREEZE = "html *, html *::before, html *::after { animation: none !important; transition: none !important; }";
 
+async function freezeMotion(page: Page) {
+  await page.addStyleTag({ content: FREEZE });
+}
+
 /**
  * 実際に描かれている配色でコントラストを検証する。
  * 半透明パネルをやめて背景が解決できるようになったため、色の上書きは行わない。
@@ -93,6 +97,15 @@ async function expectLegalHeadingHierarchy(page: Page) {
 /** 山で重なったシールの下側を掴む。重ね順はスロットのスタッキング文脈で決まる。 */
 async function raiseSticker(sticker: import("@playwright/test").Locator) {
   await sticker.evaluate((el) => {
+    const poster = el.closest(".poster") ?? document.querySelector(".poster");
+    if (poster) {
+      for (const slot of poster.querySelectorAll(".sticker-slot")) {
+        if (slot instanceof HTMLElement) {
+          // play-state: paused だと初回着地の from 姿勢で固まる。none なら静止位置。
+          slot.style.animation = "none";
+        }
+      }
+    }
     const slot = el.closest(".sticker-slot");
     if (slot instanceof HTMLElement) slot.style.zIndex = "1000";
   });
@@ -229,8 +242,8 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
   await page.goto("/");
 
   const sticker = page.locator('.sticker[href="/apps/sublog/"]');
-  await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
+  await sticker.scrollIntoViewIfNeeded();
 
   await expect(page.locator(".sticker-band")).toHaveCount(0);
   await expect(page.locator(".sticker-name")).toHaveCount(0);
@@ -308,6 +321,8 @@ test("アプリシールの形が違い、beta / alpha に印がある", async (
 test("初期表示でシールが Hero と一覧見出しに乗っている", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
+  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  await freezeMotion(page);
 
   await expect(page.locator(".sticker-band")).toHaveCount(0);
   await expect(page.locator(".sticker-name")).toHaveCount(0);
@@ -358,6 +373,8 @@ test("初期表示でシールが Hero と一覧見出しに乗っている", as
 test("390px で見出しと CTA が押せる", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto("/");
+  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  await freezeMotion(page);
   const heading = page.locator(".hero-h1");
   await expect(heading).toBeVisible();
   await expect(page.locator(".cta-btn")).toBeVisible();
@@ -378,6 +395,8 @@ test("390px で見出しと CTA が押せる", async ({ page }) => {
 test("640px で見出しと CTA が押せる", async ({ page }) => {
   await page.setViewportSize({ width: 640, height: 900 });
   await page.goto("/");
+  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  await freezeMotion(page);
   const heading = page.locator(".hero-h1");
   const cta = page.locator(".cta-btn");
   await expect(heading).toBeVisible();
@@ -402,6 +421,7 @@ test("初期配置のシールは Hero の文字と CTA を覆わない", async 
     await page.setViewportSize({ width, height: width >= 800 ? 900 : 844 });
     await page.goto("/");
     await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+    await freezeMotion(page);
     const heading = page.locator(".hero-h1");
     const cta = page.locator(".cta-btn");
     const protectedBoxes = {
@@ -432,6 +452,7 @@ test("初期配置のシールは Hero の文字と CTA を覆わない", async 
   await page.getByRole("button", { name: "英語に切り替える" }).click();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  await freezeMotion(page);
   const enHeading = page.locator(".hero-h1");
   const enCta = page.locator(".cta-btn");
   expect(await centerHits(page, enHeading, ".hero-h1")).toBe(true);
@@ -449,8 +470,8 @@ test("置いたシールはスクロールしても viewport に張り付かな�
   await page.goto("/");
 
   const sticker = page.locator('.sticker[href="/apps/pay-cycle/"]');
-  await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
+  await sticker.scrollIntoViewIfNeeded();
   const before = (await sticker.boundingBox())!;
   await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2);
   await page.waitForTimeout(350);
@@ -485,8 +506,8 @@ test("ドラッグの後でもキーボードから遷移できる", async ({ pa
   await page.goto("/");
 
   const sticker = page.locator(`.sticker[href="/apps/${apps[0]!.slug}/"]`);
-  await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
+  await sticker.scrollIntoViewIfNeeded();
   const box = await sticker.boundingBox();
 
   // 一度ドラッグする。この click 抑止フラグが戻らないと、以降の Enter が死ぬ。
@@ -505,8 +526,8 @@ test("ステッカーは動かさずに離すと個別ページへ移る", async
   await page.goto("/");
 
   const sticker = page.locator(`.sticker[href="/apps/${apps[0]!.slug}/"]`);
-  await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
+  await sticker.scrollIntoViewIfNeeded();
   await expect(sticker).toHaveAttribute("aria-label", apps[0]!.name);
   await sticker.click();
   await expect(page).toHaveURL(new RegExp(`/apps/${apps[0]!.slug}/$`, "u"));
@@ -540,6 +561,7 @@ test("一覧行とステッカーが slug で相互にハイライトする", as
   const target = apps[1]!; // CafLog。先頭以外を選び、初期状態が非活性であることも確認する。
   const row = page.locator(`.app-row[href="/apps/${target.slug}/"]`);
   const sticker = page.locator(`.sticker[href="/apps/${target.slug}/"]`);
+  await raiseSticker(sticker);
 
   await expect(row).not.toHaveClass(/\bis-linked\b/u);
   await expect(sticker).not.toHaveClass(/\bis-linked\b/u);
@@ -555,8 +577,8 @@ test("一覧行とステッカーが slug で相互にハイライトする", as
   await expect(sticker).not.toHaveClass(/\bis-linked\b/u);
 
   // 逆方向：ステッカーにホバー → 対応する行が反応する。
-  await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
+  await sticker.scrollIntoViewIfNeeded();
   await sticker.hover();
   await expect(row).toHaveClass(/\bis-linked\b/u);
 
@@ -581,8 +603,8 @@ test("一覧行とステッカーが slug で相互にハイライトする", as
 test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間だけ元の位置に跡が残る", async ({ page }) => {
   await page.goto("/");
   const sticker = page.locator('.sticker[href="/apps/sublog/"]');
-  await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
+  await sticker.scrollIntoViewIfNeeded();
   const slot = page.locator(".sticker-slot").filter({ has: sticker });
 
   // 1 回目のドラッグでステッカー自身が動くため、掴む中心座標は毎回その時点の
@@ -697,8 +719,8 @@ test("画面リサイズがドラッグ中に起きても、掴んだままの�
   await page.goto("/");
   const sticker = page.locator('.sticker[href="/apps/sublog/"]');
   const slot = page.locator(".sticker-slot").filter({ has: sticker });
-  await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
+  await sticker.scrollIntoViewIfNeeded();
   const box = (await sticker.boundingBox())!;
 
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
@@ -879,6 +901,64 @@ test("reduced-motion では初回でも Hero を再生しない", async ({ page 
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-hero-opening", "off");
+});
+
+test("ホームのシールは呼吸し、個別の標本は静止する", async ({ page }) => {
+  await page.goto("/");
+  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  const home = page.locator(".poster .sticker-slot").first();
+  await expect.poll(() => home.evaluate((el) => getComputedStyle(el).animationName)).toContain("vinyl-breathe");
+  await expect.poll(() => home.evaluate((el) => getComputedStyle(el).animationName)).toContain("sticker-settle");
+  const amp = await home.evaluate((el) => getComputedStyle(el).getPropertyValue("--breathe-amp-y").trim());
+  expect(Number.parseFloat(amp)).toBeGreaterThan(0);
+  expect(Number.parseFloat(amp)).toBeLessThanOrEqual(1.5);
+
+  for (const key of ["sublog", "caflog", "note-Tokyo"] as const) {
+    const slot = page.locator(`.poster .sticker-slot[data-key="${key}"]`);
+    expect(await slot.evaluate((el) => getComputedStyle(el).getPropertyValue("--breathe-amp-r").trim())).toBe("0deg");
+    expect(Number.parseFloat(await slot.evaluate((el) => getComputedStyle(el).getPropertyValue("--breathe-amp-y")))).toBeLessThanOrEqual(1);
+  }
+  const allSlots = page.locator(".poster .sticker-slot");
+  const count = await allSlots.count();
+  for (let index = 0; index < count; index += 1) {
+    const slot = allSlots.nth(index);
+    expect(Number.parseFloat(await slot.evaluate((el) => getComputedStyle(el).getPropertyValue("--breathe-amp-y")))).toBeLessThanOrEqual(1.5);
+    expect(Number.parseFloat(await slot.evaluate((el) => getComputedStyle(el).getPropertyValue("--breathe-amp-r")))).toBeLessThanOrEqual(0.35);
+  }
+
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-hero-opening", "off");
+  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  const again = page.locator(".poster .sticker-slot").first();
+  await expect.poll(() => again.evaluate((el) => getComputedStyle(el).animationName)).toBe("vinyl-breathe");
+  const moved = await again.evaluate((el) => {
+    const anim = el.getAnimations().find((item) => item instanceof CSSAnimation && item.animationName === "vinyl-breathe");
+    if (!(anim instanceof CSSAnimation) || !(anim.effect instanceof KeyframeEffect)) return 0;
+    const duration = anim.effect.getComputedTiming().duration;
+    const length = typeof duration === "number" ? duration : 11_000;
+    anim.pause();
+    anim.currentTime = 0;
+    const start = Number.parseFloat(getComputedStyle(el).getPropertyValue("--breathe-y"));
+    anim.currentTime = length / 2;
+    const mid = Number.parseFloat(getComputedStyle(el).getPropertyValue("--breathe-y"));
+    return Math.abs(mid - start);
+  });
+  expect(moved).toBeGreaterThanOrEqual(0.5);
+
+  await page.goto("/apps/pay-cycle/");
+  const specimen = page.locator(".specimen-slot .sticker-slot");
+  await expect(specimen).toHaveCount(1);
+  expect(await specimen.evaluate((el) => getComputedStyle(el).animationName)).toMatch(/^(?:none)?$/u);
+});
+
+test("reduced-motion ではシールも呼吸しない", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  const slot = page.locator(".poster .sticker-slot").first();
+  expect(await slot.evaluate((el) => getComputedStyle(el).animationName)).toMatch(/^(?:none)?$/u);
+  const transform = await slot.evaluate((el) => getComputedStyle(el).transform);
+  expect(transform === "none" || transform === "matrix(1, 0, 0, 1, 0, 0)").toBe(true);
 });
 
 for (const app of apps) {

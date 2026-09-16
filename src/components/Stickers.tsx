@@ -138,6 +138,7 @@ export function Stickers() {
               tilt={TILT[index % TILT.length]!}
               lift={LIFT[index % LIFT.length]!}
               layer={layers[deskKey] ?? index + 1}
+              order={index + 1}
               offset={offsets[deskKey] ?? ORIGIN}
               held={held.has(deskKey)}
               linked={item.slug !== undefined && item.slug === activeSlug}

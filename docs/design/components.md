@@ -8,8 +8,8 @@
 - `Nav`: 言語・テーマ切替。旧 Tweaks パネル、検索、フィルタ、モバイル専用メニューは無い。
 - `Hero`: 文字 span による初回だけの立ち上がり。見出しの aria-label を維持し、文字 span は aria-hidden。机の印として `TOKYO '26` と手書き合図を置く。どちらもドラッグしない。
 - `AppsSection`: registry の索引行。行全体が詳細 URL。ホバー色はアプリ自身の `accent`。
-- `Stickers` / `VinylSticker`: 机のビニール。配置は `src/lib/sticker-desk.ts`。クランプは `paperBounds`。アプリ名はシールに書かない。
-- `SpecimenSticker`: 詳細 Hero の唯一のアイコン（120px の標本ビニール）。リンクではない。クランプは `shellBounds`。法務ページには置かない。
+- `Stickers` / `VinylSticker`: 机のビニール。配置は `src/lib/sticker-desk.ts`。クランプは `paperBounds`。アプリ名はシールに書かない。ホームのスロットだけ CSS で呼吸する。
+- `SpecimenSticker`: 詳細 Hero の唯一のアイコン（120px の標本ビニール）。リンクではない。クランプは `shellBounds`。法務ページには置かない。idle は持たない。
 - `Posts` / `Contact` / `Footer`: お知らせ、連絡先、法務導線。フッターは奥付を持つ。
 - `SiteStateProvider`: theme / lang を `applibrary_state` に保存。初回の inline script と hydration 後の属性適用を両方維持する。accent / layout / density / font は UI から切り替えない。
 
