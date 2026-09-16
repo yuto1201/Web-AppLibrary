@@ -97,11 +97,14 @@ async function expectLegalHeadingHierarchy(page: Page) {
 /** 山で重なったシールの下側を掴む。重ね順はスロットのスタッキング文脈で決まる。 */
 async function raiseSticker(sticker: import("@playwright/test").Locator) {
   await sticker.evaluate((el) => {
+    const poster = el.closest(".poster") ?? document.querySelector(".poster");
+    if (poster) {
+      for (const slot of poster.querySelectorAll(".sticker-slot")) {
+        if (slot instanceof HTMLElement) slot.style.animationPlayState = "paused";
+      }
+    }
     const slot = el.closest(".sticker-slot");
-    if (!(slot instanceof HTMLElement)) return;
-    slot.style.zIndex = "1000";
-    // 呼吸中は bounding box が毎フレーム動くので、Playwright の hover 安定待ちが終わらない。
-    slot.style.animationPlayState = "paused";
+    if (slot instanceof HTMLElement) slot.style.zIndex = "1000";
   });
 }
 
@@ -236,8 +239,8 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
   await page.goto("/");
 
   const sticker = page.locator('.sticker[href="/apps/sublog/"]');
-  await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
+  await sticker.scrollIntoViewIfNeeded();
 
   await expect(page.locator(".sticker-band")).toHaveCount(0);
   await expect(page.locator(".sticker-name")).toHaveCount(0);
@@ -464,8 +467,8 @@ test("置いたシールはスクロールしても viewport に張り付かな�
   await page.goto("/");
 
   const sticker = page.locator('.sticker[href="/apps/pay-cycle/"]');
-  await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
+  await sticker.scrollIntoViewIfNeeded();
   const before = (await sticker.boundingBox())!;
   await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2);
   await page.waitForTimeout(350);
@@ -500,8 +503,8 @@ test("ドラッグの後でもキーボードから遷移できる", async ({ pa
   await page.goto("/");
 
   const sticker = page.locator(`.sticker[href="/apps/${apps[0]!.slug}/"]`);
-  await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
+  await sticker.scrollIntoViewIfNeeded();
   const box = await sticker.boundingBox();
 
   // 一度ドラッグする。この click 抑止フラグが戻らないと、以降の Enter が死ぬ。
@@ -520,8 +523,8 @@ test("ステッカーは動かさずに離すと個別ページへ移る", async
   await page.goto("/");
 
   const sticker = page.locator(`.sticker[href="/apps/${apps[0]!.slug}/"]`);
-  await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
+  await sticker.scrollIntoViewIfNeeded();
   await expect(sticker).toHaveAttribute("aria-label", apps[0]!.name);
   await sticker.click();
   await expect(page).toHaveURL(new RegExp(`/apps/${apps[0]!.slug}/$`, "u"));
@@ -555,6 +558,7 @@ test("一覧行とステッカーが slug で相互にハイライトする", as
   const target = apps[1]!; // CafLog。先頭以外を選び、初期状態が非活性であることも確認する。
   const row = page.locator(`.app-row[href="/apps/${target.slug}/"]`);
   const sticker = page.locator(`.sticker[href="/apps/${target.slug}/"]`);
+  await raiseSticker(sticker);
 
   await expect(row).not.toHaveClass(/\bis-linked\b/u);
   await expect(sticker).not.toHaveClass(/\bis-linked\b/u);
@@ -570,8 +574,8 @@ test("一覧行とステッカーが slug で相互にハイライトする", as
   await expect(sticker).not.toHaveClass(/\bis-linked\b/u);
 
   // 逆方向：ステッカーにホバー → 対応する行が反応する。
-  await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
+  await sticker.scrollIntoViewIfNeeded();
   await sticker.hover();
   await expect(row).toHaveClass(/\bis-linked\b/u);
 
@@ -596,8 +600,8 @@ test("一覧行とステッカーが slug で相互にハイライトする", as
 test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間だけ元の位置に跡が残る", async ({ page }) => {
   await page.goto("/");
   const sticker = page.locator('.sticker[href="/apps/sublog/"]');
-  await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
+  await sticker.scrollIntoViewIfNeeded();
   const slot = page.locator(".sticker-slot").filter({ has: sticker });
 
   // 1 回目のドラッグでステッカー自身が動くため、掴む中心座標は毎回その時点の
@@ -712,8 +716,8 @@ test("画面リサイズがドラッグ中に起きても、掴んだままの�
   await page.goto("/");
   const sticker = page.locator('.sticker[href="/apps/sublog/"]');
   const slot = page.locator(".sticker-slot").filter({ has: sticker });
-  await sticker.scrollIntoViewIfNeeded();
   await raiseSticker(sticker);
+  await sticker.scrollIntoViewIfNeeded();
   const box = (await sticker.boundingBox())!;
 
   await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
