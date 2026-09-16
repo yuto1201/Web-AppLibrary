@@ -516,6 +516,9 @@ test("個別ページの標本シールはリンクではなく動かせる", as
   const specimen = page.locator(".app-shell .sticker");
   await expect(specimen).toHaveCount(1);
   await expect(specimen).not.toHaveAttribute("href");
+  const specimenBox = (await specimen.boundingBox())!;
+  expect(specimenBox.width).toBeGreaterThan(100);
+  expect(specimenBox.width).toBeLessThan(140);
   const before = (await specimen.boundingBox())!;
   await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2);
   await page.waitForTimeout(350);
@@ -924,10 +927,18 @@ for (const app of apps) {
     await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
     await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
     await expect(page.locator(".hero-title")).toHaveCSS("font-weight", "400");
+    await expect(page.locator(".hero-title")).toHaveCSS("font-family", /Newsreader/i);
     await expect(page.locator(".hero-title")).toHaveCSS("color", INK.light);
     await expect(page.locator(".hero-tagline")).toHaveCSS("color", INK_2.light);
     await expect(page.locator(".section-title").first()).toHaveCSS("font-family", /Newsreader/i);
-    await expect(page.locator(".feature-card").first()).toHaveCSS("box-shadow", "none");
+    await expect(page.locator(".hero-icon")).toHaveCount(0);
+    await expect(page.locator(".feature-icon")).toHaveCount(0);
+    await expect(page.locator(".feature-row").first()).toHaveCSS("box-shadow", "none");
+    if (app.status === "release") {
+      await expect(page.locator(".hero-status")).toHaveCount(0);
+    } else {
+      await expect(page.locator(".hero-status")).toHaveText(app.status === "alpha" ? "α 開発中" : "β テスト中");
+    }
     if (app.slug === "sublog") {
       const heroInner = await page.locator(".hero-inner").boundingBox();
       const pageBox = await page.locator(".page").boundingBox();
@@ -957,9 +968,10 @@ for (const app of apps) {
       await expect(siteLink).toHaveAttribute("target", "_blank");
     }
     await expectColorContrast(page);
-    const features = page.locator("#features .feature-card");
+    const features = page.locator("#features .feature-row");
     await expect(features).toHaveCount(app.features.length);
     await expect(features.first()).toContainText(app.features[0]!.description);
+    await expect(page.locator("#features")).not.toContainText(app.features[0]!.icon);
     const screenshots = page.locator("#screenshots img");
     await expect(screenshots).toHaveCount(app.screenshots.length);
     for (const screenshot of await screenshots.all()) {

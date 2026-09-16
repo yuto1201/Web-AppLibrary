@@ -4,6 +4,8 @@ import Link from "next/link";
 import { apps, getApp } from "@/data/registry";
 import { termsDocuments } from "@/data/terms/registry";
 import { SpecimenSticker } from "@/components/SpecimenSticker";
+import { statusLabel } from "@/lib/labels";
+import { i18n } from "@/lib/site-data";
 import "@/styles/app-page.css";
 
 export function generateStaticParams() {
@@ -41,17 +43,19 @@ export default async function AppPage({ params }: { params: Promise<{ slug: stri
         <nav className="hero-nav">
           <Link href="/" className="nav-back">← AppLibrary</Link>
         </nav>
-        {app.icon ? <SpecimenSticker app={app} /> : null}
         <div className="hero-inner">
-          {app.icon && (
-            // 静的出力のため素の img を使う。
-            // eslint-disable-next-line @next/next/no-img-element
-            <img className="hero-icon" src={`/apps/${app.slug}/${app.icon}`} alt={`${app.name} アイコン`} />
-          )}
-          <h1 className="hero-title">{app.name}</h1>
-          <p className="hero-tagline">{app.tagline}</p>
+          <div className="hero-lead">
+            <div className="hero-copy">
+              <h1 className="hero-title">{app.name}</h1>
+              <p className="hero-tagline">{app.tagline}</p>
+            </div>
+            {app.icon ? <SpecimenSticker app={app} /> : null}
+          </div>
           <p className="hero-desc">{app.description}</p>
           <div className="hero-meta-row">
+            {app.status !== "release" && (
+              <span className="hero-badge hero-status">{statusLabel(app.status, i18n.ja)}</span>
+            )}
             {app.platforms.map((platform) => (
               <span className="hero-badge" key={platform}>{platform}</span>
             ))}
@@ -80,15 +84,14 @@ export default async function AppPage({ params }: { params: Promise<{ slug: stri
       <main className="page">
         <section id="features" className="features">
           <h2 className="section-title" lang="en">Features</h2>
-          <div className="feature-grid">
+          <ul className="feature-list">
             {app.features.map((feature) => (
-              <article className="feature-card" key={feature.title}>
-                <div className="feature-icon" aria-hidden="true">{feature.icon}</div>
+              <li className="feature-row" key={feature.title}>
                 <h3>{feature.title}</h3>
                 <p>{feature.description}</p>
-              </article>
+              </li>
             ))}
-          </div>
+          </ul>
         </section>
 
         {app.screenshots.length > 0 && (

@@ -44,11 +44,19 @@ body:has(.app-shell) {
   margin-inline: auto;
   padding: var(--space-6) 0 var(--space-12);
 }
+.app-shell .hero-lead {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-6);
+}
+.app-shell .hero-copy { min-width: 0; flex: 1; }
 .app-shell .specimen-slot {
-  position: absolute;
-  right: clamp(8px, 6vw, 48px);
-  top: 72px;
-  width: 96px;
+  position: relative;
+  right: auto;
+  top: auto;
+  width: 120px;
+  flex: 0 0 120px;
   z-index: 3;
   pointer-events: none;
 }
@@ -59,7 +67,7 @@ body:has(.app-shell) {
   right: auto;
   top: auto;
   bottom: auto;
-  width: 96px;
+  width: 120px;
 }
 .app-shell .specimen-slot .sticker {
   pointer-events: auto;
@@ -85,15 +93,8 @@ body:has(.app-shell) {
 .app-shell .hero-nav { margin-bottom: var(--space-8); }
 .app-shell .nav-back { font-size: 14px; color: var(--app-ink-2); font-weight: 400; }
 .app-shell .hero-inner { padding: var(--space-8) 0; }
-.app-shell .hero-icon {
-  width: 120px;
-  height: 120px;
-  margin: 0 0 var(--space-6);
-  border-radius: 28px;
-  box-shadow: none;
-}
 .app-shell .hero-title {
-  font-family: var(--font-sans);
+  font-family: var(--font-display);
   font-size: clamp(40px, 6vw, 64px);
   font-weight: 400;
   letter-spacing: -0.03em;
@@ -129,6 +130,10 @@ body:has(.app-shell) {
   background: transparent;
   font-size: 13px;
   font-weight: 400;
+}
+.app-shell .hero-status {
+  color: var(--accent);
+  border-color: var(--accent);
 }
 .app-shell .hero-actions {
   margin-top: var(--space-8);
@@ -188,21 +193,20 @@ body:has(.app-shell) {
 
 /* ═══ Features ═══ */
 .app-shell .features { padding: var(--space-12) 0; }
-.app-shell .feature-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: var(--space-5);
+.app-shell .feature-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--rule);
 }
-.app-shell .feature-card {
-  padding: var(--space-6);
+.app-shell .feature-row {
+  padding: var(--space-5) 0;
+  border-bottom: 1px solid var(--rule);
   background: transparent;
-  border-radius: 0;
   box-shadow: none;
-  border: 1px solid var(--rule);
 }
-.app-shell .feature-icon { font-size: 32px; margin-bottom: var(--space-3); }
-.app-shell .feature-card h3 { font-size: 18px; font-weight: 400; margin-bottom: var(--space-2); }
-.app-shell .feature-card p { font-size: 14px; color: var(--app-ink-2); }
+.app-shell .feature-row h3 { font-size: 18px; font-weight: 400; margin-bottom: var(--space-2); }
+.app-shell .feature-row p { font-size: 16px; color: var(--app-ink-2); }
 
 /* ═══ Screenshots ═══ */
 .app-shell .screenshots { padding: var(--space-12) 0; }
@@ -259,6 +263,14 @@ body:has(.app-shell) {
 .app-shell .privacy-page li {
   color: var(--app-ink-2);
   overflow-wrap: anywhere;
+}
+
+@media (min-width: 640px) {
+  .app-shell .hero-lead {
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
 }
 
 @media (max-width: 479px) {
