@@ -408,25 +408,55 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .sticker-slot[data-shape="squircle"] { border-radius: 14px; }
 .sticker-slot[data-shape="round-lg"] { border-radius: 28px; }
 .sticker-slot[data-shape="word"] { border-radius: 18px; }
+/* 計測前は山へ置く。% フォールバックはページが伸びると Hero に乗る。 */
 .sticker-slot[data-key="sublog"] {
-  left: min(calc(var(--desk-h1-right, 72%) + 12px), calc(100% - 124px));
-  top: var(--desk-h1-top, 16%);
-  right: auto;
-  bottom: auto;
+  left: auto;
+  right: 24px;
+  top: auto;
+  bottom: -28px;
   width: clamp(88px, 10vw, 112px);
 }
 .sticker-slot[data-key="caflog"] {
-  left: 12px;
-  top: calc(var(--desk-cta-bottom, 36%) + 12px);
-  right: auto;
-  bottom: auto;
+  left: auto;
+  right: 20px;
+  top: auto;
+  bottom: -28px;
   width: clamp(76px, 10vw, 100px);
 }
 .sticker-slot[data-key="dev-tools"] { left: 78%; top: calc(var(--desk-apps-top, 34%) - 48px); right: auto; bottom: auto; }
 .sticker-slot[data-key="pay-cycle"] { left: auto; right: 20px; top: auto; bottom: -28px; }
 .sticker-slot[data-key="note-Swift"] { left: auto; right: 168px; top: auto; bottom: -8px; }
-.sticker-slot[data-key="note-Tokyo"] { left: 36%; top: 28%; right: auto; bottom: auto; width: clamp(72px, 9vw, 96px); }
+.sticker-slot[data-key="note-Tokyo"] {
+  left: auto;
+  right: 248px;
+  top: auto;
+  bottom: -8px;
+  width: clamp(72px, 9vw, 96px);
+}
 .sticker-slot[data-key="note-solo"] { left: auto; right: 96px; top: auto; bottom: -40px; }
+@media (min-width: 641px) {
+  .poster[data-desk="ready"] .sticker-slot[data-key="sublog"] {
+    left: min(calc(var(--desk-h1-right) + 12px), calc(100% - 124px));
+    top: var(--desk-h1-top);
+    right: auto;
+    bottom: auto;
+  }
+}
+/* 左ガターが実在する幅だけ。lift -26 を見込んで CTA 下端から 40px */
+@media (min-width: 1024px) {
+  .poster[data-desk="ready"] .sticker-slot[data-key="caflog"] {
+    left: 12px;
+    top: calc(var(--desk-cta-bottom) + 40px);
+    right: auto;
+    bottom: auto;
+  }
+  .poster[data-desk="ready"] .sticker-slot[data-key="note-Tokyo"] {
+    left: min(calc(var(--desk-note-right) + 16px), calc(100% - 110px));
+    top: var(--desk-note-top);
+    right: auto;
+    bottom: auto;
+  }
+}
 .sticker-slot:hover,
 .sticker-slot:focus-within {
   z-index: calc(var(--layer, 1) + 100);

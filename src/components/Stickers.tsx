@@ -58,6 +58,7 @@ export function Stickers() {
     const poster = document.querySelector(".poster");
     const appsHead = document.querySelector("#apps .section-head") ?? document.getElementById("apps");
     const heading = document.querySelector(".hero-h1");
+    const note = document.querySelector(".hero-note");
     const cta = document.querySelector(".cta-btn");
     if (!(poster instanceof HTMLElement) || !(appsHead instanceof HTMLElement)) return;
     const sync = () => {
@@ -71,18 +72,33 @@ export function Stickers() {
         poster.style.setProperty("--desk-h1-right", `${Math.round(box.right - origin.left)}px`);
         poster.style.setProperty("--desk-h1-top", `${Math.round(box.top - origin.top)}px`);
       }
+      if (note instanceof HTMLElement) {
+        const box = note.getBoundingClientRect();
+        poster.style.setProperty("--desk-note-right", `${Math.round(box.right - origin.left)}px`);
+        poster.style.setProperty("--desk-note-top", `${Math.round(box.top - origin.top)}px`);
+      }
       if (cta instanceof HTMLElement) {
         const box = cta.getBoundingClientRect();
         poster.style.setProperty("--desk-cta-bottom", `${Math.round(box.bottom - origin.top)}px`);
       }
+      poster.setAttribute("data-desk", "ready");
     };
     sync();
     const observer = new ResizeObserver(sync);
     observer.observe(poster);
     observer.observe(appsHead);
     if (heading instanceof HTMLElement) observer.observe(heading);
+    if (note instanceof HTMLElement) observer.observe(note);
     if (cta instanceof HTMLElement) observer.observe(cta);
-    return () => observer.disconnect();
+    const mutations = new MutationObserver(sync);
+    mutations.observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
+    if (heading instanceof HTMLElement) {
+      mutations.observe(heading, { childList: true, subtree: true, characterData: true });
+    }
+    return () => {
+      observer.disconnect();
+      mutations.disconnect();
+    };
   }, []);
 
   useEffect(() => {
