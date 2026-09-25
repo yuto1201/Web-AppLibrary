@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { apps, getApp } from "@/data/registry";
 import { termsDocuments } from "@/data/terms/registry";
+import { ScreenshotGallery } from "@/components/ScreenshotGallery";
 import { SpecimenSticker } from "@/components/SpecimenSticker";
 import { statusLabel } from "@/lib/labels";
 import { i18n } from "@/lib/site-data";
@@ -97,17 +98,7 @@ export default async function AppPage({ params }: { params: Promise<{ slug: stri
         {app.screenshots.length > 0 && (
           <section id="screenshots" className="screenshots">
             <h2 className="section-title" lang="en">Screenshots</h2>
-            <div className="shot-row">
-              {app.screenshots.map((file, index) => (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  key={file}
-                  src={`/apps/${app.slug}/screenshots/${file}`}
-                  alt={`${app.name} スクリーンショット ${index + 1}`}
-                  loading="lazy"
-                />
-              ))}
-            </div>
+            <ScreenshotGallery slug={app.slug} name={app.name} files={app.screenshots} />
           </section>
         )}
       </main>
