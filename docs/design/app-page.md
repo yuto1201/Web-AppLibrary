@@ -5,13 +5,13 @@
 
 `src/app/apps/[slug]/page.tsx` が registry から `/apps/<slug>/` を静的生成する。HTML やアプリ別の script/style ファイルをコピーしない。
 
-- キャンバス: 法務ページの `.app-shell` は `--paper` / `--ink`。詳細ページだけ `data-tone` でアイコンに寄せた紙にする（SubLog は藤の帳面、CafLog は丸い暖かい紙、Dev-Tools は角を落とした冷たい紙、PayCycle は給与日の赤線）。見出しの文字色はインクのまま。`[data-theme="dark"]` では詳細も共通の暗い紙へ戻し、アクセントだけ明るくする。`--app-*` の名前は残す。紫ピンクの放射グラデと `color-scheme: light` 固定は持たない。
-- Hero: 戻るリンク、名前（`--font-display`・インク・字重 400）、タグライン（`--ink-2`、グラデ文字なし）、紹介、プラットフォーム、outlined pill の CTA。行長は `--measure`。左揃え。ホームの `<Nav />` は載せない。アイコンは標本ビニール 1 枚だけ（`.specimen-slot` 120px。印刷用の `.hero-icon` は置かない）。アイコンが無いアプリには置かない。リンクではない。`aria-hidden`。`src/components/SpecimenSticker.tsx` が `VinylSticker` を `href` なしで載せ、クランプは `.app-shell`（`shellBounds`）。viewport 固定にしない。離した位置に残る。リサイズで机と同様にオフセットを捨てる。法務ページ（アプリ `/privacy/` `/terms/`、サイト `/privacy/` `/terms/`）とトップには置かない。テープ・日付印・手書き合図は置かない。標本スロットはホームの呼吸を継承しない。`status !== release` のときだけ、索引と同じ状態ラベル（`statusLabel(..., i18n.ja)`）をヒーローへ出す。
-- Features: registry の `{ title, description }` を 1px 罫線の行で表示。絵文字と四辺の箱は置かない。`icon` は registry の必須欄のまま描かない。英語見出しは Newsreader 400。
+- キャンバス: 法務ページの `.app-shell` は `--paper` / `--ink`。詳細ページだけ `data-tone` で組みを変える。SubLog は藤の紙の帳面（名前の下に二重線、機能は見出しと説明の 2 列、狭い幅では 1 列）。CafLog は暖かい紙で中央揃え（標本を名前の上、枠は丸い）。Dev-Tools は冷たい紙の升（ヒーローを 1px の枠で囲み、機能は罫線の格子。640px 以下は 1 列）。PayCycle は給与日の赤線と、機能を貫く縦線。見出しの文字色はインクのまま。`[data-theme="dark"]` では詳細も共通の暗い紙へ戻し、アクセントだけ明るくする。`--app-*` の名前は残す。紫ピンクの放射グラデと `color-scheme: light` 固定は持たない。
+- Hero: 戻るリンク、名前（`--font-display`・インク・字重 400）、タグライン（`--ink-2`、グラデ文字なし）、紹介、プラットフォーム、outlined pill の CTA。行長は `--measure`。CafLog 以外は左揃え。ホームの `<Nav />` は載せない。アイコンは標本ビニール 1 枚だけ（`.specimen-slot` 120px。印刷用の `.hero-icon` は置かない）。アイコンが無いアプリには置かない。リンクではない。`aria-hidden`。`src/components/SpecimenSticker.tsx` が `VinylSticker` を `href` なしで載せ、クランプは `.app-shell`（`shellBounds`）。viewport 固定にしない。離した位置に残る。リサイズで机と同様にオフセットを捨てる。法務ページ（アプリ `/privacy/` `/terms/`、サイト `/privacy/` `/terms/`）とトップには置かない。テープ・日付印・手書き合図は置かない。標本スロットはホームの呼吸を継承しない。`status !== release` のときだけ、索引と同じ状態ラベル（`statusLabel(..., i18n.ja)`）をヒーローへ出す。
+- Features: registry の `{ title, description }` を 1px 罫線で表示。絵文字は置かない。`icon` は registry の必須欄のまま描かない。英語見出しは Newsreader 400。影のあるカードにはしない。並びは tone ごとに変える（帳面の 2 列、中央の行、升、縦線）。
 - Screenshots: `public/apps/<slug>/screenshots/` の実ファイルを registry の順序で、ページ内ギャラリーとして表示する。先頭が featured。2 枚以上ならサムネと Previous / Next、ギャラリー内フォーカス時の左右キー。`dialog` は出さない。枠は 1px 罫線と `--shadow-sticker`。`object-fit: contain`。黒ベタ背景は使わない。alt は日本語。
 - Footer: `/apps/<slug>/privacy/` とトップへの導線。字重 400。
 - アプリ法務: 言語見出しは `h2`（20px）、条項は `h3`（18px・上余白も一段小さく）。字重はどちらも 400。条項見出しを本文より小さくしない。
-- CTA: 配布先は電圧ブルーの outlined pill。「機能を見る」はインクの outlined pill。塗りグラデと浮き上がりは持たない。
+- CTA: 詳細の配布先は、そのアプリのアクセント色の outlined pill。「機能を見る」はインクの outlined pill。塗りグラデと浮き上がりは持たない。ホームの CTA は電圧ブルーのまま。
 
 共通 CSS は `src/styles/app-page.css`、基本トークンは `src/styles/tokens.css`。App Router は遷移後も読み込んだ global CSS を保持するため、アプリ詳細とアプリ別 privacy / terms は `.app-shell` で包み、各コンポーネント規則をその配下へスコープする。例外として、詳細表示中のブラウザ余白とオーバースクロールを同じ紙にする `body:has(.app-shell)` だけを条件付きで使う。`:root` や無条件の `body`、汎用の `.hero` などへアプリ固有の規則を追加しない。`--app-*` / `--glass-*` の既存名を維持する。掲載画像は正方形アイコン（128px 以上）と縦長スクリーンショットを使用する。
 

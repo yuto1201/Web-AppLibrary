@@ -1026,6 +1026,19 @@ for (const app of apps) {
     await expect(page.locator(".feature-icon")).toHaveCount(0);
     await expect(page.locator(".feature-row").first()).toHaveCSS("box-shadow", "none");
     await expect(page.locator(".feature-row").first()).toHaveCSS("border-bottom-width", "1px");
+    if (app.slug === "sublog") {
+      await expect(page.locator(".feature-row").first()).toHaveCSS("display", "grid");
+    }
+    if (app.slug === "caflog") {
+      await expect(page.locator(".hero-lead")).toHaveCSS("flex-direction", "column");
+      await expect(page.locator(".hero-title")).toHaveCSS("text-align", "center");
+    }
+    if (app.slug === "dev-tools") {
+      await expect(page.locator(".feature-list")).toHaveCSS("display", "grid");
+    }
+    if (app.slug === "pay-cycle") {
+      await expect(page.locator(".feature-list")).toHaveCSS("border-left-width", "2px");
+    }
     if (app.status === "release") {
       await expect(page.locator(".hero-status")).toHaveCount(0);
     } else {
