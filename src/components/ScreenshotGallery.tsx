@@ -33,14 +33,20 @@ export function ScreenshotGallery({ slug, name, files }: ScreenshotGalleryProps)
   };
 
   return (
-    <div className="shot-gallery" tabIndex={0} onKeyDown={onKeyDown}>
+    <div
+      className="shot-gallery"
+      tabIndex={0}
+      role="group"
+      aria-label="Screenshots"
+      onKeyDown={onKeyDown}
+    >
       <figure className="shot-featured">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={screenshotSrc(slug, current)} alt={screenshotAlt(name, index)} />
       </figure>
       {multiple ? (
         <>
-          <div className="shot-nav">
+          <div className="shot-nav" lang="en">
             <button type="button" className="shot-step" onClick={() => go(-1)}>
               Previous
             </button>
