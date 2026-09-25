@@ -347,7 +347,7 @@ body:has(.app-shell) {
    ink は wash 上で 4.5:1。dark は共通の暗い紙へ戻し、アクセントだけ明るくする。
    hex は src/lib/app-tone.ts と一致させる。 */
 body:has(.app-shell[data-tone="ledger"]),
-.app-shell[data-tone="ledger"] { background: #f3eef8; }
+.app-shell[data-tone="ledger"] { background: #E8E1F2; }
 .app-shell[data-tone="ledger"] { --app-accent: #6B5B8E; --app-accent-2: #6B5B8E; }
 .app-shell[data-tone="ledger"] .feature-row {
   border-left: 2px solid var(--app-accent);
@@ -355,20 +355,20 @@ body:has(.app-shell[data-tone="ledger"]),
 }
 
 body:has(.app-shell[data-tone="cafe"]),
-.app-shell[data-tone="cafe"] { background: #f6efe4; }
+.app-shell[data-tone="cafe"] { background: #F5EBDD; }
 .app-shell[data-tone="cafe"] { --app-accent: #8B5E3C; --app-accent-2: #8B5E3C; }
 .app-shell[data-tone="cafe"] .shot-featured { border-radius: 40px; }
 .app-shell[data-tone="cafe"] .shot-thumb { border-radius: 16px; }
 
 body:has(.app-shell[data-tone="bench"]),
-.app-shell[data-tone="bench"] { background: #eef3f6; }
+.app-shell[data-tone="bench"] { background: #E8EEF2; }
 .app-shell[data-tone="bench"] { --app-accent: #2A657F; --app-accent-2: #2A657F; }
 .app-shell[data-tone="bench"] .shot-featured,
 .app-shell[data-tone="bench"] .hero-badge { border-radius: 8px; }
 .app-shell[data-tone="bench"] .shot-thumb { border-radius: 4px; }
 
 body:has(.app-shell[data-tone="cycle"]),
-.app-shell[data-tone="cycle"] { background: #f8efe8; }
+.app-shell[data-tone="cycle"] { background: #F3EDE3; }
 .app-shell[data-tone="cycle"] { --app-accent: #B5362C; --app-accent-2: #B5362C; }
 .app-shell[data-tone="cycle"] .hero {
   border-bottom: 2px solid var(--app-accent);

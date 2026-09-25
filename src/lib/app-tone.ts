@@ -3,10 +3,10 @@
  * CSS の同じ hex とテストが対応する。
  */
 export const APP_PAGE_TONE = {
-  sublog: { tone: "ledger", wash: "#f3eef8", ink: "#6B5B8E", darkInk: "#cbbbe0" },
-  caflog: { tone: "cafe", wash: "#f6efe4", ink: "#8B5E3C", darkInk: "#e4c4a4" },
-  "dev-tools": { tone: "bench", wash: "#eef3f6", ink: "#2A657F", darkInk: "#8ec5d8" },
-  "pay-cycle": { tone: "cycle", wash: "#f8efe8", ink: "#B5362C", darkInk: "#ff9a90" },
+  sublog: { tone: "ledger", wash: "#E8E1F2", ink: "#6B5B8E", darkInk: "#cbbbe0" },
+  caflog: { tone: "cafe", wash: "#F5EBDD", ink: "#8B5E3C", darkInk: "#e4c4a4" },
+  "dev-tools": { tone: "bench", wash: "#E8EEF2", ink: "#2A657F", darkInk: "#8ec5d8" },
+  "pay-cycle": { tone: "cycle", wash: "#F3EDE3", ink: "#B5362C", darkInk: "#ff9a90" },
 } as const;
 
 export type AppTone = (typeof APP_PAGE_TONE)[keyof typeof APP_PAGE_TONE]["tone"];
