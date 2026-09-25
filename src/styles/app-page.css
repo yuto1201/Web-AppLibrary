@@ -221,7 +221,7 @@ body:has(.app-shell) {
   outline-offset: 4px;
 }
 .app-shell .shot-featured {
-  width: min(360px, 100%);
+  width: min(240px, 100%);
   aspect-ratio: 9 / 19.5;
   margin: 0;
   border: 1px solid var(--rule);

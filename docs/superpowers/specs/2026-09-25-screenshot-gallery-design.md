@@ -32,7 +32,7 @@
 - 1 枚だけのアプリは featured のみ。操作は出さない。
 - `dialog` / `role="dialog"` は置かない。拡大オーバーレイも置かない。
 - 枠は 1px 罫線と `--shadow-sticker`。黒ベタ背景は使わない。`object-fit` は `contain`（枠外へはみ出して切らない）。
-- featured の枠は `aspect-ratio: 9 / 19.5`、幅は `min(360px, 100%)`。
+- featured の枠は `aspect-ratio: 9 / 19.5`、幅は `min(240px, 100%)`。見出し・操作・サムネが同じ画面に残るように、360px にはしない。
 - 切替は即時。自動再生もクロスフェードも持たない。`prefers-reduced-motion` 用の例外分岐は不要。
 - 英語 chrome（Previous / Next、件数 `1 / 4`）。alt は日本語のまま（`${name} スクリーンショット ${n}`）。
 - CTA「機能を見る」は `#features` のまま。ギャラリーへの新しい CTA は足さない。
