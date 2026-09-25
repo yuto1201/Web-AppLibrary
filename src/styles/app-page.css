@@ -132,8 +132,8 @@ body:has(.app-shell) {
   font-weight: 400;
 }
 .app-shell .hero-status {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--app-accent);
+  border-color: var(--app-accent);
 }
 .app-shell .hero-actions {
   margin-top: var(--space-8);
@@ -341,3 +341,45 @@ body:has(.app-shell) {
   .app-shell .features { padding: var(--space-8) 0; }
   .app-shell .privacy-page { padding-top: var(--space-8); }
 }
+
+/* ═══ アプリごとの紙 ═══
+   詳細だけ。法務ページは data-tone を付けない。
+   ink は wash 上で 4.5:1。dark は共通の暗い紙へ戻し、アクセントだけ明るくする。
+   hex は src/lib/app-tone.ts と一致させる。 */
+body:has(.app-shell[data-tone="ledger"]),
+.app-shell[data-tone="ledger"] { background: #f3eef8; }
+.app-shell[data-tone="ledger"] { --app-accent: #6B5B8E; --app-accent-2: #6B5B8E; }
+.app-shell[data-tone="ledger"] .feature-row {
+  border-left: 2px solid var(--app-accent);
+  padding-left: var(--space-4);
+}
+
+body:has(.app-shell[data-tone="cafe"]),
+.app-shell[data-tone="cafe"] { background: #f6efe4; }
+.app-shell[data-tone="cafe"] { --app-accent: #8B5E3C; --app-accent-2: #8B5E3C; }
+.app-shell[data-tone="cafe"] .shot-featured { border-radius: 40px; }
+.app-shell[data-tone="cafe"] .shot-thumb { border-radius: 16px; }
+
+body:has(.app-shell[data-tone="bench"]),
+.app-shell[data-tone="bench"] { background: #eef3f6; }
+.app-shell[data-tone="bench"] { --app-accent: #2A657F; --app-accent-2: #2A657F; }
+.app-shell[data-tone="bench"] .shot-featured,
+.app-shell[data-tone="bench"] .hero-badge { border-radius: 8px; }
+.app-shell[data-tone="bench"] .shot-thumb { border-radius: 4px; }
+
+body:has(.app-shell[data-tone="cycle"]),
+.app-shell[data-tone="cycle"] { background: #f8efe8; }
+.app-shell[data-tone="cycle"] { --app-accent: #B5362C; --app-accent-2: #B5362C; }
+.app-shell[data-tone="cycle"] .hero {
+  border-bottom: 2px solid var(--app-accent);
+}
+
+.app-shell[data-tone] .page-footer a { color: var(--app-accent); }
+.app-shell[data-tone] .shot-featured { border-color: var(--app-accent); }
+
+[data-theme="dark"] body:has(.app-shell[data-tone]),
+[data-theme="dark"] .app-shell[data-tone] { background: var(--paper); }
+[data-theme="dark"] .app-shell[data-tone="ledger"] { --app-accent: #cbbbe0; --app-accent-2: #cbbbe0; }
+[data-theme="dark"] .app-shell[data-tone="cafe"] { --app-accent: #e4c4a4; --app-accent-2: #e4c4a4; }
+[data-theme="dark"] .app-shell[data-tone="bench"] { --app-accent: #8ec5d8; --app-accent-2: #8ec5d8; }
+[data-theme="dark"] .app-shell[data-tone="cycle"] { --app-accent: #ff9a90; --app-accent-2: #ff9a90; }
