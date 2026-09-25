@@ -41,14 +41,14 @@ export function ScreenshotGallery({ slug, name, files }: ScreenshotGalleryProps)
       {multiple ? (
         <>
           <div className="shot-nav">
-            <button type="button" className="shot-step" aria-label="Previous screenshot" onClick={() => go(-1)}>
-              ←
+            <button type="button" className="shot-step" onClick={() => go(-1)}>
+              Previous
             </button>
             <span className="shot-count" aria-live="polite">
               {index + 1} / {files.length}
             </span>
-            <button type="button" className="shot-step" aria-label="Next screenshot" onClick={() => go(1)}>
-              →
+            <button type="button" className="shot-step" onClick={() => go(1)}>
+              Next
             </button>
           </div>
           <div className="shot-thumbs">
