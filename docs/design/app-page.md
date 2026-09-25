@@ -1,14 +1,14 @@
 # アプリ詳細ページのデザイン
 
 ステータス: 確定
-最終更新日: 2026-09-16
+最終更新日: 2026-09-25
 
 `src/app/apps/[slug]/page.tsx` が registry から `/apps/<slug>/` を静的生成する。HTML やアプリ別の script/style ファイルをコピーしない。
 
 - キャンバス: `.app-shell` と `body:has(.app-shell)` は `--paper` / `--ink`。`--app-*` の名前は残し、値は紙面トークンへ寄せる。紫ピンクの放射グラデと `color-scheme: light` 固定は持たない。`[data-theme="dark"]` は `tokens.css` に従う。
 - Hero: 戻るリンク、名前（`--font-display`・インク・字重 400）、タグライン（`--ink-2`、グラデ文字なし）、紹介、プラットフォーム、outlined pill の CTA。行長は `--measure`。左揃え。ホームの `<Nav />` は載せない。アイコンは標本ビニール 1 枚だけ（`.specimen-slot` 120px。印刷用の `.hero-icon` は置かない）。アイコンが無いアプリには置かない。リンクではない。`aria-hidden`。`src/components/SpecimenSticker.tsx` が `VinylSticker` を `href` なしで載せ、クランプは `.app-shell`（`shellBounds`）。viewport 固定にしない。離した位置に残る。リサイズで机と同様にオフセットを捨てる。法務ページ（アプリ `/privacy/` `/terms/`、サイト `/privacy/` `/terms/`）とトップには置かない。テープ・日付印・手書き合図は置かない。標本スロットはホームの呼吸を継承しない。`status !== release` のときだけ、索引と同じ状態ラベル（`statusLabel(..., i18n.ja)`）をヒーローへ出す。
 - Features: registry の `{ title, description }` を 1px 罫線の行で表示。絵文字と四辺の箱は置かない。`icon` は registry の必須欄のまま描かない。英語見出しは Newsreader 400。
-- Screenshots: `public/apps/<slug>/screenshots/` の実ファイルを registry の順序で表示。flex wrap した各行を中央配置し、lazy loading と alt を付ける。1px 罫線と `--shadow-sticker`。黒ベタ背景は使わない。
+- Screenshots: `public/apps/<slug>/screenshots/` の実ファイルを registry の順序で、ページ内ギャラリーとして表示する。先頭が featured。2 枚以上ならサムネと Previous / Next、ギャラリー内フォーカス時の左右キー。`dialog` は出さない。枠は 1px 罫線と `--shadow-sticker`。`object-fit: contain`。黒ベタ背景は使わない。alt は日本語。
 - Footer: `/apps/<slug>/privacy/` とトップへの導線。字重 400。
 - アプリ法務: 言語見出しは `h2`（20px）、条項は `h3`（18px・上余白も一段小さく）。字重はどちらも 400。条項見出しを本文より小さくしない。
 - CTA: 配布先は電圧ブルーの outlined pill。「機能を見る」はインクの outlined pill。塗りグラデと浮き上がりは持たない。

@@ -1055,23 +1055,27 @@ for (const app of apps) {
     await expect(features).toHaveCount(app.features.length);
     await expect(features.first()).toContainText(app.features[0]!.description);
     await expect(page.locator("#features")).not.toContainText(app.features[0]!.icon);
-    const screenshots = page.locator("#screenshots img");
-    await expect(screenshots).toHaveCount(app.screenshots.length);
-    for (const screenshot of await screenshots.all()) {
-      await screenshot.scrollIntoViewIfNeeded();
-      await expect(screenshot).toBeVisible();
-      await expect.poll(() => screenshot.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-    }
-    if (app.slug === "caflog" && (page.viewportSize()?.width ?? 0) >= 1000) {
-      const boxes = (await screenshots.all()).map(async (screenshot) => screenshot.boundingBox());
-      const resolvedBoxes = (await Promise.all(boxes)).filter((box) => box !== null);
-      const lastRowY = Math.max(...resolvedBoxes.map((box) => box.y));
-      const lastRow = resolvedBoxes.filter((box) => Math.abs(box.y - lastRowY) < 2);
-      const left = Math.min(...lastRow.map((box) => box.x));
-      const right = Math.max(...lastRow.map((box) => box.x + box.width));
-      const row = await page.locator(".shot-row").boundingBox();
-      expect(row).not.toBeNull();
-      expect(Math.abs((left + right) / 2 - (row!.x + row!.width / 2))).toBeLessThan(2);
+    await expect(page.getByRole("heading", { name: "Screenshots", exact: true })).toBeVisible();
+    const featured = page.locator("#screenshots .shot-featured img");
+    await expect(featured).toHaveCount(1);
+    await featured.scrollIntoViewIfNeeded();
+    await expect(featured).toBeVisible();
+    await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[0]}`);
+    await expect(featured).toHaveAttribute("alt", `${app.name} スクリーンショット 1`);
+    await expect.poll(() => featured.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    if (app.screenshots.length === 1) {
+      await expect(page.locator("#screenshots .shot-thumbs")).toHaveCount(0);
+    } else {
+      const thumbs = page.locator("#screenshots .shot-thumbs button");
+      await expect(thumbs).toHaveCount(app.screenshots.length);
+      await thumbs.nth(1).click();
+      await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[1]}`);
+      await expect(page.locator("#screenshots .shot-count")).toHaveText(`2 / ${app.screenshots.length}`);
+      await page.locator(".shot-gallery").focus();
+      await page.keyboard.press("ArrowRight");
+      const afterArrow = app.screenshots[2] ?? app.screenshots[0];
+      await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${afterArrow}`);
     }
     if (app.slug === "pay-cycle") {
       await expect(page.locator('a[href*="apps.apple.com"]')).toHaveCount(0);
