@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { apps } from "../../src/data/registry";
+import { appPageTone } from "../../src/lib/app-tone";
 import { statusLabel } from "../../src/lib/labels";
 import { i18n } from "../../src/lib/site-data";
 
@@ -31,6 +32,11 @@ const PAPER = { light: "rgb(255, 248, 241)", dark: "rgb(18, 16, 14)" } as const;
 const INK = { light: "rgb(0, 0, 0)", dark: "rgb(255, 248, 241)" } as const;
 const INK_2 = { light: "rgb(63, 59, 54)", dark: "rgb(200, 194, 184)" } as const;
 const ACCENT = { light: "rgb(0, 102, 238)", dark: "rgb(110, 179, 255)" } as const;
+
+function cssRgb(hex: string) {
+  const value = hex.slice(1);
+  return `rgb(${Number.parseInt(value.slice(0, 2), 16)}, ${Number.parseInt(value.slice(2, 4), 16)}, ${Number.parseInt(value.slice(4, 6), 16)})`;
+}
 
 /** アニメーションだけ止める。色は実際の値のまま axe に判定させる。 */
 const FREEZE = "html *, html *::before, html *::after { animation: none !important; transition: none !important; }";
@@ -1006,8 +1012,11 @@ for (const app of apps) {
     await page.goto(`/apps/${app.slug}/`);
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/$`, "u"));
     await expect(page.getByRole("heading", { name: app.name, exact: true, level: 1 })).toBeVisible();
-    await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
-    await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
+    const tone = appPageTone(app.slug);
+    if (!tone) throw new Error(`${app.slug} の色味が無い`);
+    await expect(page.locator(".app-shell")).toHaveAttribute("data-tone", tone.tone);
+    await expect(page.locator("body")).toHaveCSS("background-color", cssRgb(tone.wash));
+    await expect(page.locator(".app-shell")).toHaveCSS("background-color", cssRgb(tone.wash));
     await expect(page.locator(".hero-title")).toHaveCSS("font-weight", "400");
     await expect(page.locator(".hero-title")).toHaveCSS("font-family", /Newsreader/i);
     await expect(page.locator(".hero-title")).toHaveCSS("color", INK.light);
@@ -1017,6 +1026,19 @@ for (const app of apps) {
     await expect(page.locator(".feature-icon")).toHaveCount(0);
     await expect(page.locator(".feature-row").first()).toHaveCSS("box-shadow", "none");
     await expect(page.locator(".feature-row").first()).toHaveCSS("border-bottom-width", "1px");
+    if (app.slug === "sublog") {
+      await expect(page.locator(".feature-row").first()).toHaveCSS("display", "grid");
+    }
+    if (app.slug === "caflog") {
+      await expect(page.locator(".hero-lead")).toHaveCSS("flex-direction", "column");
+      await expect(page.locator(".hero-title")).toHaveCSS("text-align", "center");
+    }
+    if (app.slug === "dev-tools") {
+      await expect(page.locator(".feature-list")).toHaveCSS("display", "grid");
+    }
+    if (app.slug === "pay-cycle") {
+      await expect(page.locator(".feature-list")).toHaveCSS("border-left-width", "2px");
+    }
     if (app.status === "release") {
       await expect(page.locator(".hero-status")).toHaveCount(0);
     } else {
@@ -1032,6 +1054,7 @@ for (const app of apps) {
     const primary = page.locator(".btn-primary").first();
     if (await primary.count()) {
       await expect(primary).toHaveCSS("background-color", "rgba(0, 0, 0, 0)");
+      await expect(primary).toHaveCSS("color", cssRgb(tone.ink));
     }
     await expect
       .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
@@ -1086,6 +1109,9 @@ for (const app of apps) {
     }
     await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/privacy/$`, "u"));
+    await expect(page.locator(".app-shell")).not.toHaveAttribute("data-tone");
+    await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
+    await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
     await expect(page.getByRole("heading", { level: 1 })).toContainText("プライバシー");
     if (app.slug === "pay-cycle") {
       await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese and English.");
