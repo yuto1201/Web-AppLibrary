@@ -1,15 +1,17 @@
 # TODO — AppLibrary
 
-最終更新日: 2026-09-16
+最終更新日: 2026-09-25
 
-- [ ] 机のシールに、主張しすぎない呼吸を足す（Issue #45）
+- [ ] 個別ページにスクショギャラリーを足す（Issue #50）
 
+- [x] 机のシールに、主張しすぎない呼吸を足す（Issue #45 / PR #46）
 - [x] Hero 本文・CTA とシールが重ならないようにする（Issue #39 / PR #42）
 - [x] 個別ページを同じ紙面の続きとして揃える（Issue #40 / PR #44）
 - [x] サイト privacy を現実装へ同期する（Issue #41 / PR #43）
 - [x] 個別ページをポスター紙面へ揃える（Issue #38 / PR #37）
 
-仕様: [机のシールの呼吸](superpowers/specs/2026-09-16-desk-idle-motion-design.md)
+仕様: [スクショギャラリー](superpowers/specs/2026-09-25-screenshot-gallery-design.md)
+計画: [スクショギャラリー](superpowers/plans/2026-09-25-screenshot-gallery.md)
 
 ## 直近の完了
 
