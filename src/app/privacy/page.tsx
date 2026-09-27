@@ -40,7 +40,7 @@ export default function SitePrivacyPage() {
 
         <h2>1. 本サイトが収集する情報</h2>
         <p>
-          本サイトにはアカウント、送信フォーム、コメント、アクセス解析、広告、トラッキング機能がなく、
+          本サイトにはアカウント、送信フォーム、コメント、独自のアクセス解析、広告、トラッキング機能がなく、
           運営者が閲覧者の個人情報を直接収集する機能はありません。本サイトの実装は Cookie を使用しません。
         </p>
 
@@ -56,6 +56,7 @@ export default function SitePrivacyPage() {
         <p>
           本サイトは Cloudflare Pages から配信されています。配信、安全性の確保、障害対応のため、Cloudflare が
           IP アドレスや通信経路、ブラウザの設定などの情報を取り扱う場合があります。
+          Cloudflare の安全対策により Cookie が使用される場合もあります。
           詳細は <a href="https://www.cloudflare.com/policies/privacy/">Cloudflare のプライバシーポリシー</a>をご確認ください。
         </p>
 

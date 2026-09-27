@@ -2,7 +2,7 @@
 
 ローカル/CI は Node 24.20.0 / npm 11.6.2 を用意して `npm ci` を実行する。`policy` が完全一致を検査する。fnm なら `fnm install` → `fnm use`、シェルの自動切替が働かない場合は `fnm exec --using=24.20.0 npm run verify` を使う。OGP 生成用 Python は `.python-version` の 3.13.3 に固定し、専用の `.venv-ogp` へ hash 検証した Pillow を導入する。npm の OGP script は `.venv-ogp/bin/python` を優先し、CI とローカルで同じ生成経路を使う。
 
-Cloudflare Pages のビルドは `.node-version` に従い Node 24.20.0 を使う。`packageManager` と `.npmrc` により npm の major を検査する。ローカル/CI の完全一致検証と公開先のビルド結果は別に確認する。詳細は [公開手順](deploy/README.md)。
+Cloudflare Pages のビルドは `.node-version` で Node 24.20.0 を指定する。npm の major は `engines.npm` と `.npmrc` の `engine-strict` が検査する。実際に選ばれた Node/npm は Pages のビルドログで確認する。ローカル/CI の完全一致検証と公開先のビルド結果は別に確認する。詳細は [公開手順](deploy/README.md)。
 
 | コマンド | 検証内容 |
 |---|---|

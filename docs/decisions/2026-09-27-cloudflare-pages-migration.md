@@ -12,7 +12,7 @@
 
 ## 決定
 
-`output: "export"` と `out/` を保ち、Cloudflare Pages の Git 連携で `main` を本番ブランチ、PR ブランチをプレビューとして配信する。ヘッダは `public/_headers` に置く。`app.yutodev.com` は Pages custom domain として登録する。ドメイン切替はプレビューと本番 Pages deployment を検証してから行い、切替成功後に旧配信サービスを停止する。
+`output: "export"` と `out/` を保ち、Cloudflare Pages の Git 連携で `main` を本番ブランチ、PR ブランチをプレビューとして配信する。ヘッダは `public/_headers` に置く。`app.yutodev.com` は Pages custom domain として登録し、DNS only で運用する。旧配信サービスの Git 連携を先に止めて最後の正常な本番 deployment を残し、プレビューと Pages 本番を検証してからドメインを切り替える。
 
 ## 検討した代替案
 
@@ -20,4 +20,4 @@ Workers で Next.js を実行する構成は、この静的サイトに不要な
 
 ## 影響
 
-配信設定、DNS、TLS、ブラウザ動作、セキュリティヘッダ、キャッシュを別々に検証する必要がある。公開操作は Issue #55 の手順と会話中の対象別承認に従う。2026-08-31 の ADR は当時の判断記録として残し、配信先に関する採択状態をこの ADR が上書きする。
+配信設定、DNS、TLS、ブラウザ動作、セキュリティヘッダ、キャッシュを別々に検証する必要がある。Cloudflare ゾーンでは Web Analytics が有効なため、DNS only と Pages 側で解析を有効にしない設定により、公開サイトへの自動挿入を避ける。公開操作は Issue #55 の手順と会話中の対象別承認に従う。2026-08-31 の ADR は当時の判断記録として残し、配信先に関する採択状態をこの ADR が上書きする。

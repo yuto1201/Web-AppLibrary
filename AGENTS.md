@@ -8,7 +8,7 @@ Next.js の静的出力 (`output: "export"`) を Cloudflare Pages で配信し�
 
 - 公開 URL: <https://app.yutodev.com/>
 - ホスティング: Cloudflare Pages（`main` への push で自動デプロイ）
-- DNS: Cloudflare（`app` の Pages custom domain。実際のレコードは公開切替時に確認）
+- DNS: Cloudflare（`app` の Pages custom domain。DNS only とし、実際のレコードは公開切替時に確認）
 - リポジトリ: <https://github.com/yuto1201/Web-AppLibrary>
 
 2026-08-31 に Next.js へ移行し、2026-09-27 に Cloudflare Pages へ戻す方針を採用しました。GitHub Pages での公開は終了しています。
@@ -131,7 +131,7 @@ App Store 審査ではプライバシーポリシー URL が必須です。各�
 
 `public/_headers` がセキュリティヘッダとキャッシュ制御を持ちます。CSP を緩める変更は理由を PR に書きます。
 
-`app.yutodev.com` は Pages の custom domain へ登録してから DNS を切り替えます。レコードを手で Pages に向けるだけでは検証が完了しないため、公開手順に従います。
+`app.yutodev.com` は Pages の custom domain へ登録してから DNS を切り替え、DNS only を確認します。レコードを手で Pages に向けるだけでは検証が完了しないため、公開手順に従います。
 
 ## 完了報告の原則
 

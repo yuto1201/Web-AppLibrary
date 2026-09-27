@@ -102,7 +102,7 @@ export function VinylSticker({
     resetTokenRef.current = resetToken;
     if (!drag.current) return;
     drag.current = null;
-    dragged.current = false;
+    // リサイズでドラッグを中断しても、直後の click をリンク遷移として扱わない。
     setSpin(0);
   }, [resetToken]);
 

@@ -5,7 +5,7 @@
   "productionUrl": "https://app.yutodev.com/",
   "profile": "static-site",
   "hosting": "cloudflare-pages",
-  "dns": { "provider": "cloudflare" },
+  "dns": { "provider": "cloudflare", "proxied": false },
   "templateSource": {
     "repository": "yuto1201/Web-Template",
     "commit": "997b15c4662b544888206660463b22b32765fd51"

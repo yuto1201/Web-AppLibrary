@@ -7,7 +7,7 @@
 | 本番 URL | <https://app.yutodev.com/> |
 | Pages プロジェクト | `applibrary`（Cloudflare account `Yuto Dev`） |
 | ソース | `yuto1201/Web-AppLibrary` の Git 連携 |
-| 本番ブランチ | `main` |
+| 本番ブランチ | `main`（移行中は自動本番デプロイを無効にする） |
 | プレビュー | PR ブランチの Pages preview deployment |
 | ビルド | `npm run build`、出力ディレクトリ `out` |
 | Node | `.node-version` の `24.20.0`（Pages の build image v3） |
@@ -16,15 +16,16 @@ Next.js は `output: "export"` で静的ファイルを生成する。Pages Func
 
 ## 移行手順（Issue #55）
 
-1. `npm run verify`、OpenAI / Anthropic の独立レビュー、対象 Head の GitHub `Repository checks` / `Browser checks` を確認する。
-2. Cloudflare Pages に `applibrary` を作成し、上記の GitHub repository・production branch・build command・出力ディレクトリを設定する。GitHub App の権限とプレビューが有効か実際に確認する。
-3. PR の preview URL でトップ・アプリ詳細・法務・404 を表示し、`public/_headers` の CSP とキャッシュ方針が応答に反映されることを確認する。
-4. 公開対象の PR と Head について承認を得てから `main` へ squash merge する。本番 Pages deployment の成功と内容を `*.pages.dev` で確認する。
-5. Pages の Custom domains で `app.yutodev.com` を登録する。Cloudflare が管理する `yutodev.com` の `app` CNAME を Pages へ切り替える。**CNAME だけを先に変更しない。** DNS・custom domain の操作には別の明示承認を得る。
-6. `https://app.yutodev.com/` の TLS、主要ページ、404、CSP、キャッシュ、DNS と Pages の domain status を確認する。ローカルの build 成功を本番の証拠に流用しない。
-7. 新しい配信経路を確認した後、旧 Vercel の `applibrary` プロジェクトの自動デプロイとドメイン設定を停止し、プロジェクトを整理する。対象を特定して別の明示承認を得る。
+1. `npm run verify` と OpenAI / Anthropic の独立レビューを済ませる。Cloudflare の DNS、Web Analytics、Bot Management、Zaraz、Rocket Loader、CAA の現状を読み取りで確認する。
+2. 対象を示して承認を得た後、Vercel `yuto16/applibrary` の Git 連携だけを解除する。**既存の本番 deployment と custom domain は保持する。** 解除後も `app.yutodev.com` が従来の CSP・法務本文で正常に配信され、新しい Git push では Vercel がデプロイしないことを確認する。
+3. 対象を示して承認を得た後、Cloudflare Pages `applibrary` を作り、`yuto1201/Web-AppLibrary`、production branch `main`、build command `npm run build`、出力 `out` を設定する。移行中は**自動本番デプロイを無効**、PR preview を有効にする。Pages Web Analytics は有効にしない。GitHub App 権限を確認してからブランチを push し、PR を作る。
+4. 対象 Head の `Repository checks` / `Browser checks` と独立レビューを確認する。PR preview でトップ・アプリ詳細・法務・404・`public/_headers` の応答を検証し、Pages build log の Node/npm を確認する。
+5. 公開対象の PR と Head について承認を得た後、Pages の自動本番デプロイを有効にして `main` へ squash merge する。Pages の本番 `*.pages.dev` で新しい本文・ヘッダ・404 を確認する。この時点の公開ドメインは、Git 連携を解除した Vercel の最後の deployment を引き続き配信する。
+6. Pages の Custom domains に `app.yutodev.com` を登録し、`app` CNAME を Pages へ切り替えて **DNS only** を確認する。Custom domain の登録時に Cloudflare が CNAME を自動で変更する場合もあるため、この一連の操作には別の明示承認を得る。**CNAME だけを先に変更しない。**
+7. `https://app.yutodev.com/` の TLS、主要ページ、404、CSP、キャッシュ、DNS、Pages domain status を確認する。HTML に解析・Zaraz の script が挿入されていないこと、ブラウザ console に CSP 違反がないこと、想定外の Cookie がないことも確認する。ローカルの build 成功を本番の証拠に流用しない。
+8. 切替後 10 分間の疎通確認を終えてから、旧 Vercel の domain 設定とプロジェクトを整理する。対象を特定して別の明示承認を得る。切替中に問題があれば Vercel の最後の正常な deployment を残したまま、`app` CNAME を旧値へ戻し、DNS only で復旧する。
 
-2026-09-27 の移行開始時点では Cloudflare Pages プロジェクトは 0 件で、`app` は Vercel の CNAME `392c47f2b226d996.vercel-dns-017.com`（DNS only）を指し、公開応答の `server` は `Vercel` だった。完了を報告する際は上記の状態を再取得し、各操作と結果を記録する。
+2026-09-27 の移行開始時点では Cloudflare Pages プロジェクトは 0 件で、`app` は Vercel の CNAME `392c47f2b226d996.vercel-dns-017.com`（DNS only）を指し、公開応答の `server` は `Vercel` だった。Cloudflare ゾーンの Web Analytics は on、Bot Fight Mode と Rocket Loader は off、CAA レコードは 0 件だった。DNS only を目標にするのは、ゾーンで有効な解析が本サイトへ自動挿入されるのを避けるためでもある。完了を報告する際は上記の状態を再取得し、各操作と結果を記録する。
 
 ## ヘッダとキャッシュ
 
