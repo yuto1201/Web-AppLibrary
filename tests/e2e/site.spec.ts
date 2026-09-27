@@ -743,6 +743,7 @@ test("画面リサイズがドラッグ中に起きても、掴んだままの�
   await page.mouse.move(box.x + 90, box.y - 20, { steps: 4 });
   await page.mouse.up();
 
+  await expect(page).toHaveURL("/");
   await expect(sticker).not.toHaveClass(/\bis-held\b/u);
   await expect(slot.locator(".sticker-ghost")).toHaveCount(0);
   await expect
@@ -750,6 +751,9 @@ test("画面リサイズがドラッグ中に起きても、掴んだままの�
     .toBe(true);
 
   await page.setViewportSize(viewport);
+  await sticker.focus();
+  await page.keyboard.press("Enter");
+  await expect(page).toHaveURL(/\/apps\/sublog\/$/u);
 });
 
 test("フッターの奥付は既定で閉じており、開くと本文とリンクが読める", async ({ page }) => {
