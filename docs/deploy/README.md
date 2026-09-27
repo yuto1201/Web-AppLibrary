@@ -1,59 +1,43 @@
-ステータス：確定
-最終更新日：2026-09-01
+# デプロイ — Cloudflare Pages
 
----
+## 目標構成
 
-# デプロイ
+| 項目 | 設定 |
+|---|---|
+| 本番 URL | <https://app.yutodev.com/> |
+| Pages プロジェクト | `applibrary`（Cloudflare account `Yuto Dev`） |
+| ソース | `yuto1201/Web-AppLibrary` の Git 連携 |
+| 本番ブランチ | `main` |
+| プレビュー | PR ブランチの Pages preview deployment |
+| ビルド | `npm run build`、出力ディレクトリ `out` |
+| Node | `.node-version` の `24.20.0`（Pages の build image v3） |
 
-## 公開先
+Next.js は `output: "export"` で静的ファイルを生成する。Pages Functions、DB、認証は使わない。Cloudflare の build image は `.node-version` を読み、Node のバージョンを切り替える。`engines` は互換 major 範囲、ローカルと CI は `policy` で Node/npm の完全一致を検査する。
 
-| 種別 | URL | 状態 |
-|---|---|---|
-| 本番 | <https://app.yutodev.com/> | 稼働中 |
-| Vercel 既定 | <https://applibrary-yuto16.vercel.app/> | 稼働中（同一デプロイ） |
+## 移行手順（Issue #55）
 
-## 仕組み
+1. `npm run verify`、OpenAI / Anthropic の独立レビュー、対象 Head の GitHub `Repository checks` / `Browser checks` を確認する。
+2. Cloudflare Pages に `applibrary` を作成し、上記の GitHub repository・production branch・build command・出力ディレクトリを設定する。GitHub App の権限とプレビューが有効か実際に確認する。
+3. PR の preview URL でトップ・アプリ詳細・法務・404 を表示し、`public/_headers` の CSP とキャッシュ方針が応答に反映されることを確認する。
+4. 公開対象の PR と Head について承認を得てから `main` へ squash merge する。本番 Pages deployment の成功と内容を `*.pages.dev` で確認する。
+5. Pages の Custom domains で `app.yutodev.com` を登録する。Cloudflare が管理する `yutodev.com` の `app` CNAME を Pages へ切り替える。**CNAME だけを先に変更しない。** DNS・custom domain の操作には別の明示承認を得る。
+6. `https://app.yutodev.com/` の TLS、主要ページ、404、CSP、キャッシュ、DNS と Pages の domain status を確認する。ローカルの build 成功を本番の証拠に流用しない。
+7. 新しい配信経路を確認した後、旧 Vercel の `applibrary` プロジェクトの自動デプロイとドメイン設定を停止し、プロジェクトを整理する。対象を特定して別の明示承認を得る。
 
-`main` へ push すると Vercel が自動でビルドしデプロイする。手動操作は不要。
+2026-09-27 の移行開始時点では Cloudflare Pages プロジェクトは 0 件で、`app` は Vercel の CNAME `392c47f2b226d996.vercel-dns-017.com`（DNS only）を指し、公開応答の `server` は `Vercel` だった。完了を報告する際は上記の状態を再取得し、各操作と結果を記録する。
 
-- Vercel プロジェクト: `applibrary`（team `yuto16`）
-- フレームワーク検出: Next.js
-- 出力: `output: "export"` による静的ファイル（`out/`）
+## ヘッダとキャッシュ
 
-PR を作るとプレビューデプロイが自動生成される。
-
-## Node/npm の互換範囲
-
-ローカル/CI は `.node-version` と `packageManager` で完全固定する。Vercel の install/build は `engines` の Node 24.x / npm 11.x を許容する。Vercel は minor/patch を自動更新し、major のみ選択可能なため、完全一致の engines と engine-strict を組み合わせない。[Vercel の仕様](https://vercel.com/docs/functions/runtimes/node-js/node-js-versions)
-
-クラウドは `npm run build` を実行する。完全固定環境での `npm run verify` は GitHub CI が担当する。
-
-## DNS
-
-Cloudflare がゾーン `yutodev.com` を管理している。
-
-| 名前 | タイプ | 値 | プロキシ |
-|---|---|---|---|
-| `app` | CNAME | `392c47f2b226d996.vercel-dns-017.com` | **DNS only** |
-
-**プロキシ（オレンジ雲）を有効にしないこと。** Vercel が `disableProxy: true` を要求しており、有効にすると証明書と経路で問題が出る。同ゾーンの `web-template` も同じ設定。
-
-証明書は Vercel が Let's Encrypt で自動発行・更新する。
-
-## ヘッダ
-
-`vercel.json` がセキュリティヘッダとキャッシュ制御を持つ。
+`public/_headers` は Next.js の `out/_headers` にコピーされ、Pages の静的応答に適用される。
 
 - 全パス: CSP、`X-Frame-Options: DENY`、`X-Content-Type-Options`、`Referrer-Policy`、`Permissions-Policy`
-- `/_next/static/*`: 1 年 immutable（ファイル名にハッシュを含むため）
-- `/apps/*`: `public, max-age=0, must-revalidate`。HTML と固定名のアイコン・スクリーンショットを再デプロイ後に再検証できるようにする
+- `/_next/static/*`: 1 年 immutable。ファイル名にハッシュを持つ資産だけを長期キャッシュする
+- `/apps/*`: `public, max-age=0, must-revalidate`。HTML と固定名のアイコン・スクリーンショットを再検証する
 
-CSP を緩める変更は理由を PR に書く。
+CSP を緩める変更は理由を PR に書く。Pages の `_headers` は Pages Functions の応答には適用されないため、Functions を導入する場合はヘッダ設計を見直す。
 
-PR の `Repository checks` / `Browser checks` と独立レビューの実際の出力を確認してから、承認された対象をマージする。両 check は active な GitHub Ruleset で必須化されており、正規化した設定は `config/github-ruleset.json` に保存する。この export は取得時点の記録であり、実効状態は GitHub API で別途確認する。[../workflow.md](../workflow.md) を参照。
+## 検証と履歴
 
-## 移行の履歴
+PR の `Repository checks` / `Browser checks` と独立レビューの実際の出力を確認してから、承認された対象をマージする。両 check は active な GitHub Ruleset で必須化され、正規化した設定は `config/github-ruleset.json` に保存する。この export は取得時点の記録であり、実効状態は GitHub API で別途確認する。[../workflow.md](../workflow.md) を参照。
 
-2026-08-31 に Cloudflare Pages から Vercel へ移行した。GitHub Pages の公開も同時に終了している。経緯は [decisions/2026-08-31-nextjs-vercel-migration.md](../decisions/2026-08-31-nextjs-vercel-migration.md) を参照。
-
-2026-09-01 に旧 Cloudflare Pages プロジェクト `applibrary` を削除した。プロジェクト一覧は空で、同名プロジェクトの取得は not found、`applibrary-ag2.pages.dev` は名前解決しないことを確認した。削除後はプロジェクト固有の Git 設定も参照できない。Cloudflare は `yutodev.com` の DNS 管理だけを継続し、`app` の Vercel CNAME と DNS only 設定は変更していない。Cloudflare のアカウント単位の GitHub App installation は別の権限設定であり、このプロジェクト削除の完了証拠には含めない。
+2026-08-31 の Next.js 化と旧配信先への移行は [履歴 ADR](../decisions/2026-08-31-nextjs-vercel-migration.md) に記録する。Cloudflare Pages に戻す判断は [新しい ADR](../decisions/2026-09-27-cloudflare-pages-migration.md) に記録する。

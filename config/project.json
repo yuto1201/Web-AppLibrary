@@ -4,8 +4,8 @@
   "repository": "yuto1201/Web-AppLibrary",
   "productionUrl": "https://app.yutodev.com/",
   "profile": "static-site",
-  "hosting": "vercel",
-  "dns": { "provider": "cloudflare", "proxied": false },
+  "hosting": "cloudflare-pages",
+  "dns": { "provider": "cloudflare" },
   "templateSource": {
     "repository": "yuto1201/Web-Template",
     "commit": "997b15c4662b544888206660463b22b32765fd51"

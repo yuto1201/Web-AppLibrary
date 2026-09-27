@@ -20,7 +20,7 @@ async function loadRuleset() { return JSON.parse(await readFile(rulesetUrl, "utf
 afterEach(async () => { await Promise.all(roots.splice(0).map((root) => rm(root, { recursive: true, force: true }))); });
 
 describe("development checks", () => {
-  it("pins local verification without pinning Vercel to an unavailable patch", () => {
+  it("pins local verification while allowing compatible hosted runtime updates", () => {
     const pkg = { packageManager: "npm@11.6.2", engines: { node: "24.x", npm: "11.x" } };
     expect(validateRuntime(pkg, "24.20.0", "24.20.0", "npm/11.6.2 node/v24.20.0")).toEqual([]);
     expect(validateRuntime(pkg, "24.20.0", "24.21.0", "npm/11.6.2")).toHaveLength(1);
@@ -56,14 +56,24 @@ describe("development checks", () => {
     await writeFile(isolated, "");
     expect(resolveOgpPython(root)).toBe(isolated);
   });
-  it("keeps immutable caching on hashed assets only", async () => {
-    const vercel = JSON.parse(await readFile("vercel.json", "utf8"));
-    const cacheValue = (source) => vercel.headers
-      .find((entry) => entry.source === source)
-      ?.headers.find((header) => header.key === "Cache-Control")
-      ?.value;
-    expect(cacheValue("/_next/static/(.*)")).toBe("public, max-age=31536000, immutable");
-    expect(cacheValue("/apps/(.*)")).toBe("public, max-age=0, must-revalidate");
+  it("keeps Pages security headers and immutable caching on hashed assets only", async () => {
+    const source = await readFile("public/_headers", "utf8");
+    const blocks = new Map(source.trim().split(/\n\s*\n/u).map((block) => {
+      const [route, ...lines] = block.split("\n");
+      return [route, new Map(lines.map((line) => {
+        const match = /^\s+([^:]+):\s*(.+)$/u.exec(line);
+        if (!match) throw new Error(`Invalid Pages header: ${line}`);
+        return [match[1], match[2]];
+      }))];
+    }));
+    expect(blocks.get("/*")?.get("Content-Security-Policy")).toBe("default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
+    expect(blocks.get("/*")?.get("X-Frame-Options")).toBe("DENY");
+    expect(blocks.get("/*")?.get("X-Content-Type-Options")).toBe("nosniff");
+    expect(blocks.get("/*")?.get("Referrer-Policy")).toBe("strict-origin-when-cross-origin");
+    expect(blocks.get("/*")?.get("Permissions-Policy")).toBe("camera=(), microphone=(), geolocation=(), interest-cohort=()");
+    expect(blocks.get("/_next/static/*")?.get("Cache-Control")).toBe("public, max-age=31536000, immutable");
+    expect(blocks.get("/apps/*")?.get("Cache-Control")).toBe("public, max-age=0, must-revalidate");
+    expect(blocks.get("/*")?.has("Cache-Control")).toBe(false);
   });
   it("keeps the exported ruleset aligned with required GitHub Actions checks regardless of order", async () => {
     const ruleset = await loadRuleset();

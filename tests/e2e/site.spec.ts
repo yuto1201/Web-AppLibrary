@@ -843,7 +843,8 @@ test("OGP metadata とサイト共通の法務ページ", async ({ page, request
   await expect(page.locator(".legal-card")).toContainText("テーマと言語");
   await expect(page.locator(".legal-card")).not.toContainText("検索入力");
   await expect(page.locator(".legal-card")).not.toContainText("表示密度");
-  await expect(page.locator(".legal-meta")).toContainText("制定日: 2026年9月1日 · 最終更新: 2026年9月16日");
+  await expect(page.locator(".legal-meta")).toContainText("制定日: 2026年9月1日 · 最終更新: 2026年9月27日");
+  await expect(page.getByRole("link", { name: "Cloudflare のプライバシーポリシー" })).toHaveAttribute("href", "https://www.cloudflare.com/policies/privacy/");
   await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://app.yutodev.com/privacy/");
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "プライバシーポリシー — AppLibrary");
   await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute("content", "プライバシーポリシー — AppLibrary");

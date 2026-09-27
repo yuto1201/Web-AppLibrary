@@ -5,7 +5,7 @@
 
 # アーキテクチャ概要
 
-AppLibrary は Next.js の静的出力を Vercel で配信する紹介サイト。サーバー処理・DB・認証を持たない。
+AppLibrary は Next.js の静的出力を Cloudflare Pages で配信する紹介サイト。サーバー処理・DB・認証を持たない。
 
 ## サイトマップ
 
@@ -92,10 +92,11 @@ registry.ts (zod 検証)
 
 ## デプロイと配信
 
-`main` への push で Vercel が自動ビルド・デプロイする。詳細は [deploy/README.md](deploy/README.md)。
+`main` への push で Cloudflare Pages が自動ビルド・デプロイする。詳細は [deploy/README.md](deploy/README.md)。
 
 ## 関連ドキュメント
 
 - [../AGENTS.md](../AGENTS.md) — 開発規約
 - [deploy/README.md](deploy/README.md) — 公開とデプロイ
 - [decisions/2026-08-31-nextjs-vercel-migration.md](decisions/2026-08-31-nextjs-vercel-migration.md) — 移行の経緯
+- [decisions/2026-09-27-cloudflare-pages-migration.md](decisions/2026-09-27-cloudflare-pages-migration.md) — 現行の配信先

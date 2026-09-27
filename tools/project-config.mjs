@@ -14,8 +14,8 @@ export const projectSchema = z.strictObject({
   repository: z.literal("yuto1201/Web-AppLibrary"),
   productionUrl: z.literal("https://app.yutodev.com/"),
   profile: z.literal("static-site"),
-  hosting: z.literal("vercel"),
-  dns: z.strictObject({ provider: z.literal("cloudflare"), proxied: z.literal(false) }),
+  hosting: z.literal("cloudflare-pages"),
+  dns: z.strictObject({ provider: z.literal("cloudflare") }),
   templateSource: z.strictObject({ repository: z.literal("yuto1201/Web-Template"), commit: z.string().regex(/^[a-f0-9]{40}$/u) }),
 });
 

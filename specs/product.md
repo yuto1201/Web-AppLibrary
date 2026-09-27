@@ -5,7 +5,7 @@ AppLibrary は個人開発したアプリの紹介サイト。訪問者が一覧
 - 掲載対象は iOS / iPadOS / macOS / watchOS / visionOS / Web / CLI。
 - アプリ情報は `src/data/registry.ts`、本文は `src/data/privacy/`、画像は `public/apps/` に保持する。
 - 表示設定はテーマと言語のみ。端末の localStorage に保存し、アカウントを作らない。
-- Next.js App Router の静的出力を Vercel からドメインルートへ配信する。Cloudflare は DNS only。
+- Next.js App Router の静的出力を Cloudflare Pages からドメインルートへ配信する。
 - トップページは紙 (paper) の意匠。掲載数が一覧の絞り込みを必要としないため、検索とフィルタは持たない。掲載アプリが 10 件を超えたら再検討する。
 - 遊びは机に残したシール。アプリアイコンのビニールを掴んで動かせる。最初の画面から紙に乗っている。
 - 個別ページはアイコンの色味に寄せた紙。法務ページは共通の紙面。机の散らしはホームだけ。詳細の標本ビニールは 1 枚。スクショはページ内ギャラリー。モーダルは持たない。
