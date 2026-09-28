@@ -18,14 +18,19 @@ export type Post = { date: string; title: string; excerpt: string };
 
 export const posts: Post[] = [
   {
+    date: "2026-09-29",
+    title: "アプリを眺める、小さな工房に",
+    excerpt: "気になるアイコンから、実際の画面をひとつずつ。紙とシールの机に、アプリの小さな展示を加えました。",
+  },
+  {
+    date: "2026-09-25",
+    title: "使う前に、画面をのぞけるように",
+    excerpt: "アプリの詳細ページにスクリーンショットのギャラリーを追加。機能と一緒に、使い心地も想像できるように。",
+  },
+  {
     date: "2026-09-08",
     title: "トップページを紙とステッカーに",
     excerpt: "検索とフィルタをやめ、アプリを行の索引に。アイコンは掴んで動かせるステッカーにしました。",
-  },
-  {
-    date: "2026-04-19",
-    title: "AppLibrary を新デザインに刷新",
-    excerpt: "liquid-glass デザインの新しいトップページに切り替えました。",
   },
 ];
 
@@ -49,6 +54,20 @@ type Dict = {
   hero_h1_b: string;
   hero_note: string;
   hero_cta: string;
+  spotlight_title: string;
+  spotlight_choose: string;
+  spotlight_screen: string;
+  spotlight_open: string;
+  spotlight_static: string;
+  studio_intro: string;
+  studio_apps: string;
+  studio_made: string;
+  apps_intro: string;
+  workshop_title: string;
+  workshop_intro: string;
+  workshop_items: { title: string; text: string }[];
+  posts_intro: string;
+  contact_note: string;
   desk_hint: string;
   stickers_title: string;
   stickers_hint: string;
@@ -83,6 +102,24 @@ export const i18n: Record<Lang, Dict> = {
     hero_h1_b: "丁寧に。",
     hero_note: "東京で、Swift と SwiftUI でつくっています。",
     hero_cta: "アプリを見る",
+    spotlight_title: "机の上の、ひとつ。",
+    spotlight_choose: "選んでみて",
+    spotlight_screen: "アプリの画面",
+    spotlight_open: "詳しく見る",
+    spotlight_static: "実際のアプリのスクリーンショットです。アプリ自体はこのページでは操作できません。",
+    studio_intro: "東京の、小さな個人開発室",
+    studio_apps: "つの小さな道具",
+    studio_made: "つくる。使う。また直す。",
+    apps_intro: "暮らしのことも、つくることも。気になるひとつをどうぞ。",
+    workshop_title: "小さく作って、\n少しずつ育てる。",
+    workshop_intro: "この机から、生まれるもの。",
+    workshop_items: [
+      { title: "日々の「ちょっと」から。", text: "毎月の支払い、コーヒー、開発のひと手間。身近なことを、ひとつの道具に。" },
+      { title: "使い心地まで、こつこつと。", text: "必要な機能を、迷わず使える形へ。小さな画面の手触りも大切にしています。" },
+      { title: "途中も、ここに。", text: "リリースしたものも、まだ開発中のものも。できあがっていく過程ごと並べています。" },
+    ],
+    posts_intro: "机の端に残しておく、ちょっとした変化の記録。",
+    contact_note: "感想ひとつから、次のアイデアが生まれることも。",
     desk_hint: "つまんでみて",
     stickers_title: "Stickers",
     stickers_hint: "つまんで動かせます。",
@@ -90,7 +127,7 @@ export const i18n: Record<Lang, Dict> = {
     section_apps: "App Library",
     section_posts: "Notes",
     contact_h: "お仕事・感想・雑談まで。",
-    contact_p: "お気軽にご連絡ください。SNS・メール、どちらでも。",
+    contact_p: "使ってみた感想も、こんなの欲しい、も。X や GitHub からお気軽に。",
     footer_copyright: "© 2026 · 東京から、愛を込めて",
     colophon_label: "奥付",
     colophon_p1: "東京在住のひとりの開発者が、趣味と実益を兼ねて作って運用しています。",
@@ -115,6 +152,24 @@ export const i18n: Record<Lang, Dict> = {
     hero_h1_b: "made with care.",
     hero_note: "Made in Tokyo with Swift and SwiftUI.",
     hero_cta: "Browse apps",
+    spotlight_title: "One from the desk.",
+    spotlight_choose: "Pick an app",
+    spotlight_screen: "app screenshot",
+    spotlight_open: "Explore",
+    spotlight_static: "An actual app screenshot. The app itself is not interactive on this page.",
+    studio_intro: "A small independent studio in Tokyo",
+    studio_apps: "little tools",
+    studio_made: "Make. Use. Make it better.",
+    apps_intro: "For everyday life, and for making things. Find a little tool for you.",
+    workshop_title: "Start small.\nKeep making it better.",
+    workshop_intro: "Things that begin at this desk.",
+    workshop_items: [
+      { title: "An everyday starting point.", text: "Monthly bills, a cup of coffee, a step in a workflow. Familiar things, made into little tools." },
+      { title: "Care in the small details.", text: "Useful features, easy to find. A little extra thought for how every screen feels to use." },
+      { title: "Room for work in progress.", text: "Released apps sit alongside works in progress. This is a place to see them take shape." },
+    ],
+    posts_intro: "Small changes, noted down at the edge of the desk.",
+    contact_note: "A little feedback can be the start of the next idea.",
     desk_hint: "Pinch one.",
     stickers_title: "Stickers",
     stickers_hint: "Grab them and move them around.",
@@ -122,7 +177,7 @@ export const i18n: Record<Lang, Dict> = {
     section_apps: "App Library",
     section_posts: "Notes",
     contact_h: "Work, feedback, or just hi.",
-    contact_p: "Always happy to hear from you — email or social, either works.",
+    contact_p: "Tried an app, or have an idea? Drop me a line on X or GitHub.",
     footer_copyright: "© 2026 · Made in Tokyo, with care",
     colophon_label: "Colophon",
     colophon_p1: "Built and run by one developer in Tokyo, as a side project.",

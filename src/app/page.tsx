@@ -2,7 +2,7 @@ import { Nav } from "@/components/Nav";
 import { Hero } from "@/components/Hero";
 import { AppsSection } from "@/components/AppsSection";
 import { Stickers } from "@/components/Stickers";
-import { Posts, Contact, Footer } from "@/components/Sections";
+import { Workshop, Posts, Contact, Footer } from "@/components/Sections";
 import { ActivateProvider } from "@/lib/activate";
 
 export default function HomePage() {
@@ -15,6 +15,7 @@ export default function HomePage() {
         <main className="page">
           <Hero />
           <AppsSection />
+          <Workshop />
           <Posts />
           <Contact />
         </main>
