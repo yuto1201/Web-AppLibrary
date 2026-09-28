@@ -1,7 +1,8 @@
 # TODO — AppLibrary
 
-最終更新日: 2026-09-25
+最終更新日: 2026-09-27
 
+- [ ] AppLibrary の配信を Cloudflare Pages に移行し、旧配信先を停止する（Issue #55）
 - [ ] 個別ページをアイコンの色味に合わせる（Issue #52）
 - [x] 個別ページにスクショギャラリーを足す（Issue #50 / PR #51）
 

@@ -1,8 +1,10 @@
 # Next.js 化と Vercel 移行
 
-ステータス: 採択
+ステータス: 上書き（配信先のみ。Next.js の静的出力は継続）
 日付: 2026-08-31
 関連: 2026-05-16-docs-restructure
+
+配信先は [2026-09-27 の Cloudflare Pages 判断](2026-09-27-cloudflare-pages-migration.md) が上書きする。以下は移行時点の記録。
 
 ---
 

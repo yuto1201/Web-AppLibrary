@@ -5,7 +5,7 @@
   "highRiskPaths": [
     "AGENTS.md", "CLAUDE.md", ".github/", ".codex/", ".claude/",
     "config/", "tools/", "specs/", "docs/workflow.md", "docs/verification.md",
-    "docs/agent-contracts/", "docs/deploy/", "next.config.mjs", "vercel.json",
+    "docs/agent-contracts/", "docs/deploy/", "next.config.mjs", "public/_headers",
     "package.json", "package-lock.json", ".node-version", ".python-version", ".npmrc"
   ],
   "review": {

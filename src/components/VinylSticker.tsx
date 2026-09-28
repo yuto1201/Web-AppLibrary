@@ -102,7 +102,7 @@ export function VinylSticker({
     resetTokenRef.current = resetToken;
     if (!drag.current) return;
     drag.current = null;
-    dragged.current = false;
+    // リサイズでドラッグを中断しても、直後の click をリンク遷移として扱わない。
     setSpin(0);
   }, [resetToken]);
 
@@ -157,6 +157,11 @@ export function VinylSticker({
     onPointerCancel: handlePointerCancel,
     onLostPointerCapture: handlePointerUp,
     onClick: (event: React.MouseEvent) => {
+      // キーボードや支援技術の click は、直前に mouseup がなくても有効にする。
+      if (event.detail === 0) {
+        dragged.current = false;
+        return;
+      }
       if (!dragged.current) return;
       event.preventDefault();
       dragged.current = false;

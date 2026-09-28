@@ -29,7 +29,7 @@ export default function SitePrivacyPage() {
         <p className="legal-meta">
           制定日: <time dateTime="2026-09-01">2026年9月1日</time>
           {" · "}
-          最終更新: <time dateTime="2026-09-16">2026年9月16日</time>
+          最終更新: <time dateTime="2026-09-27">2026年9月27日</time>
         </p>
         <p className="legal-language">本ページは日本語で提供しています。 <span lang="en">This page is available in Japanese only.</span></p>
 
@@ -40,7 +40,7 @@ export default function SitePrivacyPage() {
 
         <h2>1. 本サイトが収集する情報</h2>
         <p>
-          本サイトにはアカウント、送信フォーム、コメント、アクセス解析、広告、トラッキング機能がなく、
+          本サイトにはアカウント、送信フォーム、コメント、独自のアクセス解析、広告、トラッキング機能がなく、
           運営者が閲覧者の個人情報を直接収集する機能はありません。本サイトの実装は Cookie を使用しません。
         </p>
 
@@ -54,9 +54,10 @@ export default function SitePrivacyPage() {
 
         <h2>3. ホスティング事業者による処理</h2>
         <p>
-          本サイトは Vercel から配信されています。配信、安全性の確保、障害対応のため、Vercel が
-          IP アドレス、リクエスト日時、ブラウザ情報などの通信情報を取り扱う場合があります。
-          その取り扱いには Vercel のプライバシーポリシーが適用されます。
+          本サイトは Cloudflare Pages から配信されています。配信、安全性の確保、障害対応のため、Cloudflare が
+          IP アドレスや通信経路、ブラウザの設定などの情報を取り扱う場合があります。
+          Cloudflare の安全対策により Cookie が使用される場合もあります。
+          詳細は <a href="https://www.cloudflare.com/policies/privacy/">Cloudflare のプライバシーポリシー</a>をご確認ください。
         </p>
 
         <h2>4. 外部サービスへのリンク</h2>
