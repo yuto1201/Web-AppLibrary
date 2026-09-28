@@ -20,7 +20,6 @@
   font-size: 12px;
 }
 .studio-strip > span { display: inline-flex; align-items: center; gap: 10px; }
-.studio-strip strong { font-family: var(--font-mono); font-weight: 400; color: var(--accent); }
 .studio-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
 
 /* 切り替えはクリック / キーボード操作だけ。自動送りや常時モーションは加えない。 */
@@ -51,6 +50,7 @@
   transform: rotate(-7deg);
 }
 .spotlight-screen img { height: 100%; width: 100%; object-fit: cover; object-position: top; }
+.spotlight-screen[data-kind="icon"] { height: 144px; aspect-ratio: 1; border-radius: 28px; }
 .spotlight-seal {
   position: absolute;
   right: 13px;
@@ -130,6 +130,10 @@
 }
 @media (min-width: 641px) and (max-width: 1179px) {
   .poster .hero { width: min(760px, calc(100% - var(--space-10))); }
+}
+/* 2列へ切り替わった直後は左ガターが狭い。CafLog は読める余白ができるまで山へ戻す。 */
+@media (min-width: 1180px) and (max-width: 1279px) {
+  .poster[data-desk="ready"] .sticker-slot[data-key="caflog"] { top: auto; bottom: -28px; }
 }
 @media (max-width: 640px) {
   .poster .hero { padding-top: 64px; }

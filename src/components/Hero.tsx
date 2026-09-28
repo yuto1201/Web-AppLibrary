@@ -29,7 +29,7 @@ export function Hero() {
   return (
     <section className="hero" id="top">
       <div className="hero-copy">
-        <p className="hero-tag">{profile.tagline}</p>
+        <p className="hero-tag" lang="en">{profile.tagline}</p>
         <h1 className="hero-h1" aria-label={t.hero_h1_a + t.hero_h1_b}>
           <span className="hero-line" aria-hidden="true">
             <Letters text={t.hero_h1_a} baseIndex={0} />
@@ -49,7 +49,7 @@ export function Hero() {
       <AppSpotlight />
       <div className="studio-strip">
         <span><span className="studio-dot" aria-hidden="true" />{t.studio_intro}</span>
-        <span><strong>{String(apps.length).padStart(2, "0")}</strong> {t.studio_apps}</span>
+        <span>{t.studio_apps.replace("{count}", String(apps.length))}</span>
         <span>{t.studio_made}</span>
       </div>
     </section>

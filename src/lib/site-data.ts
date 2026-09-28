@@ -23,7 +23,7 @@ export const posts: Post[] = [
     excerpt: "気になるアイコンから、実際の画面をひとつずつ。紙とシールの机に、アプリの小さな展示を加えました。",
   },
   {
-    date: "2026-09-25",
+    date: "2026-09-26",
     title: "使う前に、画面をのぞけるように",
     excerpt: "アプリの詳細ページにスクリーンショットのギャラリーを追加。機能と一緒に、使い心地も想像できるように。",
   },
@@ -31,6 +31,11 @@ export const posts: Post[] = [
     date: "2026-09-08",
     title: "トップページを紙とステッカーに",
     excerpt: "検索とフィルタをやめ、アプリを行の索引に。アイコンは掴んで動かせるステッカーにしました。",
+  },
+  {
+    date: "2026-04-19",
+    title: "AppLibrary を新デザインに刷新",
+    excerpt: "liquid-glass デザインの新しいトップページに切り替えました。",
   },
 ];
 
@@ -57,6 +62,7 @@ type Dict = {
   spotlight_title: string;
   spotlight_choose: string;
   spotlight_screen: string;
+  spotlight_icon: string;
   spotlight_open: string;
   spotlight_static: string;
   studio_intro: string;
@@ -105,10 +111,11 @@ export const i18n: Record<Lang, Dict> = {
     spotlight_title: "机の上の、ひとつ。",
     spotlight_choose: "選んでみて",
     spotlight_screen: "アプリの画面",
+    spotlight_icon: "アプリアイコン",
     spotlight_open: "詳しく見る",
     spotlight_static: "実際のアプリのスクリーンショットです。アプリ自体はこのページでは操作できません。",
     studio_intro: "東京の、小さな個人開発室",
-    studio_apps: "つの小さな道具",
+    studio_apps: "{count}つの小さな道具",
     studio_made: "つくる。使う。また直す。",
     apps_intro: "暮らしのことも、つくることも。気になるひとつをどうぞ。",
     workshop_title: "小さく作って、\n少しずつ育てる。",
@@ -155,10 +162,11 @@ export const i18n: Record<Lang, Dict> = {
     spotlight_title: "One from the desk.",
     spotlight_choose: "Pick an app",
     spotlight_screen: "app screenshot",
+    spotlight_icon: "app icon",
     spotlight_open: "Explore",
     spotlight_static: "An actual app screenshot. The app itself is not interactive on this page.",
     studio_intro: "A small independent studio in Tokyo",
-    studio_apps: "little tools",
+    studio_apps: "{count} little tools",
     studio_made: "Make. Use. Make it better.",
     apps_intro: "For everyday life, and for making things. Find a little tool for you.",
     workshop_title: "Start small.\nKeep making it better.",

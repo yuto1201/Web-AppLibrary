@@ -10,7 +10,7 @@ export function Workshop() {
   return (
     <section className="section workshop" aria-labelledby="workshop-heading">
       <div className="workshop-lead">
-        <p className="eyebrow">BEHIND THE APPS</p>
+        <p className="eyebrow" lang="en">BEHIND THE APPS</p>
         <h2 id="workshop-heading">{t.workshop_title}</h2>
         <p>{t.workshop_intro}</p>
         <span className="workshop-flower" aria-hidden="true">✳</span>
@@ -62,7 +62,7 @@ export function Contact() {
     <section className="section" id="contact">
       <div className="contact-postcard">
         <div className="contact-stamp" aria-hidden="true"><span>FROM TOKYO</span><span>hello.</span><span>WITH CARE</span></div>
-        <p className="eyebrow">SAY HELLO</p>
+        <p className="eyebrow" lang="en">SAY HELLO</p>
         <h2 className="contact-h">{t.contact_h}</h2>
         <p className="contact-p">{t.contact_p}</p>
         {visible.length > 0 && (
