@@ -21,9 +21,10 @@ Next.js は `output: "export"` で静的ファイルを生成する。Pages Func
 - PR #56 の本番コミットは `26e19fe8613349378ceff16dd20b5a43cec54947`、Pages deployment は `3d836bf0-01fb-48c1-943a-b23e565a369e`。
 - `app.yutodev.com` を Pages の Custom domains に登録後、自動更新された CNAME を DNS only に戻した。権威 DNS と公開リゾルバーの両方で Pages 向きを確認した。
 - Pages は「アクティブ」「SSL 有効」。切替直後の検証中には一時的に 522 が返り、2026-09-28 12:45 UTC に 200 応答へ移行した。
-- 本番ドメインでトップ、アプリ詳細、アプリ privacy、サイト privacy、terms、404、CSP、セキュリティヘッダ、HTML 再検証、ハッシュ付き JS の immutable を確認した。PC / モバイル表示で JavaScript と console のエラーはなかった。
+- 本番ドメインでトップ、アプリ詳細、アプリ privacy、サイト privacy、terms、404、CSP、セキュリティヘッダ、HTML の `Cache-Control: public, max-age=0, must-revalidate`、404 の `no-store`、ハッシュ付き JS の `public, max-age=31536000, immutable` を観測した。PC / モバイル表示で JavaScript と console のエラーはなかった。
 - 12:46:34〜12:56:38 UTC の10分間、30秒間隔の21回すべてで HTTP 200、Cloudflare 配信、CSP を確認した。HTML に解析 / Zaraz script や Set-Cookie はなく、別の新規 Chromium セッションでも Cookie と外部 script は空だった。
-- 12:57 UTC に旧 `yuto16/applibrary` プロジェクトを削除（API 204）。再取得は Project not found（404）、旧標準 URL と旧本番 deployment URL も DEPLOYMENT_NOT_FOUND（404）を返した。削除後に本番ドメインの主要ページ・ヘッダを再検証した。
+- 12:57 UTC に旧 Vercel `yuto16/applibrary` プロジェクトを削除（API 204）。再取得は Project not found（404）、旧標準 URL と旧本番 deployment URL も DEPLOYMENT_NOT_FOUND（404）を返した。削除後に本番ドメインの主要ページ・ヘッダを再検証した。
+- 切替後にダッシュボードと権威 DNS で再確認したゾーン設定は、Web Analytics 有効、Bot Fight Mode 無効、Rocket Loader 無効、CAA なし。ゾーン設定は変更せず、DNS only と実際の公開応答で解析の自動挿入がないことを確認した。
 - 旧配信先の削除後は、下記の旧 CNAME に戻す復旧手順は使えない。今後の復旧は Pages の正常な deployment を使う。
 
 検証範囲は Chromium の PC / モバイル表示と上記 HTTP / DNS 観測。全地域の DNS キャッシュの反映完了や Safari 実機確認を意味しない。
