@@ -28,8 +28,9 @@ export function AppsSection() {
         <h2 className="section-title">{t.section_apps}</h2>
         <span className="section-count">{apps.length}</span>
       </div>
+      <p className="section-intro">{t.apps_intro}</p>
       <ul className="app-list">
-        {apps.map((app) => (
+        {apps.map((app, index) => (
           <li key={app.slug}>
             <Link
               className={`app-row${app.slug === activeSlug ? " is-linked" : ""}`}
@@ -47,6 +48,7 @@ export function AppsSection() {
                 <img src={`/apps/${app.slug}/${app.icon}`} alt="" loading="lazy" />
               </span>
               <span className="app-row-main">
+                <span className="app-row-category"><span aria-hidden="true">{String(index + 1).padStart(2, "0")} / </span><span lang="ja">{app.category}</span></span>
                 <span className="app-row-name">{app.name}</span>
                 <span className="app-row-tagline" lang="ja">{app.tagline}</span>
               </span>
@@ -55,6 +57,7 @@ export function AppsSection() {
                 <span className="app-row-platforms">{app.platforms.join(" ")}</span>
                 <span className="app-row-year">{app.year}</span>
               </span>
+              <span className="app-row-arrow" aria-hidden="true">↗</span>
             </Link>
           </li>
         ))}
