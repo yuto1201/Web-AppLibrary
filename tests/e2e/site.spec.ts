@@ -701,10 +701,12 @@ test("390px で右端の鉛筆メモが画面内に収まる", async ({ page }) 
 test("reduced-motion では掴み中に拡大しない", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  await expect(page.locator(".poster")).toHaveAttribute("data-desk", "ready");
   const sublog = page.locator('.sticker[href="/apps/sublog/"]');
   await raiseSticker(sublog);
-  const box = (await sublog.boundingBox())!;
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  // data-desk は最初の計測完了。mobile の初期レイアウトが収束する前の座標を
+  // 固定せず、Playwright の安定・表示・ヒット判定を経てシールへポインタを乗せる。
+  await sublog.hover();
   await page.mouse.down();
   await expect(sublog).toHaveClass(/\bis-held\b/u);
   const scale = await sublog.evaluate((el) => {
