@@ -5,9 +5,9 @@ import { ScreenshotGallery } from "@/components/ScreenshotGallery";
 import "@/styles/caflog.css";
 
 const moments = [
-  { number: "01", label: "LOG YOUR CUP", title: "まずは、一杯の記録から。", copy: "いつものコーヒーも、新しいドリンクも。飲んだ瞬間を、手軽に残す。", feature: 0, symbol: "cup" },
-  { number: "02", label: "KNOW YOUR FLOW", title: "見えなかった流れを、知る。", copy: "今、体内にどれくらい残っている？ 時間とともに変わる推定量を確認。", feature: 1, symbol: "flow" },
-  { number: "03", label: "LOOK AHEAD", title: "今日の夜まで、見通そう。", copy: "次の一杯を決める前に。就寝予定時刻の推定残量をチェック。", feature: 2, symbol: "moon" },
+  { number: "01", label: "LOG YOUR CUP", title: "まずは、一杯の記録から。", copy: "いつものコーヒーも、新しいドリンクも。飲んだ瞬間を、手軽に残す。", featureTitle: "10 秒で記録", target: "caflog-feature-log", symbol: "cup" },
+  { number: "02", label: "KNOW YOUR FLOW", title: "見えなかった流れを、知る。", copy: "今、体内にどれくらい残っている？ 時間とともに変わる推定量を確認。", featureTitle: "体内残量をリアルタイム計算", target: "caflog-feature-flow", symbol: "flow" },
+  { number: "03", label: "LOOK AHEAD", title: "今日の夜まで、見通そう。", copy: "次の一杯を決める前に。就寝予定時刻の推定残量をチェック。", featureTitle: "睡眠への影響を確認", target: "caflog-feature-sleep", symbol: "moon" },
 ] as const;
 
 function ArrowIcon({ direction = "out" }: { direction?: "out" | "down" | "both" }) {
@@ -46,8 +46,8 @@ export function CafLogPage({ app }: { app: App }) {
         </a>
         <nav className="caflog-navigation" aria-label="CafLog ページ内ナビゲーション">
           <a href="#rhythm">CafLogとは</a>
-          <a href="#features">機能</a>
           <a href="#screenshots">アプリの画面</a>
+          <a href="#features">機能</a>
         </nav>
         {app.appStoreUrl ? <a className="caflog-button caflog-nav-download" href={app.appStoreUrl} target="_blank" rel="noopener noreferrer">ダウンロード <ArrowIcon /></a> : null}
       </header>
@@ -85,7 +85,7 @@ export function CafLogPage({ app }: { app: App }) {
               <p>{app.description}</p>
             </div>
             <div className="caflog-moments">
-              {moments.map((moment) => <a className={`caflog-moment caflog-moment-${moment.symbol}`} href={`#caflog-feature-${moment.feature + 1}`} key={moment.number}>
+              {moments.map((moment) => <a className={`caflog-moment caflog-moment-${moment.symbol}`} href={`#${moment.target}`} key={moment.number}>
                 <div className="caflog-moment-visual"><span className="caflog-moment-number">{moment.number}</span><MomentGraphic symbol={moment.symbol} /></div>
                 <div className="caflog-moment-copy"><p className="caflog-kicker" lang="en">{moment.label}</p><h3>{moment.title}</h3><p>{moment.copy}</p><span className="caflog-text-link">機能を詳しく <ArrowIcon /></span></div>
               </a>)}
@@ -110,9 +110,9 @@ export function CafLogPage({ app }: { app: App }) {
           <div className="caflog-container">
             <div className="caflog-section-heading"><div><p className="caflog-kicker" lang="en">BUILT FOR YOUR EVERYDAY</p><h2 id="features-title">小さな記録。<br />広がる発見。</h2></div><p>すばやく残して、じっくり振り返る。<br />毎日の一杯に寄り添う、CafLogの機能。</p></div>
             <ul className="caflog-feature-list">
-              {app.features.map((feature, index) => <li className="feature-row" id={`caflog-feature-${index + 1}`} key={feature.title}>
+              {app.features.map((feature, index) => <li className="feature-row" id={moments.find((moment) => moment.featureTitle === feature.title)?.target ?? `caflog-feature-${index + 1}`} key={feature.title}>
                 <span className="caflog-feature-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-                <div>{index === 5 ? <span className="caflog-pro" lang="en">PRO</span> : null}<h3>{feature.title}</h3><p>{feature.description}</p></div>
+                <div>{feature.title === "Pro 連携機能" ? <span className="caflog-pro" lang="en">PRO</span> : null}<h3>{feature.title}</h3><p>{feature.description}</p></div>
               </li>)}
             </ul>
             <p className="caflog-estimate-note">体内残量はモデルに基づく推定値です。個人差があり、医療上の診断や判断を行うものではありません。</p>

@@ -116,7 +116,7 @@ body:has(.caflog-site) { background: #071629; }
 .caflog-site .caflog-headline { font-size: clamp(42px, 4.6vw, 66px); font-weight: 800; line-height: 1.38; letter-spacing: -.065em; }
 .caflog-site .caflog-hero-description { margin-top: 28px; color: #d3deea; font-size: 15px; line-height: 1.95; }
 .caflog-site .caflog-hero-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 16px 22px; margin-top: 34px; }
-.caflog-site .caflog-platform { color: #b9c7d7; font-size: 11px; }
+.caflog-site .caflog-platform { color: #b9c7d7; font-size: 13px; }
 .caflog-site .caflog-photo-note { position: absolute; right: 0; bottom: 24px; padding: 6px 10px; background: var(--caf-navy); color: #e1e8f0; font-size: 9px; font-weight: 600; letter-spacing: .11em; }
 .caflog-site .caflog-hero-index { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); padding-inline: var(--caf-gutter); background: var(--caf-navy); border-top: 1px solid #304053; }
 .caflog-site .caflog-hero-index a { display: flex; align-items: center; gap: 20px; min-height: 88px; padding: 20px 28px; border-right: 1px solid #304053; color: #fff; }
@@ -170,7 +170,7 @@ body:has(.caflog-site) { background: #071629; }
 .caflog-site .caflog-feature-list h3 { font-size: 17px; font-weight: 800; line-height: 1.7; letter-spacing: -.035em; }
 .caflog-site .caflog-feature-list p { margin-top: 11px; color: #4b596b; font-size: 13px; line-height: 1.95; }
 .caflog-site .caflog-pro { position: absolute; top: 34px; right: 0; padding: 3px 7px; border: 1px solid #8b99aa; color: #293b50; font-size: 9px; font-weight: 800; letter-spacing: .09em; line-height: 1.5; }
-.caflog-site .caflog-estimate-note { margin-top: 25px; padding-top: 24px; border-top: 1px solid #d3dae3; color: #596678; font-size: 11px; line-height: 1.9; }
+.caflog-site .caflog-estimate-note { margin-top: 25px; padding-top: 24px; border-top: 1px solid #d3dae3; color: #596678; font-size: 13px; line-height: 1.9; }
 
 /* Closing invitation */
 .caflog-site .caflog-download { position: relative; overflow: hidden; padding-block: 80px; background: #bd1535; }
@@ -181,7 +181,7 @@ body:has(.caflog-site) { background: #071629; }
 .caflog-site .caflog-download-action img { width: 76px; height: 76px; border-radius: 17px; }
 .caflog-site .caflog-download .caflog-button { min-width: 248px; background: #071629; border-color: #071629; }
 .caflog-site .caflog-download .caflog-button:hover { background: #173452; border-color: #173452; }
-.caflog-site .caflog-download-action p { color: #fff; font-size: 11px; line-height: 1.8; text-align: center; }
+.caflog-site .caflog-download-action p { color: #fff; font-size: 13px; line-height: 1.8; text-align: center; }
 .caflog-site .caflog-footer { padding-block: 35px; background: #071629; }
 .caflog-site .caflog-footer-inner { display: flex; align-items: center; flex-wrap: wrap; gap: 16px 25px; }
 .caflog-site .caflog-footer-brand { font-size: 25px; font-weight: 800; letter-spacing: -.065em; line-height: 1.2; }
@@ -303,7 +303,7 @@ body:has(.caflog-site) { background: #071629; }
   .caflog-site .caflog-hero-description { margin-top: 21px; font-size: 13px; }
   .caflog-site .caflog-hero-actions { gap: 14px; margin-top: 26px; }
   .caflog-site .caflog-hero-actions .caflog-button { min-height: 52px; padding: 14px 20px; font-size: 13px; }
-  .caflog-site .caflog-platform { font-size: 10px; }
+  .caflog-site .caflog-platform { font-size: 13px; }
   .caflog-site .caflog-photo-note { top: 19px; bottom: auto; right: var(--caf-gutter); font-size: 8px; }
   .caflog-site .caflog-hero-index { grid-template-columns: 1fr; }
   .caflog-site .caflog-hero-index a { min-height: 64px; padding: 14px 0; border-right: 0; border-bottom: 1px solid #304053; gap: 23px; }
@@ -338,14 +338,14 @@ body:has(.caflog-site) { background: #071629; }
   .caflog-site .caflog-feature-list h3 { font-size: 16px; }
   .caflog-site .caflog-feature-list p { margin-top: 7px; font-size: 12px; }
   .caflog-site .caflog-pro { position: static; display: inline-block; margin-bottom: 7px; }
-  .caflog-site .caflog-estimate-note { margin-top: 12px; font-size: 10px; }
+  .caflog-site .caflog-estimate-note { margin-top: 12px; font-size: 13px; }
   .caflog-site .caflog-download { padding-block: 57px; }
   .caflog-site .caflog-download-inner { flex-direction: column; align-items: flex-start; gap: 36px; }
   .caflog-site .caflog-download h2 { font-size: 40px; }
   .caflog-site .caflog-download-action { width: 100%; min-width: 0; grid-template-columns: 56px minmax(0, 1fr); gap: 16px; justify-items: start; align-items: center; }
   .caflog-site .caflog-download-action img { width: 56px; height: 56px; border-radius: 13px; }
   .caflog-site .caflog-download .caflog-button { width: 100%; min-width: 0; min-height: 54px; gap: 13px; padding-inline: 17px; font-size: 12px; }
-  .caflog-site .caflog-download-action p { grid-column: 2; text-align: left; font-size: 10px; }
+  .caflog-site .caflog-download-action p { grid-column: 2; text-align: left; font-size: 13px; }
   .caflog-site .caflog-footer { padding-block: 28px; }
   .caflog-site .caflog-footer-inner { gap: 12px 18px; }
   .caflog-site .caflog-footer nav { gap: 20px; }
@@ -361,3 +361,6 @@ body:has(.caflog-site) { background: #071629; }
 }
 
 .caflog-site .caflog-arrow { width: 22px; height: 22px; flex: 0 0 22px; }
+
+/* The skip target is a document landmark, not an interactive control. */
+.caflog-site #caflog-main:focus { outline: none; box-shadow: none; }

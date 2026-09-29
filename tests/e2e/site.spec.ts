@@ -1037,6 +1037,16 @@ for (const app of apps) {
         await expect(link).toHaveAttribute("target", "_blank");
         await expect(link).toHaveAttribute("rel", /noopener/u);
       }
+      const proFeature = page.locator("#features .feature-row").filter({ has: page.locator(".caflog-pro") });
+      await expect(proFeature.getByRole("heading")).toHaveText("Pro 連携機能");
+      for (const [target, title] of [
+        ["caflog-feature-log", "10 秒で記録"],
+        ["caflog-feature-flow", "体内残量をリアルタイム計算"],
+        ["caflog-feature-sleep", "睡眠への影響を確認"],
+      ]) {
+        await expect(page.locator(`.caflog-moment[href="#${target}"]`)).toHaveCount(1);
+        await expect(page.locator(`#${target}`).getByRole("heading")).toHaveText(title!);
+      }
       const download = page.locator(".caflog-button").first();
       await expect(download).toHaveCSS("background-color", CAFLOG.red);
       await expect(download).toHaveCSS("color", CAFLOG.white);
