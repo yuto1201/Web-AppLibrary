@@ -31,8 +31,14 @@ const privacyContacts: Record<string, { label: string; url: string }> = {
 const PAPER = { light: "rgb(255, 248, 241)", dark: "rgb(18, 16, 14)" } as const;
 const INK = { light: "rgb(0, 0, 0)", dark: "rgb(255, 248, 241)" } as const;
 const INK_2 = { light: "rgb(63, 59, 54)", dark: "rgb(200, 194, 184)" } as const;
-const ACCENT = { light: "rgb(0, 102, 238)", dark: "rgb(110, 179, 255)" } as const;
 const CAFLOG = { navy: "rgb(7, 22, 41)", red: "rgb(215, 25, 63)", white: "rgb(255, 255, 255)" } as const;
+const HOME = {
+  light: { paper: "rgb(245, 245, 242)", ink: "rgb(18, 32, 44)" },
+  dark: { paper: "rgb(12, 23, 33)", ink: "rgb(247, 247, 244)" },
+  navy: "rgb(7, 22, 41)",
+  red: "rgb(215, 25, 63)",
+  white: "rgb(255, 255, 255)",
+} as const;
 
 function cssRgb(hex: string) {
   const value = hex.slice(1);
@@ -132,6 +138,8 @@ function boxesOverlap(a: Box, b: Box): boolean {
 }
 
 async function centerHits(page: Page, target: ReturnType<typeof page.locator>, selector: string) {
+  // 写真や展示が増えて画面外にある対象へは、利用者と同じくスクロールしてから届くか確かめる。
+  await target.scrollIntoViewIfNeeded();
   const box = await target.boundingBox();
   expect(box).not.toBeNull();
   return page.evaluate(
@@ -157,30 +165,45 @@ async function exportedIndexRoutes(directory = "out", prefix = ""): Promise<stri
   return routes;
 }
 
-test("ポスター紙面はクリームと電圧ブルーで、Bricolage を使わない", async ({ page }) => {
+test("ホームは写真・濃紺・赤の Hero と太いサンセリフで作品へ案内する", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
 
-  await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
-  await expect(page.locator("body")).toHaveCSS("color", INK.light);
+  await expect(page.locator("body")).toHaveCSS("background-color", HOME.light.paper);
+  await expect(page.locator("body")).toHaveCSS("color", HOME.light.ink);
+  await expect(page.locator(".nav")).toHaveCSS("background-color", HOME.navy);
+  await expect(page.locator(".nav-brand")).toContainText("AppLibrary");
+  await expect(page.locator(".nav-brand")).toContainText("uesugiyuuto");
 
   const html = await page.content();
   expect(html.toLowerCase()).not.toContain("bricolage");
 
-  const headingFont = await page.locator(".hero-h1").evaluate((el) => getComputedStyle(el).fontFamily);
-  expect(headingFont.toLowerCase()).toMatch(/newsreader/);
+  const heading = page.locator(".hero-h1");
+  const headingStyle = await heading.evaluate((el) => {
+    const style = getComputedStyle(el);
+    return { font: style.fontFamily, weight: Number(style.fontWeight) };
+  });
+  expect(headingStyle.font.toLowerCase()).toMatch(/inter/);
+  expect(headingStyle.weight).toBeGreaterThanOrEqual(600);
+  await expect(heading).toHaveCSS("color", HOME.white);
+  await expect(page.locator(".hero-copy")).toHaveCSS("background-color", HOME.navy);
+
+  const picture = page.locator(".home-hero-picture");
+  const photo = picture.locator(".home-hero-image");
+  await expect(photo).toBeVisible();
+  await expect.poll(() => photo.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+  const photoBox = (await picture.boundingBox())!;
+  expect(photoBox.width).toBeGreaterThanOrEqual(1278);
+  expect(Math.abs(photoBox.x)).toBeLessThanOrEqual(1);
 
   const cta = page.locator(".cta-btn");
-  await expect(cta).toHaveCSS("color", ACCENT.light);
-  const [background, radius, borderWidth] = await cta.evaluate((el) => {
-    const cs = getComputedStyle(el);
-    return [cs.backgroundColor, parseFloat(cs.borderTopLeftRadius), parseFloat(cs.borderTopWidth)];
-  });
-  expect(background === "rgba(0, 0, 0, 0)" || background === "transparent").toBe(true);
-  expect(radius).toBeGreaterThanOrEqual(30);
-  expect(borderWidth).toBeGreaterThanOrEqual(1);
+  await expect(cta).toHaveCSS("color", HOME.white);
+  await expect(cta).toHaveCSS("background-color", HOME.red);
+  await expect(cta).toHaveAttribute("href", "#apps");
 
   await page.getByRole("button", { name: "ダークモードに切り替える" }).click();
-  await expect(page.locator(".cta-btn")).toHaveCSS("color", ACCENT.dark);
+  await expect(cta).toHaveCSS("color", HOME.white);
+  await expect(cta).toHaveCSS("background-color", HOME.red);
 });
 
 test("机のテープとスタンプと手書き合図がある", async ({ page }) => {
@@ -218,7 +241,8 @@ test("Klee One を全ページへ preload しない", async ({ page }) => {
   }
 });
 
-test("一覧は行の索引で、検索・フィルタ・モーダルを持たない", async ({ page }) => {
+test("作品カードは実画面と掲載情報を持ち、検索・フィルタ・モーダルを持たない", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
 
   const rows = page.locator(".app-row");
@@ -231,15 +255,31 @@ test("一覧は行の索引で、検索・フィルタ・モーダルを持た�
   await expect(page.getByText("プラットフォーム", { exact: true })).toHaveCount(0);
   await expect(page.getByText("カテゴリ", { exact: true })).toHaveCount(0);
 
-  // 掲載中の全アプリが行として名前・説明・年と一緒に並ぶ。
+  // 掲載中の全アプリを、実画面・名前・説明・年が揃ったリンクとして紹介する。
   for (const app of apps) {
     const row = rows.filter({ has: page.getByText(app.name, { exact: true }) });
     await expect(row).toHaveAttribute("href", `/apps/${app.slug}/`);
     await expect(row.locator(".app-row-tagline")).toHaveText(app.tagline);
     await expect(row.locator(".app-row-year")).toHaveText(String(app.year));
+    const preview = row.locator(".app-row-visual .app-preview-phone img");
+    await preview.scrollIntoViewIfNeeded();
+    await expect(preview).toHaveAttribute("alt", "");
+    await expect(preview).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[0]}`);
+    await expect.poll(() => preview.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
   }
 
-  // 行のクリックはモーダルを開かず、そのまま個別ページへ移る。
+  const first = (await rows.nth(0).boundingBox())!;
+  const second = (await rows.nth(1).boundingBox())!;
+  expect(Math.abs(first.y - second.y)).toBeLessThanOrEqual(1);
+  expect(second.x).toBeGreaterThan(first.x + first.width);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobileFirst = (await rows.nth(0).boundingBox())!;
+  const mobileSecond = (await rows.nth(1).boundingBox())!;
+  expect(Math.abs(mobileFirst.x - mobileSecond.x)).toBeLessThanOrEqual(1);
+  expect(mobileSecond.y).toBeGreaterThan(mobileFirst.y + mobileFirst.height);
+
+  // カードのクリックはモーダルを開かず、そのまま個別ページへ移る。
   await rows.first().click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect.poll(() => new URL(page.url()).pathname).toMatch(/^\/apps\/[a-z-]+\/$/u);
@@ -777,17 +817,17 @@ test("フッターの奥付は既定で閉じており、開くと本文とリ�
   await expect(page.getByRole("link", { name: "プライバシー", exact: true })).toBeVisible();
 });
 
-test("既定は紙のライトテーマで、light / dark 双方が実配色でコントラストを満たす", async ({ page }) => {
+test("ホームの light / dark 双方が専用の実配色でコントラストを満たす", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
-  await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
-  await expect(page.locator("body")).toHaveCSS("color", INK.light);
+  await expect(page.locator("body")).toHaveCSS("background-color", HOME.light.paper);
+  await expect(page.locator("body")).toHaveCSS("color", HOME.light.ink);
   await expectColorContrast(page);
 
   await page.getByRole("button", { name: "ダークモードに切り替える" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await expect(page.locator("body")).toHaveCSS("background-color", PAPER.dark);
-  await expect(page.locator("body")).toHaveCSS("color", INK.dark);
+  await expect(page.locator("body")).toHaveCSS("background-color", HOME.dark.paper);
+  await expect(page.locator("body")).toHaveCSS("color", HOME.dark.ink);
   await expectColorContrast(page);
 });
 
@@ -1205,9 +1245,9 @@ for (const app of apps) {
     await page.getByRole("link", { name: "← AppLibrary", exact: true }).click();
     await expect.poll(() => new URL(page.url()).pathname).toBe("/");
     await expect(page.locator(".app-shell")).toHaveCount(0);
-    // トップへ戻ると紙面の配色に戻る。
-    await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
-    await expect(page.locator("body")).toHaveCSS("color", INK.light);
+    // トップへ戻るとホーム専用の配色へ戻り、アプリや法務の色が残らない。
+    await expect(page.locator("body")).toHaveCSS("background-color", HOME.light.paper);
+    await expect(page.locator("body")).toHaveCSS("color", HOME.light.ink);
     await expect(page.locator(".app-row")).toHaveCount(apps.length);
     await page.getByRole("link", { name: "プライバシー", exact: true }).click();
     await expect(page.getByRole("heading", { level: 1, name: "プライバシーポリシー" })).toBeVisible();
@@ -1285,6 +1325,12 @@ test("未生成ルートは 404", async ({ request }) => {
 test("展示はキーボードで選べ、画面・状態・詳細リンクが同じアプリを指す", async ({ page }) => {
   await page.goto("/");
   const spotlight = page.getByRole("region", { name: i18n.ja.spotlight_title });
+  await expect(page.locator(".hero .spotlight")).toHaveCount(0);
+  await expect(page.locator(".home-showcase.section .spotlight")).toHaveCount(1);
+  await expect(spotlight.getByRole("button", { name: apps[0]!.name, exact: true })).toHaveAttribute("aria-pressed", "true");
+  const appsBox = (await page.locator("#apps").boundingBox())!;
+  const showcaseBox = (await page.locator(".home-showcase").boundingBox())!;
+  expect(showcaseBox.y).toBeGreaterThanOrEqual(appsBox.y + appsBox.height);
   for (const app of apps) {
     const choice = spotlight.getByRole("button", { name: app.name, exact: true });
     await choice.focus();

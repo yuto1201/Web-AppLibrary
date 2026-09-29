@@ -1,4 +1,5 @@
 import { Nav } from "@/components/Nav";
+import { HomeShowcase } from "@/components/HomeShowcase";
 import { Hero } from "@/components/Hero";
 import { AppsSection } from "@/components/AppsSection";
 import { Stickers } from "@/components/Stickers";
@@ -15,6 +16,7 @@ export default function HomePage() {
         <main className="page">
           <Hero />
           <AppsSection />
+          <HomeShowcase />
           <Workshop />
           <Posts />
           <Contact />

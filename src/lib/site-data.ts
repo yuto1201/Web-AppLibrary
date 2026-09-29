@@ -19,6 +19,11 @@ export type Post = { date: string; title: string; excerpt: string };
 export const posts: Post[] = [
   {
     date: "2026-09-29",
+    title: "いつもの毎日に、小さな発見を。",
+    excerpt: "CafLog に続いて、ホームも新しい表情に。アプリの実画面を眺めながら、自分に合う道具を探せるギャラリーにしました。",
+  },
+  {
+    date: "2026-09-29",
     title: "アプリを眺める、小さな工房に",
     excerpt: "気になるアイコンから、実際の画面をひとつずつ。紙とシールの机に、アプリの小さな展示を加えました。",
   },
@@ -59,6 +64,7 @@ type Dict = {
   hero_h1_b: string;
   hero_note: string;
   hero_cta: string;
+  showcase_intro: string;
   spotlight_title: string;
   spotlight_choose: string;
   spotlight_screen: string;
@@ -104,11 +110,12 @@ export const i18n: Record<Lang, Dict> = {
     a11y_theme: "テーマ",
     a11y_switch_light: "ライトモードに切り替える",
     a11y_switch_dark: "ダークモードに切り替える",
-    hero_h1_a: "小さなアプリを、",
-    hero_h1_b: "丁寧に。",
+    hero_h1_a: "小さなアプリで、",
+    hero_h1_b: "毎日を面白く。",
     hero_note: "東京で、Swift と SwiftUI でつくっています。",
     hero_cta: "アプリを見る",
-    spotlight_title: "机の上の、ひとつ。",
+    showcase_intro: "気になるアイコンを選んで、使う前にひとのぞき。あなたの毎日に合う、ひとつを。",
+    spotlight_title: "画面から、見つけよう。",
     spotlight_choose: "選んでみて",
     spotlight_screen: "アプリの画面",
     spotlight_icon: "アプリアイコン",
@@ -159,7 +166,8 @@ export const i18n: Record<Lang, Dict> = {
     hero_h1_b: "made with care.",
     hero_note: "Made in Tokyo with Swift and SwiftUI.",
     hero_cta: "Browse apps",
-    spotlight_title: "One from the desk.",
+    showcase_intro: "Pick an icon. Take a closer look. Find a little tool that feels right for your everyday.",
+    spotlight_title: "A closer look.",
     spotlight_choose: "Pick an app",
     spotlight_screen: "app screenshot",
     spotlight_icon: "app icon",
