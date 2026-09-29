@@ -5,9 +5,9 @@ import { ScreenshotGallery } from "@/components/ScreenshotGallery";
 import "@/styles/caflog.css";
 
 const moments = [
-  { number: "01", label: "LOG YOUR CUP", title: "まずは、一杯の記録から。", copy: "いつものコーヒーも、新しいドリンクも。飲んだ瞬間を、手軽に残す。", featureTitle: "10 秒で記録", target: "caflog-feature-log", symbol: "cup" },
-  { number: "02", label: "KNOW YOUR FLOW", title: "見えなかった流れを、知る。", copy: "今、体内にどれくらい残っている？ 時間とともに変わる推定量を確認。", featureTitle: "体内残量をリアルタイム計算", target: "caflog-feature-flow", symbol: "flow" },
-  { number: "03", label: "LOOK AHEAD", title: "今日の夜まで、見通そう。", copy: "次の一杯を決める前に。就寝予定時刻の推定残量をチェック。", featureTitle: "睡眠への影響を確認", target: "caflog-feature-sleep", symbol: "moon" },
+  { number: "01", label: "A LITTLE RECORD", title: "飲んだら、さっと記録。", copy: "いつものコーヒーも、新しいドリンクも。飲んだ時間と量を、手軽に残す。", featureTitle: "10 秒で記録", target: "caflog-feature-log", symbol: "cup" },
+  { number: "02", label: "YOUR DAILY FLOW", title: "からだの中の、今を知る。", copy: "今、体内にどれくらい残っている？ 時間とともに変わる推定量を確認。", featureTitle: "体内残量をリアルタイム計算", target: "caflog-feature-flow", symbol: "flow" },
+  { number: "03", label: "A QUIETER EVENING", title: "夜のことも、少し意識。", copy: "次の一杯を決める前に。就寝予定時刻の推定残量をチェック。", featureTitle: "睡眠への影響を確認", target: "caflog-feature-sleep", symbol: "moon" },
 ] as const;
 
 function ArrowIcon({ direction = "out" }: { direction?: "out" | "down" | "both" }) {
@@ -54,22 +54,27 @@ export function CafLogPage({ app }: { app: App }) {
 
       <main id="caflog-main" tabIndex={-1}>
         <section className="caflog-hero" aria-labelledby="caflog-title">
-          <picture className="caflog-hero-picture">
-            <source media="(max-width: 640px)" srcSet="/apps/caflog/editorial/morning-ride-mobile.webp" />
-            <img className="caflog-hero-image" src="/apps/caflog/editorial/morning-ride.webp" width="1672" height="941" alt="朝の街を背景に、自転車のそばでコーヒーを手にするひととき" fetchPriority="high" />
-          </picture>
-          <div className="caflog-hero-content">
+          <div className="caflog-container caflog-hero-grid">
             <div className="caflog-hero-copy">
-              <span className="caflog-hero-edge" aria-hidden="true" />
-              <div className="caflog-eyebrow"><span className="caflog-live-dot" aria-hidden="true" /><h1 id="caflog-title">{app.name}</h1><span lang="en">CAFFEINE TRACKER</span></div>
-              <p className="caflog-headline">その一杯を、<br />自分のリズムに。</p>
-              <p className="caflog-hero-description">{app.tagline}<br />飲む、記録する、自分を知る。今日の一杯から。</p>
+              <div className="caflog-eyebrow"><h1 id="caflog-title">{app.name}</h1><span>毎日のカフェイン記録</span></div>
+              <p className="caflog-headline">一杯ずつ、<br /><span>自分のペースへ。</span></p>
+              <p className="caflog-hero-description">{app.tagline}<br />好きな一杯を楽しみながら、<br />自分に合うリズムを見つけよう。</p>
               <div className="caflog-hero-actions">
                 {app.appStoreUrl ? <a className="caflog-button" href={app.appStoreUrl} target="_blank" rel="noopener noreferrer">App Store で入手 <ArrowIcon /></a> : null}
-                <span className="caflog-platform">{app.platforms.join(" / ")} · {app.price}ではじめる</span>
+                <a className="caflog-button caflog-button-ghost" href="#screenshots">画面を見てみる <ArrowIcon direction="down" /></a>
               </div>
+              <p className="caflog-platform">{app.platforms.join(" / ")} · 基本機能{app.price} / Pro 機能あり</p>
             </div>
-            <span className="caflog-photo-note" lang="en">A NEW DAY. YOUR OWN PACE.</span>
+            <figure className="caflog-hero-stage">
+              <span className="caflog-hero-halo" aria-hidden="true" />
+              {app.icon ? <div className="caflog-icon-card">
+                <Image src={`/apps/${app.slug}/${app.icon}`} width={124} height={124} alt="CafLog のアプリアイコン" />
+              </div> : null}
+              <div className="caflog-hero-phone">
+                <Image className="caflog-hero-image" src={`/apps/${app.slug}/screenshots/4.png`} width={1179} height={2556} alt="CafLog の実際のホーム画面。今日の摂取量と体内カフェインの推定量、飲んだ記録を表示" priority />
+              </div>
+              <figcaption className="caflog-stage-caption">CafLogの実際のホーム画面</figcaption>
+            </figure>
           </div>
           <div className="caflog-hero-index">
             <a href="#rhythm"><span>01</span><strong>一杯から、はじめよう</strong><ArrowIcon direction="down" /></a>
@@ -81,7 +86,7 @@ export function CafLogPage({ app }: { app: App }) {
         <section className="caflog-rhythm caflog-light" id="rhythm" aria-labelledby="rhythm-title">
           <div className="caflog-container">
             <div className="caflog-section-heading">
-              <div><p className="caflog-kicker" lang="en">MAKE IT YOUR ROUTINE</p><h2 id="rhythm-title">いつもの一杯に、<br />新しい気づきを。</h2></div>
+              <div><p className="caflog-kicker" lang="en">A SMALL DAILY HABIT</p><h2 id="rhythm-title">いつもの一杯を、<br />ちいさな気づきに。</h2></div>
               <p>{app.description}</p>
             </div>
             <div className="caflog-moments">
@@ -97,10 +102,10 @@ export function CafLogPage({ app }: { app: App }) {
           <div className="caflog-container caflog-showcase-grid">
             <div className="caflog-showcase-copy">
               <h2 className="caflog-kicker" id="screenshots-title" lang="en">Screenshots</h2>
-              <p className="caflog-display" lang="en">KNOW<br />YOUR<br /><span>RHYTHM.</span></p>
-              <h3>感覚だけだった習慣を、<br />自分のデータで。</h3>
+              <p className="caflog-display">からだのリズムを、<br /><span>見えるかたちに。</span></p>
+              <h3>今日の一杯から、<br />日々の傾向まで。</h3>
               <p>飲んだ時間。いつもの量。日々の傾向。<br />記録を重ねて、自分の飲み方を見つけよう。</p>
-              <div className="caflog-gallery-hint"><ArrowIcon direction="both" /> 画面を切り替えて、CafLogをのぞいてみよう。</div>
+              <div className="caflog-gallery-hint"><ArrowIcon direction="both" /> {app.screenshots.length}枚の実際のアプリ画面を見てみよう。</div>
             </div>
             <ScreenshotGallery slug={app.slug} name={app.name} files={app.screenshots} />
           </div>
@@ -108,7 +113,7 @@ export function CafLogPage({ app }: { app: App }) {
 
         <section className="caflog-features caflog-light" id="features" aria-labelledby="features-title">
           <div className="caflog-container">
-            <div className="caflog-section-heading"><div><p className="caflog-kicker" lang="en">BUILT FOR YOUR EVERYDAY</p><h2 id="features-title">小さな記録。<br />広がる発見。</h2></div><p>すばやく残して、じっくり振り返る。<br />毎日の一杯に寄り添う、CafLogの機能。</p></div>
+            <div className="caflog-section-heading"><div><p className="caflog-kicker" lang="en">MADE FOR YOUR EVERYDAY</p><h2 id="features-title">気軽に続く、<br />うれしい機能。</h2></div><p>すばやく残して、じっくり振り返る。<br />毎日の一杯に寄り添う、CafLogの機能。</p></div>
             <ul className="caflog-feature-list">
               {app.features.map((feature, index) => <li className="feature-row" id={moments.find((moment) => moment.featureTitle === feature.title)?.target ?? `caflog-feature-${index + 1}`} key={feature.title}>
                 <span className="caflog-feature-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
