@@ -67,9 +67,9 @@ export function CafLogPage({ app }: { app: App }) {
             </div>
             <figure className="caflog-hero-stage">
               <span className="caflog-hero-halo" aria-hidden="true" />
-              <div className="caflog-icon-card">
+              {app.icon ? <div className="caflog-icon-card">
                 <Image src={`/apps/${app.slug}/${app.icon}`} width={124} height={124} alt="CafLog のアプリアイコン" />
-              </div>
+              </div> : null}
               <div className="caflog-hero-phone">
                 <Image className="caflog-hero-image" src={`/apps/${app.slug}/screenshots/4.png`} width={1179} height={2556} alt="CafLog の実際のホーム画面。今日の摂取量と体内カフェインの推定量、飲んだ記録を表示" priority />
               </div>
@@ -105,7 +105,7 @@ export function CafLogPage({ app }: { app: App }) {
               <p className="caflog-display">からだのリズムを、<br /><span>見えるかたちに。</span></p>
               <h3>今日の一杯から、<br />日々の傾向まで。</h3>
               <p>飲んだ時間。いつもの量。日々の傾向。<br />記録を重ねて、自分の飲み方を見つけよう。</p>
-              <div className="caflog-gallery-hint"><ArrowIcon direction="both" /> 5枚の実際のアプリ画面を見てみよう。</div>
+              <div className="caflog-gallery-hint"><ArrowIcon direction="both" /> {app.screenshots.length}枚の実際のアプリ画面を見てみよう。</div>
             </div>
             <ScreenshotGallery slug={app.slug} name={app.name} files={app.screenshots} />
           </div>

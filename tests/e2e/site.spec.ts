@@ -1279,6 +1279,11 @@ test("CafLog は320〜1280pxで実画面とアイコンを表示し、配布先�
     for (const image of [heroImage, icon]) {
       await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
     }
+    await icon.scrollIntoViewIfNeeded();
+    await expect.poll(() => icon.evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return document.elementFromPoint(box.x + box.width / 2, box.y + box.height / 2) === element;
+    })).toBe(true);
 
     const controls = [
       page.locator(".caflog-hero-actions").getByRole("link", { name: "App Store で入手", exact: true }),
