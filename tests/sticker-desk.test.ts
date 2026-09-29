@@ -10,14 +10,11 @@ describe("sticker desk catalog", () => {
     expect(slugs.sort()).toEqual(apps.map((app) => app.slug).sort());
   });
 
-  it("Hero / 一覧 / 山の役割が仕様どおり", () => {
-    expect(deskApp("sublog").anchor).toBe("hero");
+  it("すべてのシールを Hero に置き、アプリごとの形を保つ", () => {
+    expect(DESK_ITEMS.every((item) => item.anchor === "hero")).toBe(true);
     expect(deskApp("sublog").shape).toBe("round-rect");
-    expect(deskApp("caflog").anchor).toBe("hero");
     expect(deskApp("caflog").shape).toBe("circle");
-    expect(deskApp("dev-tools").anchor).toBe("apps");
     expect(deskApp("dev-tools").shape).toBe("squircle");
-    expect(deskApp("pay-cycle").anchor).toBe("pile");
     expect(deskApp("pay-cycle").shape).toBe("round-lg");
   });
 
@@ -27,10 +24,10 @@ describe("sticker desk catalog", () => {
     expect(DESK_ITEMS.find((item) => item.kind === "word" && item.word === "Tokyo")?.anchor).toBe("hero");
   });
 
-  it("各アプリの data-key に CSS の初期位置がある", () => {
-    const css = readFileSync(join(process.cwd(), "src/styles/standard.css"), "utf8");
-    for (const app of apps) {
-      expect(css).toContain(`.sticker-slot[data-key="${app.slug}"]`);
+  it("すべての data-key にホーム専用 CSS の初期位置がある", () => {
+    const css = readFileSync(join(process.cwd(), "src/styles/studio.css"), "utf8");
+    for (const item of DESK_ITEMS) {
+      expect(css).toContain(`.sticker-slot[data-key="${item.key}"]`);
     }
   });
 
