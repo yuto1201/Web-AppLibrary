@@ -5,6 +5,7 @@ import { apps, getApp } from "@/data/registry";
 import { termsDocuments } from "@/data/terms/registry";
 import { ScreenshotGallery } from "@/components/ScreenshotGallery";
 import { CafLogPage } from "@/components/CafLogPage";
+import { SubLogPage } from "@/components/SubLogPage";
 import { SpecimenSticker } from "@/components/SpecimenSticker";
 import { appTone } from "@/lib/app-tone";
 import { statusLabel } from "@/lib/labels";
@@ -41,6 +42,7 @@ export default async function AppPage({ params }: { params: Promise<{ slug: stri
   if (!app) notFound();
 
   if (app.slug === "caflog") return <CafLogPage app={app} />;
+  if (app.slug === "sublog") return <SubLogPage app={app} />;
 
   return (
     <div className="app-shell" lang="ja" data-tone={appTone(app.slug)}>
