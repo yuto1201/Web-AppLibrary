@@ -163,7 +163,7 @@ export const i18n: Record<Lang, Dict> = {
     a11y_switch_light: "Switch to light mode",
     a11y_switch_dark: "Switch to dark mode",
     hero_h1_a: "Small apps,",
-    hero_h1_b: "made with care.",
+    hero_h1_b: "brighter days.",
     hero_note: "Made in Tokyo with Swift and SwiftUI.",
     hero_cta: "Browse apps",
     showcase_intro: "Pick an icon. Take a closer look. Find a little tool that feels right for your everyday.",

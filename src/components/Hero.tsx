@@ -28,7 +28,7 @@ export function Hero() {
   return (
     <section className="hero" id="top">
       <picture className="home-hero-picture">
-        <source media="(max-width: 767px)" srcSet="/home/editorial/tokyo-desk-mobile.webp" />
+        <source media="(max-width: 640px)" srcSet="/home/editorial/tokyo-desk-mobile.webp 1000w, /home/editorial/tokyo-desk.webp 1672w" sizes="100vw" />
         <img className="home-hero-image" src="/home/editorial/tokyo-desk.webp" alt="" width={1672} height={941} fetchPriority="high" />
       </picture>
       <div className="hero-frame">
