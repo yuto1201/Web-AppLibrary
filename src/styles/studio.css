@@ -73,7 +73,7 @@ body:has(.poster) { background: #dceeff; color: #111111; }
    live below the entire playground, on a solid sky-colored reading surface. */
 .poster .hero { width: 100%; margin: 0; padding: 31px 0 0; color: var(--ink); background: var(--paper); }
 .poster .hero-tag { position: relative; z-index: 2; background: var(--paper); width: fit-content; max-width: calc(100% - 44px); margin: 0 auto 12px; color: var(--ink); font-size: 10px; font-weight: 700; letter-spacing: .13em; line-height: 1.6; text-align: center; }
-.poster .hero-playground { position: relative; width: min(1200px, calc(100% - 44px)); height: 460px; margin-inline: auto; }
+.poster .hero-playground { position: relative; isolation: isolate; width: min(1200px, calc(100% - 44px)); height: 460px; margin-inline: auto; }
 .poster .hero-orbit { position: absolute; z-index: 0; top: -10px; left: 50%; width: 700px; max-width: 92%; height: 400px; object-fit: contain; transform: translateX(-50%) rotate(-9deg); pointer-events: none; }
 .poster .hero-wordmark { position: absolute; z-index: 1; top: 73px; left: 50%; width: 4.17em; height: 1.786em; max-width: 100%; transform: translateX(-50%); color: var(--ink); fill: currentColor; font: 900 clamp(100px, 13vw, 168px)/.78 var(--font-sans); letter-spacing: -.095em; text-align: center; pointer-events: none; }
 .poster .playground-spark { position: absolute; z-index: 2; top: 113px; left: 22%; width: 45px; height: 45px; color: var(--ink); transform: rotate(11deg); pointer-events: none; }
@@ -96,6 +96,10 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 /* Only the measured playground determines initial sticker positions. The
    existing drag transforms, pointer handling, z-order and reset remain intact. */
 .poster .stickers, .poster .sticker-stage { display: contents; }
+/* Static HTML must not expose the former footer positions before measurement.
+   Every app remains reachable through its ordinary card without JavaScript. */
+.poster:not([data-desk="ready"]) .sticker-slot,
+.poster:not([data-desk="ready"]) .stickers-foot { visibility: hidden; }
 .poster .sticker-slot { width: 95px; }
 .poster .sticker-slot .sticker-note { min-height: 54px; padding: 10px 5px; font: 700 14px/1.5 var(--font-sans); color: #111; }
 .poster .sticker-slot[data-key="note-Swift"] .sticker { background: var(--home-yellow); border: 1px solid #111; }

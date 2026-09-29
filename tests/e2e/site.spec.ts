@@ -161,6 +161,7 @@ async function expectInitialPlayground(page: Page, context: string) {
 
   const stickers = page.locator(".poster .sticker-slot .sticker");
   await expect(stickers).toHaveCount(7);
+  const initialBoxes: { key: string | null | undefined; box: Box }[] = [];
   for (const sticker of await stickers.all()) {
     const painted = (await sticker.boundingBox())!;
     const key = await sticker.evaluate((el) => el.closest(".sticker-slot")?.getAttribute("data-key"));
@@ -168,6 +169,10 @@ async function expectInitialPlayground(page: Page, context: string) {
     expect(painted.x + painted.width, `${context} ${key} right`).toBeLessThanOrEqual(board.x + board.width + 1);
     expect(painted.y, `${context} ${key} top`).toBeGreaterThanOrEqual(board.y - 1);
     expect(painted.y + painted.height, `${context} ${key} bottom`).toBeLessThanOrEqual(board.y + board.height - 72 + 1);
+    for (const previous of initialBoxes) {
+      expect(boxesOverlap(painted, previous.box), `${context} ${key} × ${previous.key}`).toBe(false);
+    }
+    initialBoxes.push({ key, box: painted });
     for (const [name, target] of Object.entries(protectedBoxes)) {
       expect(boxesOverlap(painted, target), `${context} ${key} × ${name}`).toBe(false);
     }
@@ -202,6 +207,22 @@ async function exportedIndexRoutes(directory = "out", prefix = ""): Promise<stri
   }
   return routes;
 }
+
+test.describe("静的 HTML の初期表示", () => {
+  test.use({ javaScriptEnabled: false });
+  test("計測前のシールを旧位置へ出さず、作品へのリンクは使える", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator(".poster")).not.toHaveAttribute("data-desk", "ready");
+    for (const slot of await page.locator(".poster .sticker-slot").all()) {
+      await expect(slot).toBeHidden();
+    }
+    await expect(page.locator(".stickers-foot")).toBeHidden();
+    await expect(page.locator(".hero-wordmark")).toBeVisible();
+    await expect(page.locator(".app-row")).toHaveCount(apps.length);
+    await page.locator('.app-row[href="/apps/sublog/"]').click();
+    await expect(page).toHaveURL(/\/apps\/sublog\/$/u);
+  });
+});
 
 test("ホームは空色の遊び場と大きなワードマーク、黒いピルで作品へ案内する", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
@@ -400,6 +421,12 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
   // ならべ直すと遊び場の初期位置へ戻る（操作でスクロールしても文書座標は同じ）。
   const reset = page.getByRole("button", { name: "ならべ直す" });
   await expect(reset).toBeVisible();
+  const resetArea = (await page.locator(".stickers-foot").boundingBox())!;
+  const playground = (await page.locator(".hero-playground").boundingBox())!;
+  expect(resetArea.y).toBeGreaterThanOrEqual(playground.y + playground.height - 72 - 1);
+  expect(resetArea.y + resetArea.height).toBeLessThanOrEqual(playground.y + playground.height + 1);
+  expect(resetArea.x).toBeGreaterThanOrEqual(playground.x - 1);
+  expect(resetArea.x + resetArea.width).toBeLessThanOrEqual(playground.x + playground.width + 1);
   await reset.click();
   await expect(reset).toBeHidden();
   // 戻りは transition で補間されるので、収束するまで待つ。
