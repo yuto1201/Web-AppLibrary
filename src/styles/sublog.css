@@ -84,13 +84,13 @@ body:has(.sublog-site) { background: #f7f8f5; }
 .sublog-site .sublog-demo-row > div:first-child { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; width: 100%; }
 .sublog-site .sublog-demo-row > div:first-child > span:last-child { font-size: 13px; font-weight: 500; font-variant-numeric: tabular-nums; }
 .sublog-site .sublog-demo-track { width: 100%; height: 7px; overflow: hidden; border-radius: 20px; background: #064cab; }
-.sublog-site .sublog-demo-track i { display: block; width: var(--bar); height: 100%; background: #fff; border-radius: inherit; transition: width .25s ease; }
+.sublog-site .sublog-demo-track i { display: block; height: 100%; background: #fff; border-radius: inherit; transition: width .25s ease; }
 .sublog-site .sublog-demo-row:nth-child(2) .sublog-demo-track i { background: var(--sub-lime); }
 .sublog-site .sublog-demo-row:nth-child(3) .sublog-demo-track i { background: #a7d1ff; }
 .sublog-site .sublog-demo-bottom { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; margin-top: 30px; }
 .sublog-site .sublog-demo-bottom > p { max-width: 210px; color: #e5f0ff; font-size: 10px; line-height: 1.9; }
 .sublog-site .sublog-demo-bottom > p > span { display: block; margin-bottom: 11px; color: #fff; font-size: 11px; letter-spacing: .05em; line-height: 1.6; }
-.sublog-site .sublog-demo-bottom small { display: block; font-size: 9px; }
+.sublog-site .sublog-demo-bottom small { display: block; font-size: 11px; }
 .sublog-site .sublog-cube { flex-shrink: 0; width: 86px; padding: 6px; border-radius: 24px 24px 24px 6px; background: #fff; transform: rotate(-6deg); }
 .sublog-site .sublog-cube img { width: 100%; border-radius: 20px; }
 .sublog-site .sublog-principles { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 68px; padding-block: 31px 37px; border-top: 1px solid var(--sub-rule); }
@@ -105,7 +105,7 @@ body:has(.sublog-site) { background: #f7f8f5; }
 .sublog-site .sublog-story { margin-top: 28px; padding-block: 94px; background: var(--sub-blue-deep); color: #fff; border-radius: 0 88px 0 0; }
 .sublog-site .sublog-story-grid { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr); align-items: center; gap: 100px; }
 .sublog-site .sublog-section-label { color: var(--sub-blue-ink); font-size: 11px; font-weight: 500; letter-spacing: .05em; line-height: 1.5; }
-.sublog-site .sublog-story .sublog-section-label { color: var(--sub-lime); }
+.sublog-site .sublog-story .sublog-section-label { color: #d6ff96; }
 .sublog-site .sublog-story h2 { margin-top: 26px; font-size: clamp(32px, 3.5vw, 50px); font-weight: 400; letter-spacing: -.055em; line-height: 1.55; }
 .sublog-site .sublog-story p:not(.sublog-section-label, .sublog-story-caption) { max-width: 465px; margin-top: 24px; color: #e5efff; font-size: 14px; line-height: 2.1; }
 .sublog-site .sublog-story-icon { position: relative; width: min(100%, 280px); margin-inline: auto; }
