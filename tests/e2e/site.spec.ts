@@ -31,7 +31,7 @@ const privacyContacts: Record<string, { label: string; url: string }> = {
 const PAPER = { light: "rgb(255, 248, 241)", dark: "rgb(18, 16, 14)" } as const;
 const INK = { light: "rgb(0, 0, 0)", dark: "rgb(255, 248, 241)" } as const;
 const INK_2 = { light: "rgb(63, 59, 54)", dark: "rgb(200, 194, 184)" } as const;
-const CAFLOG = { navy: "rgb(7, 22, 41)", red: "rgb(215, 25, 63)", white: "rgb(255, 255, 255)" } as const;
+const CAFLOG = { canvas: "rgb(250, 249, 247)", ink: "rgb(32, 32, 36)", white: "rgb(255, 255, 255)" } as const;
 const HOME = {
   light: { paper: "rgb(220, 238, 255)", ink: "rgb(17, 17, 17)" },
   dark: { paper: "rgb(22, 35, 48)", ink: "rgb(242, 246, 250)" },
@@ -1046,12 +1046,13 @@ for (const app of apps) {
     const tone = appPageTone(app.slug);
     if (!tone) throw new Error(`${app.slug} の色味が無い`);
     if (app.slug === "caflog") {
-      // CafLog は 2026-09-29 の刷新から専用の写真・濃紺・赤の構成を持つ。
+      // Issue #69: 実アイコンとアプリ画面に合わせた明るい専用ページ。
       await expect(page.locator(".caflog-site")).toHaveAttribute("lang", "ja");
       await expect(page.locator(".app-shell")).toHaveCount(0);
-      await expect(page.locator("body")).toHaveCSS("background-color", CAFLOG.navy);
+      await expect(page.locator("body")).toHaveCSS("background-color", CAFLOG.canvas);
       await expect(page.locator(".caflog-hero")).toBeVisible();
-      await expect(page.locator(".caflog-headline")).toBeVisible();
+      await expect(page.locator(".caflog-headline")).toHaveText(/一杯ずつ、\s*自分のペースへ。/u);
+      await expect(page.locator(".caflog-headline")).toHaveCSS("color", CAFLOG.ink);
       const heroImage = page.locator(".caflog-hero-image");
       await expect(heroImage).toBeVisible();
       await expect.poll(() => heroImage.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
@@ -1073,7 +1074,7 @@ for (const app of apps) {
         await expect(page.locator(`#${target}`).getByRole("heading")).toHaveText(title!);
       }
       const download = page.locator(".caflog-button").first();
-      await expect(download).toHaveCSS("background-color", CAFLOG.red);
+      await expect(download).toHaveCSS("background-color", CAFLOG.ink);
       await expect(download).toHaveCSS("color", CAFLOG.white);
     } else {
       await expect(page.locator(".app-shell")).toHaveAttribute("data-tone", tone.tone);
@@ -1265,16 +1266,46 @@ test("CafLog の案内リンクと実画面ギャラリーをキーボードで�
   await expect.poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth)).toBe(true);
 });
 
-test("CafLog は保存した dark でも専用配色を保ち、法務へ戻ると保存テーマに従う", async ({ page }) => {
+test("CafLog は320〜1280pxで実画面とアイコンを表示し、配布先とギャラリーを操作できる", async ({ page }) => {
+  for (const width of [320, 393, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    await page.goto("/apps/caflog/");
+    const heroImage = page.locator(".caflog-hero-image");
+    await expect(heroImage).toHaveAttribute("src", "/apps/caflog/screenshots/4.png");
+    await expect(heroImage).toBeVisible();
+    const icon = page.locator(".caflog-icon-card img");
+    await expect(icon).toHaveAttribute("src", "/apps/caflog/icon.png");
+    await expect(icon).toBeVisible();
+    for (const image of [heroImage, icon]) {
+      await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+    }
+
+    const controls = [
+      page.locator(".caflog-hero-actions").getByRole("link", { name: "App Store で入手", exact: true }),
+      page.locator(".caflog-hero-actions").getByRole("link", { name: "画面を見てみる", exact: true }),
+      page.getByRole("group", { name: "Screenshots", exact: true }).getByRole("button", { name: "Previous", exact: true }),
+      page.getByRole("group", { name: "Screenshots", exact: true }).getByRole("button", { name: "Next", exact: true }),
+    ];
+    for (const control of controls) {
+      await control.click({ trial: true });
+      const box = (await control.boundingBox())!;
+      expect(box.width, `${width}px control width`).toBeGreaterThanOrEqual(44);
+      expect(box.height, `${width}px control height`).toBeGreaterThanOrEqual(44);
+    }
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  }
+});
+
+test("CafLog は保存した dark でもアプリに合わせた明るい配色を保ち、法務へ戻ると保存テーマに従う", async ({ page }) => {
   await page.goto("/apps/caflog/");
   await setStoredState(page, { theme: "dark", lang: "en" });
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expect(page.locator(".caflog-site")).toHaveAttribute("lang", "ja");
-  await expect(page.locator("body")).toHaveCSS("background-color", CAFLOG.navy);
+  await expect(page.locator("body")).toHaveCSS("background-color", CAFLOG.canvas);
   await expect(page.locator(".caflog-headline")).toBeVisible();
-  await expect(page.locator(".caflog-button").first()).toHaveCSS("background-color", CAFLOG.red);
+  await expect(page.locator(".caflog-button").first()).toHaveCSS("background-color", CAFLOG.ink);
   await expect(page.locator(".caflog-button").first()).toHaveCSS("color", CAFLOG.white);
   await expectColorContrast(page);
   await expect.poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth)).toBe(true);
@@ -1286,7 +1317,7 @@ test("CafLog は保存した dark でも専用配色を保ち、法務へ戻る�
   await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.dark);
   await expectColorContrast(page);
   await page.getByRole("link", { name: "← CafLog", exact: true }).click();
-  await expect(page.locator("body")).toHaveCSS("background-color", CAFLOG.navy);
+  await expect(page.locator("body")).toHaveCSS("background-color", CAFLOG.canvas);
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 });
 
