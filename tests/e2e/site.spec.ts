@@ -206,6 +206,18 @@ test("ホームは写真・濃紺・赤の Hero と太いサンセリフで作�
   await expect(cta).toHaveCSS("background-color", HOME.red);
 });
 
+test("赤い連絡先パネルのリンクをキーボードで識別できる", async ({ page }) => {
+  await page.goto("/#contact");
+  const socials = page.locator(".contact-postcard .social-link");
+  await socials.first().focus();
+  await page.keyboard.press("Tab");
+  await expect(socials.nth(1)).toBeFocused();
+  await expect(socials.nth(1)).toHaveCSS("outline-color", HOME.white);
+  await expect(socials.nth(1)).toHaveCSS("outline-style", "solid");
+  await expect(socials.nth(1)).toHaveCSS("outline-width", "3px");
+  await expect(page.locator(".contact-postcard")).toHaveCSS("background-color", "rgb(189, 21, 53)");
+});
+
 test("机のテープとスタンプと手書き合図がある", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator(".desk-tape")).toHaveCount(1);

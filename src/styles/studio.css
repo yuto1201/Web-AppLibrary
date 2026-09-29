@@ -168,6 +168,7 @@ body:has(.poster) { background: #f5f5f2; color: #12202c; }
 .poster #contact { border-top: 0; padding-top: 0; }
 .poster .contact-postcard { position: relative; padding: 53px; border: 0; background: #bd1535; color: #fff; }
 .poster .contact-postcard .eyebrow { color: #fff; }
+.poster .contact-postcard :focus-visible { outline-color: #fff; }
 .poster .contact-h { text-wrap: balance; max-width: calc(100% - 145px); margin: 0 0 18px; color: #fff; font: 800 clamp(29px, 3.2vw, 43px)/1.45 var(--font-sans); letter-spacing: -.05em; }
 .poster .contact-p { max-width: min(54ch, calc(100% - 145px)); margin: 0 0 26px; color: #fff; font-size: 14px; line-height: 1.95; }
 .poster .contact-stamp { position: absolute; right: 45px; top: 45px; display: grid; place-items: center; align-content: center; gap: 7px; width: 100px; height: 115px; border: 1px solid #fff; background: #bd1535; color: #fff; transform: rotate(8deg); }
