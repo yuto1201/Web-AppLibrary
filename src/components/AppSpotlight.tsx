@@ -18,7 +18,7 @@ export function AppSpotlight() {
   return (
     <section className="spotlight" aria-labelledby="spotlight-heading">
       <div className="spotlight-heading">
-        <h2 id="spotlight-heading">{t.spotlight_title}</h2>
+        <h3 id="spotlight-heading">{t.spotlight_title}</h3>
         <span className="spotlight-edition" aria-hidden="true">APP STUDY — {String(index).padStart(2, "0")}</span>
       </div>
       <div className="spotlight-stage">

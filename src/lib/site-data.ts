@@ -19,6 +19,11 @@ export type Post = { date: string; title: string; excerpt: string };
 export const posts: Post[] = [
   {
     date: "2026-09-29",
+    title: "さわって、並べて、見つけて。",
+    excerpt: "ホームを、カラフルなアプリの遊び場に。気になるアイコンを動かしたり、実際の画面をのぞいたり。自分のペースで探してみてください。",
+  },
+  {
+    date: "2026-09-29",
     title: "アプリを眺める、小さな工房に",
     excerpt: "気になるアイコンから、実際の画面をひとつずつ。紙とシールの机に、アプリの小さな展示を加えました。",
   },
@@ -59,6 +64,7 @@ type Dict = {
   hero_h1_b: string;
   hero_note: string;
   hero_cta: string;
+  showcase_intro: string;
   spotlight_title: string;
   spotlight_choose: string;
   spotlight_screen: string;
@@ -104,11 +110,12 @@ export const i18n: Record<Lang, Dict> = {
     a11y_theme: "テーマ",
     a11y_switch_light: "ライトモードに切り替える",
     a11y_switch_dark: "ダークモードに切り替える",
-    hero_h1_a: "小さなアプリを、",
-    hero_h1_b: "丁寧に。",
+    hero_h1_a: "小さなアプリで、",
+    hero_h1_b: "毎日を面白く。",
     hero_note: "東京で、Swift と SwiftUI でつくっています。",
     hero_cta: "アプリを見る",
-    spotlight_title: "机の上の、ひとつ。",
+    showcase_intro: "気になるアイコンを選んで、使う前にひとのぞき。あなたの毎日に合う、ひとつを。",
+    spotlight_title: "画面から、見つけよう。",
     spotlight_choose: "選んでみて",
     spotlight_screen: "アプリの画面",
     spotlight_icon: "アプリアイコン",
@@ -127,9 +134,9 @@ export const i18n: Record<Lang, Dict> = {
     ],
     posts_intro: "机の端に残しておく、ちょっとした変化の記録。",
     contact_note: "感想ひとつから、次のアイデアが生まれることも。",
-    desk_hint: "つまんでみて",
+    desk_hint: "ちょっとべんり。ちょっとたのしい。",
     stickers_title: "Stickers",
-    stickers_hint: "つまんで動かせます。",
+    stickers_hint: "動かして遊ぶ。タップでのぞく。",
     stickers_reset: "ならべ直す",
     section_apps: "App Library",
     section_posts: "Notes",
@@ -156,10 +163,11 @@ export const i18n: Record<Lang, Dict> = {
     a11y_switch_light: "Switch to light mode",
     a11y_switch_dark: "Switch to dark mode",
     hero_h1_a: "Small apps,",
-    hero_h1_b: "made with care.",
+    hero_h1_b: "brighter days.",
     hero_note: "Made in Tokyo with Swift and SwiftUI.",
     hero_cta: "Browse apps",
-    spotlight_title: "One from the desk.",
+    showcase_intro: "Pick an icon. Take a closer look. Find a little tool that feels right for your everyday.",
+    spotlight_title: "A closer look.",
     spotlight_choose: "Pick an app",
     spotlight_screen: "app screenshot",
     spotlight_icon: "app icon",
@@ -178,9 +186,9 @@ export const i18n: Record<Lang, Dict> = {
     ],
     posts_intro: "Small changes, noted down at the edge of the desk.",
     contact_note: "A little feedback can be the start of the next idea.",
-    desk_hint: "Pinch one.",
+    desk_hint: "A little useful. A little playful.",
     stickers_title: "Stickers",
-    stickers_hint: "Grab them and move them around.",
+    stickers_hint: "Drag to play. Tap to explore.",
     stickers_reset: "Tidy up",
     section_apps: "App Library",
     section_posts: "Notes",

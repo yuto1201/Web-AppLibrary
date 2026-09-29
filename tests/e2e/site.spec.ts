@@ -31,8 +31,17 @@ const privacyContacts: Record<string, { label: string; url: string }> = {
 const PAPER = { light: "rgb(255, 248, 241)", dark: "rgb(18, 16, 14)" } as const;
 const INK = { light: "rgb(0, 0, 0)", dark: "rgb(255, 248, 241)" } as const;
 const INK_2 = { light: "rgb(63, 59, 54)", dark: "rgb(200, 194, 184)" } as const;
-const ACCENT = { light: "rgb(0, 102, 238)", dark: "rgb(110, 179, 255)" } as const;
 const CAFLOG = { navy: "rgb(7, 22, 41)", red: "rgb(215, 25, 63)", white: "rgb(255, 255, 255)" } as const;
+const HOME = {
+  light: { paper: "rgb(220, 238, 255)", ink: "rgb(17, 17, 17)" },
+  dark: { paper: "rgb(22, 35, 48)", ink: "rgb(242, 246, 250)" },
+  black: "rgb(17, 17, 17)",
+  white: "rgb(255, 255, 255)",
+  focus: "rgb(22, 75, 202)",
+  lavender: "rgb(233, 204, 255)",
+  mint: "rgb(85, 219, 156)",
+  yellow: "rgb(255, 215, 49)",
+} as const;
 
 function cssRgb(hex: string) {
   const value = hex.slice(1);
@@ -131,7 +140,49 @@ function boxesOverlap(a: Box, b: Box): boolean {
   return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
 }
 
+async function expectInitialPlayground(page: Page, context: string) {
+  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
+  await freezeMotion(page);
+  const board = (await page.locator(".hero-playground").boundingBox())!;
+  expect(board, `${context} playground`).not.toBeNull();
+  const protectedBoxes = {
+    h1: (await page.locator(".hero-h1").boundingBox())!,
+    bio: (await page.locator(".hero-bio").boundingBox())!,
+    note: (await page.locator(".hero-note").boundingBox())!,
+    hint: (await page.locator(".desk-hint").boundingBox())!,
+    cta: (await page.locator(".cta-btn").boundingBox())!,
+    controls: (await page.locator(".stickers-foot").boundingBox())!,
+  };
+  const controls = protectedBoxes.controls;
+  expect(controls.y, `${context} controls reservation`).toBeGreaterThanOrEqual(board.y + board.height - 72 - 1);
+  expect(controls.y + controls.height, `${context} controls bottom`).toBeLessThanOrEqual(board.y + board.height + 1);
+  expect(controls.x, `${context} controls left`).toBeGreaterThanOrEqual(board.x - 1);
+  expect(controls.x + controls.width, `${context} controls right`).toBeLessThanOrEqual(board.x + board.width + 1);
+
+  const stickers = page.locator(".poster .sticker-slot .sticker");
+  await expect(stickers).toHaveCount(7);
+  const initialBoxes: { key: string | null | undefined; box: Box }[] = [];
+  for (const sticker of await stickers.all()) {
+    const painted = (await sticker.boundingBox())!;
+    const key = await sticker.evaluate((el) => el.closest(".sticker-slot")?.getAttribute("data-key"));
+    expect(painted.x, `${context} ${key} left`).toBeGreaterThanOrEqual(board.x - 1);
+    expect(painted.x + painted.width, `${context} ${key} right`).toBeLessThanOrEqual(board.x + board.width + 1);
+    expect(painted.y, `${context} ${key} top`).toBeGreaterThanOrEqual(board.y - 1);
+    expect(painted.y + painted.height, `${context} ${key} bottom`).toBeLessThanOrEqual(board.y + board.height - 72 + 1);
+    for (const previous of initialBoxes) {
+      expect(boxesOverlap(painted, previous.box), `${context} ${key} × ${previous.key}`).toBe(false);
+    }
+    initialBoxes.push({ key, box: painted });
+    for (const [name, target] of Object.entries(protectedBoxes)) {
+      expect(boxesOverlap(painted, target), `${context} ${key} × ${name}`).toBe(false);
+    }
+  }
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+}
+
 async function centerHits(page: Page, target: ReturnType<typeof page.locator>, selector: string) {
+  // 遊び場の下にある本文・CTA は、利用者と同じくスクロールしてから届くか確かめる。
+  await target.scrollIntoViewIfNeeded();
   const box = await target.boundingBox();
   expect(box).not.toBeNull();
   return page.evaluate(
@@ -157,38 +208,98 @@ async function exportedIndexRoutes(directory = "out", prefix = ""): Promise<stri
   return routes;
 }
 
-test("ポスター紙面はクリームと電圧ブルーで、Bricolage を使わない", async ({ page }) => {
+test.describe("静的 HTML の初期表示", () => {
+  test.use({ javaScriptEnabled: false });
+  test("計測前のシールを旧位置へ出さず、作品へのリンクは使える", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.locator(".poster")).not.toHaveAttribute("data-desk", "ready");
+    for (const slot of await page.locator(".poster .sticker-slot").all()) {
+      await expect(slot).toBeHidden();
+    }
+    await expect(page.locator(".stickers-foot")).toBeHidden();
+    await expect(page.locator(".hero-wordmark")).toBeVisible();
+    await expect(page.locator(".app-row")).toHaveCount(apps.length);
+    await page.locator('.app-row[href="/apps/sublog/"]').click();
+    await expect(page).toHaveURL(/\/apps\/sublog\/$/u);
+  });
+});
+
+test("ホームは空色の遊び場と大きなワードマーク、黒いピルで作品へ案内する", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
 
-  await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
-  await expect(page.locator("body")).toHaveCSS("color", INK.light);
+  await expect(page.locator("body")).toHaveCSS("background-color", HOME.light.paper);
+  await expect(page.locator("body")).toHaveCSS("color", HOME.light.ink);
+  await expect(page.locator(".nav-inner")).toHaveCSS("background-color", HOME.white);
+  await expect(page.locator(".nav-brand")).toContainText("AppLibrary");
+  await expect(page.locator(".nav-brand")).toContainText("uesugiyuuto");
 
   const html = await page.content();
   expect(html.toLowerCase()).not.toContain("bricolage");
+  const board = page.locator(".hero-playground");
+  await expect(board).toBeVisible();
+  const wordmark = board.locator(".hero-wordmark");
+  await expect(wordmark).toHaveAttribute("aria-hidden", "true");
+  await expect(wordmark).toHaveAttribute("viewBox", "0 0 700 300");
+  await expect(wordmark).toHaveAttribute("focusable", "false");
+  await expect(wordmark).toBeVisible();
+  await expect(wordmark.locator("path")).toHaveCount(2);
+  await expect(wordmark.locator("text")).toHaveCount(0);
+  await expect(wordmark).toHaveCSS("color", HOME.black);
+  // 装飾ロゴはアウトラインの図形。本文のフォント検証と混同しない。
+  const wordmarkBox = (await wordmark.boundingBox())!;
+  expect(wordmarkBox.width).toBeGreaterThan(500);
+  expect(wordmarkBox.height).toBeGreaterThan(200);
 
-  const headingFont = await page.locator(".hero-h1").evaluate((el) => getComputedStyle(el).fontFamily);
-  expect(headingFont.toLowerCase()).toMatch(/newsreader/);
+  const ornament = board.locator(".hero-orbit");
+  await expect(ornament).toHaveAttribute("src", "/home/playground/blue-orbit.webp");
+  await expect(ornament).toHaveAttribute("alt", "");
+  await expect(ornament).toHaveAttribute("aria-hidden", "true");
+  await expect.poll(() => ornament.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+  await expect(page.locator(".home-hero-picture")).toHaveCount(0);
+
+  const heading = page.locator(".hero-h1");
+  await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+  await expect(heading).toHaveAccessibleName(i18n.ja.hero_h1_a + i18n.ja.hero_h1_b);
+  await expect(heading).toHaveCSS("color", HOME.black);
+  expect(await heading.evaluate((el) => Number(getComputedStyle(el).fontWeight))).toBeGreaterThanOrEqual(800);
+  const boardBox = (await board.boundingBox())!;
+  const headingBox = (await heading.boundingBox())!;
+  expect(headingBox.y).toBeGreaterThanOrEqual(boardBox.y + boardBox.height);
 
   const cta = page.locator(".cta-btn");
-  await expect(cta).toHaveCSS("color", ACCENT.light);
-  const [background, radius, borderWidth] = await cta.evaluate((el) => {
-    const cs = getComputedStyle(el);
-    return [cs.backgroundColor, parseFloat(cs.borderTopLeftRadius), parseFloat(cs.borderTopWidth)];
-  });
-  expect(background === "rgba(0, 0, 0, 0)" || background === "transparent").toBe(true);
-  expect(radius).toBeGreaterThanOrEqual(30);
-  expect(borderWidth).toBeGreaterThanOrEqual(1);
+  await expect(cta).toHaveCSS("color", HOME.white);
+  await expect(cta).toHaveCSS("background-color", HOME.black);
+  await expect(cta).toHaveAttribute("href", "#apps");
+  expect(await cta.evaluate((el) => Number.parseFloat(getComputedStyle(el).borderTopLeftRadius))).toBeGreaterThanOrEqual(24);
+  await expect(page.locator(".home-showcase")).toHaveCSS("background-color", HOME.lavender);
+  await expect(page.locator(".workshop")).toHaveCSS("background-color", HOME.mint);
 
   await page.getByRole("button", { name: "ダークモードに切り替える" }).click();
-  await expect(page.locator(".cta-btn")).toHaveCSS("color", ACCENT.dark);
+  await expect(page.locator("body")).toHaveCSS("background-color", HOME.dark.paper);
+  await expect(page.locator("body")).toHaveCSS("color", HOME.dark.ink);
+  await expect(heading).toHaveCSS("color", HOME.dark.ink);
+  await expect(cta).toHaveCSS("color", HOME.white);
+  await expect(cta).toHaveCSS("background-color", HOME.black);
 });
 
-test("机のテープとスタンプと手書き合図がある", async ({ page }) => {
+test("黄色い連絡先パネルの黒いリンクをキーボードで識別できる", async ({ page }) => {
+  await page.goto("/#contact");
+  const socials = page.locator(".contact-postcard .social-link");
+  await socials.first().focus();
+  await page.keyboard.press("Tab");
+  await expect(socials.nth(1)).toBeFocused();
+  await expect(socials.nth(1)).toHaveCSS("color", HOME.black);
+  await expect(socials.nth(1)).toHaveCSS("outline-color", HOME.focus);
+  await expect(socials.nth(1)).toHaveCSS("outline-style", "solid");
+  await expect(socials.nth(1)).toHaveCSS("outline-width", "3px");
+  await expect(page.locator(".contact-postcard")).toHaveCSS("background-color", HOME.yellow);
+});
+
+test("手書きの紹介は日英で読める", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator(".desk-tape")).toHaveCount(1);
-  await expect(page.locator(".desk-stamp")).toHaveText("TOKYO '26");
   const hint = page.locator(".desk-hint");
-  await expect(hint).toHaveText("つまんでみて");
+  await expect(hint).toHaveText(i18n.ja.desk_hint);
   const hintFont = await hint.evaluate((el) => getComputedStyle(el).fontFamily);
   expect(hintFont.toLowerCase()).toMatch(/klee/);
   const kleePaintsJa = await hint.evaluate(async (el) => {
@@ -205,7 +316,7 @@ test("机のテープとスタンプと手書き合図がある", async ({ page 
   expect(html.toLowerCase()).not.toContain("bricolage");
 
   await page.getByRole("button", { name: "英語に切り替える" }).click();
-  await expect(page.locator(".desk-hint")).toHaveText("Pinch one.");
+  await expect(page.locator(".desk-hint")).toHaveText(i18n.en.desk_hint);
 });
 
 test("Klee One を全ページへ preload しない", async ({ page }) => {
@@ -218,7 +329,8 @@ test("Klee One を全ページへ preload しない", async ({ page }) => {
   }
 });
 
-test("一覧は行の索引で、検索・フィルタ・モーダルを持たない", async ({ page }) => {
+test("作品カードは実画面と掲載情報を持ち、検索・フィルタ・モーダルを持たない", async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
 
   const rows = page.locator(".app-row");
@@ -231,15 +343,34 @@ test("一覧は行の索引で、検索・フィルタ・モーダルを持た�
   await expect(page.getByText("プラットフォーム", { exact: true })).toHaveCount(0);
   await expect(page.getByText("カテゴリ", { exact: true })).toHaveCount(0);
 
-  // 掲載中の全アプリが行として名前・説明・年と一緒に並ぶ。
+  // 掲載中の全アプリを、実画面・名前・説明・年が揃ったリンクとして紹介する。
   for (const app of apps) {
     const row = rows.filter({ has: page.getByText(app.name, { exact: true }) });
     await expect(row).toHaveAttribute("href", `/apps/${app.slug}/`);
     await expect(row.locator(".app-row-tagline")).toHaveText(app.tagline);
     await expect(row.locator(".app-row-year")).toHaveText(String(app.year));
+    const preview = row.locator(".app-row-visual .app-preview-phone img");
+    await preview.scrollIntoViewIfNeeded();
+    await expect(preview).toHaveAttribute("alt", "");
+    await expect(preview).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[0]}`);
+    await expect.poll(() => preview.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
   }
 
-  // 行のクリックはモーダルを開かず、そのまま個別ページへ移る。
+  const first = (await rows.nth(0).boundingBox())!;
+  const second = (await rows.nth(1).boundingBox())!;
+  for (const row of await rows.all()) {
+    expect(await row.evaluate((el) => Number.parseFloat(getComputedStyle(el).borderTopLeftRadius))).toBeGreaterThanOrEqual(24);
+  }
+  expect(Math.abs(first.y - second.y)).toBeLessThanOrEqual(1);
+  expect(second.x).toBeGreaterThan(first.x + first.width);
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  const mobileFirst = (await rows.nth(0).boundingBox())!;
+  const mobileSecond = (await rows.nth(1).boundingBox())!;
+  expect(Math.abs(mobileFirst.x - mobileSecond.x)).toBeLessThanOrEqual(1);
+  expect(mobileSecond.y).toBeGreaterThan(mobileFirst.y + mobileFirst.height);
+
+  // カードのクリックはモーダルを開かず、そのまま個別ページへ移る。
   await rows.first().click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect.poll(() => new URL(page.url()).pathname).toMatch(/^\/apps\/[a-z-]+\/$/u);
@@ -287,9 +418,15 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
   // ドラッグの終わりのクリックでは遷移しない。
   await expect.poll(() => new URL(page.url()).pathname).toBe("/");
 
-  // ならべ直すと机の位置へ戻る（リセット操作でフッターへスクロールしても文書座標は同じ）。
+  // ならべ直すと遊び場の初期位置へ戻る（操作でスクロールしても文書座標は同じ）。
   const reset = page.getByRole("button", { name: "ならべ直す" });
   await expect(reset).toBeVisible();
+  const resetArea = (await page.locator(".stickers-foot").boundingBox())!;
+  const playground = (await page.locator(".hero-playground").boundingBox())!;
+  expect(resetArea.y).toBeGreaterThanOrEqual(playground.y + playground.height - 72 - 1);
+  expect(resetArea.y + resetArea.height).toBeLessThanOrEqual(playground.y + playground.height + 1);
+  expect(resetArea.x).toBeGreaterThanOrEqual(playground.x - 1);
+  expect(resetArea.x + resetArea.width).toBeLessThanOrEqual(playground.x + playground.width + 1);
   await reset.click();
   await expect(reset).toBeHidden();
   // 戻りは transition で補間されるので、収束するまで待つ。
@@ -325,152 +462,38 @@ test("アプリシールの形が違い、beta / alpha に印がある", async (
   await expect(page.locator(".sticker-name")).toHaveCount(0);
 });
 
-test("初期表示でシールが Hero と一覧見出しに乗っている", async ({ page }) => {
+test("初期表示の7枚と操作案内は Hero の遊び場に収まる", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
-  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
-  await freezeMotion(page);
-
+  await expectInitialPlayground(page, "1280px");
   await expect(page.locator(".sticker-band")).toHaveCount(0);
   await expect(page.locator(".sticker-name")).toHaveCount(0);
-
-  const hero = (await page.locator(".hero-h1").boundingBox())!;
-  const appsHead = (await page.locator("#apps").boundingBox())!;
-  const footer = (await page.locator(".footer").boundingBox())!;
-  const cta = page.locator(".cta-btn");
-
-  const sublog = page.locator('.sticker[href="/apps/sublog/"]');
-  const caflog = page.locator('.sticker[href="/apps/caflog/"]');
-  const devTools = page.locator('.sticker[href="/apps/dev-tools/"]');
-  const payCycle = page.locator('.sticker[href="/apps/pay-cycle/"]');
-
-  const sublogBox = (await sublog.boundingBox())!;
-  const caflogBox = (await caflog.boundingBox())!;
-  const devBox = (await devTools.boundingBox())!;
-  const payBox = (await payCycle.boundingBox())!;
-
-  expect(sublogBox.y + sublogBox.height / 2).toBeLessThan(appsHead.y);
-  expect(sublogBox.y).toBeGreaterThan(hero.y - 40);
-  expect(caflogBox.y + caflogBox.height / 2).toBeLessThan(appsHead.y);
-  expect(Math.abs(devBox.y - appsHead.y)).toBeLessThan(120);
-  expect(payBox.y).toBeGreaterThan(footer.y - 160);
-
-  const tokyo = page.locator('.sticker-slot[data-key="note-Tokyo"] .sticker');
-  const tokyoBox = (await tokyo.boundingBox())!;
-  expect(boxesOverlap(caflogBox, tokyoBox)).toBe(false);
-  expect(boxesOverlap(sublogBox, tokyoBox)).toBe(false);
-
-  const firstRow = (await page.locator(".app-row").first().boundingBox())!;
-  expect(boxesOverlap(devBox, firstRow)).toBe(false);
-
-  await expect(cta).toBeVisible();
-  const ctaBox = (await cta.boundingBox())!;
-  const hitsCta = [sublogBox, caflogBox].some((box) =>
-    box.x < ctaBox.x + ctaBox.width && box.x + box.width > ctaBox.x &&
-    box.y < ctaBox.y + ctaBox.height && box.y + box.height > ctaBox.y,
-  );
-  expect(hitsCta).toBe(false);
-  await cta.click();
-  await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
-
   const stagePosition = await page.locator(".sticker-stage").evaluate((el) => getComputedStyle(el).position);
   expect(stagePosition).not.toBe("fixed");
-});
-
-test("390px で見出しと CTA が押せる", async ({ page }) => {
-  await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
-  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
-  await freezeMotion(page);
-  const heading = page.locator(".hero-h1");
-  await expect(heading).toBeVisible();
-  await expect(page.locator(".cta-btn")).toBeVisible();
-  expect(await centerHits(page, heading, ".hero-h1")).toBe(true);
-  expect(await centerHits(page, page.locator(".cta-btn"), ".cta-btn")).toBe(true);
-  const appsHead = (await page.locator("#apps").boundingBox())!;
-  const firstRow = (await page.locator(".app-row").first().boundingBox())!;
-  const devBox = (await page.locator('.sticker[href="/apps/dev-tools/"]').boundingBox())!;
-  expect(Math.abs(devBox.y - appsHead.y)).toBeLessThan(80);
-  expect(boxesOverlap(devBox, firstRow)).toBe(false);
   await page.locator(".cta-btn").click();
-  await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
-  await expect
-    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
-    .toBe(true);
+  await expect.poll(() => page.evaluate(() => location.hash)).toBe("#apps");
 });
 
-test("640px で見出しと CTA が押せる", async ({ page }) => {
-  await page.setViewportSize({ width: 640, height: 900 });
-  await page.goto("/");
-  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
-  await freezeMotion(page);
-  const heading = page.locator(".hero-h1");
-  const cta = page.locator(".cta-btn");
-  await expect(heading).toBeVisible();
-  await expect(cta).toBeVisible();
-  expect(await centerHits(page, heading, ".hero-h1")).toBe(true);
-  expect(await centerHits(page, cta, ".cta-btn")).toBe(true);
-  const appsHead = (await page.locator("#apps").boundingBox())!;
-  const firstRow = (await page.locator(".app-row").first().boundingBox())!;
-  const devBox = (await page.locator('.sticker[href="/apps/dev-tools/"]').boundingBox())!;
-  expect(Math.abs(devBox.y - appsHead.y)).toBeLessThan(80);
-  expect(boxesOverlap(devBox, firstRow)).toBe(false);
-
-  await cta.click();
-  await expect.poll(() => page.evaluate(() => location.hash)).toMatch(/apps/);
-  await expect
-    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
-    .toBe(true);
-});
-
-test("初期配置のシールは Hero の文字と CTA を覆わない", async ({ page }) => {
-  for (const width of [390, 641, 768, 834, 1023, 1024, 1180, 1240, 1279, 1280] as const) {
+test("320〜1280px と英語でも遊び場の7枚は本文と CTA を覆わない", async ({ page }) => {
+  for (const width of [320, 390, 640, 641, 768, 834, 1023, 1024, 1180, 1240, 1279, 1280] as const) {
     await page.setViewportSize({ width, height: width >= 800 ? 900 : 844 });
     await page.goto("/");
-    await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
-    await freezeMotion(page);
-    const heading = page.locator(".hero-h1");
-    const cta = page.locator(".cta-btn");
-    const protectedBoxes = {
-      h1: (await heading.boundingBox())!,
-      bio: (await page.locator(".hero-bio").boundingBox())!,
-      note: (await page.locator(".hero-note").boundingBox())!,
-      hint: (await page.locator(".desk-hint").boundingBox())!,
-      cta: (await cta.boundingBox())!,
-    };
-    const stickers = page.locator(".sticker-slot .sticker");
-    const count = await stickers.count();
-    for (let index = 0; index < count; index += 1) {
-      const painted = (await stickers.nth(index).boundingBox())!;
-      const key = await stickers.nth(index).evaluate((el) => el.closest(".sticker-slot")?.getAttribute("data-key"));
-      for (const [name, target] of Object.entries(protectedBoxes)) {
-        expect(boxesOverlap(painted, target), `${width}px ${key} × ${name}`).toBe(false);
-      }
-    }
-    expect(await centerHits(page, heading, ".hero-h1"), `${width}px heading center`).toBe(true);
-    expect(await centerHits(page, cta, ".cta-btn"), `${width}px cta center`).toBe(true);
-    await expect
-      .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
-      .toBe(true);
+    await expectInitialPlayground(page, `${width}px`);
+    expect(await centerHits(page, page.locator(".hero-h1"), ".hero-h1"), `${width}px heading center`).toBe(true);
+    expect(await centerHits(page, page.locator(".cta-btn"), ".cta-btn"), `${width}px cta center`).toBe(true);
+    await page.locator(".cta-btn").click();
+    await expect.poll(() => page.evaluate(() => location.hash)).toBe("#apps");
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
   }
 
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
   await page.getByRole("button", { name: "英語に切り替える" }).click();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
-  await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
-  await freezeMotion(page);
-  const enHeading = page.locator(".hero-h1");
-  const enCta = page.locator(".cta-btn");
-  expect(await centerHits(page, enHeading, ".hero-h1")).toBe(true);
-  expect(await centerHits(page, enCta, ".cta-btn")).toBe(true);
-  const enCtaBox = (await enCta.boundingBox())!;
-  const enStickers = page.locator(".sticker-slot .sticker");
-  const enCount = await enStickers.count();
-  for (let index = 0; index < enCount; index += 1) {
-    const painted = (await enStickers.nth(index).boundingBox())!;
-    expect(boxesOverlap(painted, enCtaBox), `1280en sticker ${index} × cta`).toBe(false);
-  }
+  await expectInitialPlayground(page, "1280px en");
+  expect(await centerHits(page, page.locator(".hero-h1"), ".hero-h1")).toBe(true);
+  await page.locator(".cta-btn").click();
+  await expect.poll(() => page.evaluate(() => location.hash)).toBe("#apps");
 });
 
 test("置いたシールはスクロールしても viewport に張り付かない", async ({ page }) => {
@@ -483,7 +506,7 @@ test("置いたシールはスクロールしても viewport に張り付かな�
   await page.mouse.move(before.x + before.width / 2, before.y + before.height / 2);
   await page.waitForTimeout(350);
   await page.mouse.down();
-  // フッターを見ている状態から、ビューポート上端へ引き上げる。
+  // Hero の遊び場から、ビューポート上端へ引き上げる。
   await page.mouse.move(before.x + 40, 80, { steps: 16 });
   await page.mouse.up();
 
@@ -495,8 +518,8 @@ test("置いたシールはスクロールしても viewport に張り付かな�
   const scrolled = await page.evaluate(() => {
     const root = document.documentElement;
     const beforeY = root.scrollTop;
-    root.scrollTo({ top: Math.max(0, beforeY - 400), behavior: "instant" });
-    return beforeY - root.scrollTop;
+    root.scrollTo({ top: beforeY + 400, behavior: "instant" });
+    return root.scrollTop - beforeY;
   });
   expect(scrolled).toBeGreaterThan(200);
 
@@ -506,7 +529,7 @@ test("置いたシールはスクロールしても viewport に張り付かな�
   });
   // 紙に貼ったままスクロールする。fixed なら viewport 上端に張り付き docTop が動く。
   expect(Math.abs(after.docTop - placed.docTop)).toBeLessThan(2);
-  expect(after.top - placed.top).toBeGreaterThan(200);
+  expect(placed.top - after.top).toBeGreaterThan(200);
 });
 
 test("ドラッグの後でもキーボードから遷移できる", async ({ page }) => {
@@ -705,10 +728,12 @@ test("390px で右端の鉛筆メモが画面内に収まる", async ({ page }) 
 test("reduced-motion では掴み中に拡大しない", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");
+  await expect(page.locator(".poster")).toHaveAttribute("data-desk", "ready");
   const sublog = page.locator('.sticker[href="/apps/sublog/"]');
   await raiseSticker(sublog);
-  const box = (await sublog.boundingBox())!;
-  await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+  // data-desk は最初の計測完了。mobile の初期レイアウトが収束する前の座標を
+  // 固定せず、Playwright の安定・表示・ヒット判定を経てシールへポインタを乗せる。
+  await sublog.hover();
   await page.mouse.down();
   await expect(sublog).toHaveClass(/\bis-held\b/u);
   const scale = await sublog.evaluate((el) => {
@@ -777,17 +802,17 @@ test("フッターの奥付は既定で閉じており、開くと本文とリ�
   await expect(page.getByRole("link", { name: "プライバシー", exact: true })).toBeVisible();
 });
 
-test("既定は紙のライトテーマで、light / dark 双方が実配色でコントラストを満たす", async ({ page }) => {
+test("ホームの light / dark 双方が専用の実配色でコントラストを満たす", async ({ page }) => {
   await page.goto("/");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
-  await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
-  await expect(page.locator("body")).toHaveCSS("color", INK.light);
+  await expect(page.locator("body")).toHaveCSS("background-color", HOME.light.paper);
+  await expect(page.locator("body")).toHaveCSS("color", HOME.light.ink);
   await expectColorContrast(page);
 
   await page.getByRole("button", { name: "ダークモードに切り替える" }).click();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
-  await expect(page.locator("body")).toHaveCSS("background-color", PAPER.dark);
-  await expect(page.locator("body")).toHaveCSS("color", INK.dark);
+  await expect(page.locator("body")).toHaveCSS("background-color", HOME.dark.paper);
+  await expect(page.locator("body")).toHaveCSS("color", HOME.dark.ink);
   await expectColorContrast(page);
 });
 
@@ -1205,9 +1230,9 @@ for (const app of apps) {
     await page.getByRole("link", { name: "← AppLibrary", exact: true }).click();
     await expect.poll(() => new URL(page.url()).pathname).toBe("/");
     await expect(page.locator(".app-shell")).toHaveCount(0);
-    // トップへ戻ると紙面の配色に戻る。
-    await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
-    await expect(page.locator("body")).toHaveCSS("color", INK.light);
+    // トップへ戻るとホーム専用の配色へ戻り、アプリや法務の色が残らない。
+    await expect(page.locator("body")).toHaveCSS("background-color", HOME.light.paper);
+    await expect(page.locator("body")).toHaveCSS("color", HOME.light.ink);
     await expect(page.locator(".app-row")).toHaveCount(apps.length);
     await page.getByRole("link", { name: "プライバシー", exact: true }).click();
     await expect(page.getByRole("heading", { level: 1, name: "プライバシーポリシー" })).toBeVisible();
@@ -1285,6 +1310,12 @@ test("未生成ルートは 404", async ({ request }) => {
 test("展示はキーボードで選べ、画面・状態・詳細リンクが同じアプリを指す", async ({ page }) => {
   await page.goto("/");
   const spotlight = page.getByRole("region", { name: i18n.ja.spotlight_title });
+  await expect(page.locator(".hero .spotlight")).toHaveCount(0);
+  await expect(page.locator(".home-showcase.section .spotlight")).toHaveCount(1);
+  await expect(spotlight.getByRole("button", { name: apps[0]!.name, exact: true })).toHaveAttribute("aria-pressed", "true");
+  const appsBox = (await page.locator("#apps").boundingBox())!;
+  const showcaseBox = (await page.locator(".home-showcase").boundingBox())!;
+  expect(showcaseBox.y).toBeGreaterThanOrEqual(appsBox.y + appsBox.height);
   for (const app of apps) {
     const choice = spotlight.getByRole("button", { name: app.name, exact: true });
     await choice.focus();
