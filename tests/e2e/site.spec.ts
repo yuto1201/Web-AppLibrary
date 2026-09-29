@@ -32,6 +32,7 @@ const PAPER = { light: "rgb(255, 248, 241)", dark: "rgb(18, 16, 14)" } as const;
 const INK = { light: "rgb(0, 0, 0)", dark: "rgb(255, 248, 241)" } as const;
 const INK_2 = { light: "rgb(63, 59, 54)", dark: "rgb(200, 194, 184)" } as const;
 const CAFLOG = { canvas: "rgb(250, 249, 247)", ink: "rgb(32, 32, 36)", white: "rgb(255, 255, 255)" } as const;
+const SUBLOG = { paper: "rgb(247, 248, 245)" } as const;
 const HOME = {
   light: { paper: "rgb(220, 238, 255)", ink: "rgb(17, 17, 17)" },
   dark: { paper: "rgb(22, 35, 48)", ink: "rgb(242, 246, 250)" },
@@ -565,7 +566,7 @@ test("ステッカーは動かさずに離すと個別ページへ移る", async
 });
 
 test("個別ページの標本シールはリンクではなく動かせる", async ({ page }) => {
-  await page.goto("/apps/sublog/");
+  await page.goto("/apps/dev-tools/");
   const specimen = page.locator(".app-shell .sticker");
   await expect(specimen).toHaveCount(1);
   await expect(specimen).not.toHaveAttribute("href");
@@ -580,9 +581,9 @@ test("個別ページの標本シールはリンクではなく動かせる", as
   await page.mouse.up();
   const after = (await specimen.boundingBox())!;
   expect(Math.abs(after.x - before.x) + Math.abs(after.y - before.y)).toBeGreaterThan(20);
-  await expect.poll(() => new URL(page.url()).pathname).toBe("/apps/sublog/");
+  await expect.poll(() => new URL(page.url()).pathname).toBe("/apps/dev-tools/");
 
-  await page.goto("/apps/sublog/privacy/");
+  await page.goto("/apps/dev-tools/privacy/");
   await expect(page.locator(".app-shell .sticker")).toHaveCount(0);
 });
 
@@ -839,7 +840,7 @@ test("テーマと言語の設定が再読み込み後も維持される", async
   await expect(page.getByRole("button", { name: "Tidy up" })).toBeHidden();
 
   for (const [route, selector] of [
-    ["/apps/sublog/", ".app-shell"],
+    ["/apps/sublog/", ".sublog-site"],
     ["/apps/sublog/privacy/", ".app-shell"],
     ["/privacy/", ".legal-page"],
     ["/terms/", ".legal-page"],
@@ -848,7 +849,7 @@ test("テーマと言語の設定が再読み込み後も維持される", async
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
     await expect(page.locator(selector)).toHaveAttribute("lang", "ja");
     if (route === "/apps/sublog/") {
-      await expect(page.getByRole("heading", { level: 2, name: "Features" })).toHaveAttribute("lang", "en");
+      await expect(page.locator(".sublog-headline")).toHaveText("サブスクを、すっきりひとまとめ。");
     }
   }
 });
@@ -1076,6 +1077,21 @@ for (const app of apps) {
       const download = page.locator(".caflog-button").first();
       await expect(download).toHaveCSS("background-color", CAFLOG.ink);
       await expect(download).toHaveCSS("color", CAFLOG.white);
+    } else if (app.slug === "sublog") {
+      await expect(page.locator(".sublog-site")).toHaveAttribute("lang", "ja");
+      await expect(page.locator(".app-shell")).toHaveCount(0);
+      await expect(page.locator("body")).toHaveCSS("background-color", SUBLOG.paper);
+      await expect(page.locator(".sublog-headline")).toHaveText("サブスクを、すっきりひとまとめ。");
+      const icon = page.locator(`.sublog-site img[src="/apps/${app.slug}/${app.icon}"]`).first();
+      await expect(icon).toBeVisible();
+      await expect.poll(() => icon.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+      const storeLinks = page.locator('a[href*="apps.apple.com"]');
+      expect(await storeLinks.count()).toBeGreaterThan(0);
+      for (const link of await storeLinks.all()) {
+        await expect(link).toHaveAttribute("href", app.appStoreUrl!);
+        await expect(link).toHaveAttribute("target", "_blank");
+        await expect(link).toHaveAttribute("rel", /noopener/u);
+      }
     } else {
       await expect(page.locator(".app-shell")).toHaveAttribute("data-tone", tone.tone);
       await expect(page.locator("body")).toHaveCSS("background-color", cssRgb(tone.wash));
@@ -1090,9 +1106,6 @@ for (const app of apps) {
       await expect(page.locator(".feature-row").first()).toHaveCSS("box-shadow", "none");
       await expect(page.locator(".feature-row").first()).toHaveCSS("border-bottom-width", "1px");
     }
-    if (app.slug === "sublog") {
-      await expect(page.locator(".feature-row").first()).toHaveCSS("display", "grid");
-    }
     if (app.slug === "dev-tools") {
       await expect(page.locator(".feature-list")).toHaveCSS("display", "grid");
     }
@@ -1103,13 +1116,6 @@ for (const app of apps) {
       await expect(page.locator(".hero-status")).toHaveCount(0);
     } else {
       await expect(page.locator(".hero-status")).toHaveText(statusLabel(app.status, i18n.ja));
-    }
-    if (app.slug === "sublog") {
-      const heroInner = await page.locator(".hero-inner").boundingBox();
-      const pageBox = await page.locator(".page").boundingBox();
-      expect(heroInner).not.toBeNull();
-      expect(pageBox).not.toBeNull();
-      expect(Math.abs(heroInner!.x - pageBox!.x)).toBeLessThan(2);
     }
     const primary = page.locator(".btn-primary").first();
     if (await primary.count()) {
@@ -1326,8 +1332,8 @@ test("CafLog は保存した dark でもアプリに合わせた明るい配色�
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 });
 
-test("保存した dark でも個別ページの見出しが電圧ブルーに飲み込まれない", async ({ page }) => {
-  await page.goto("/apps/sublog/");
+test("保存した dark でも共通個別ページの見出しが電圧ブルーに飲み込まれない", async ({ page }) => {
+  await page.goto("/apps/dev-tools/");
   await setStoredState(page, { theme: "dark" });
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
@@ -1337,6 +1343,58 @@ test("保存した dark でも個別ページの見出しが電圧ブルーに�
   await expect(page.locator(".app-shell .section-title").first()).toHaveCSS("color", INK.dark);
   await expect(page.locator(".app-shell .hero-title")).toHaveCSS("color", INK.dark);
   await expectColorContrast(page);
+});
+
+test("SubLog の支払い表示例はキーボードで月額・年額を切り替えられ、各幅で実画面を確認できる", async ({ page }) => {
+  await page.goto("/apps/sublog/");
+  const overview = page.locator(".sublog-overview");
+  await expect(overview).toHaveAttribute("aria-label", "支払いの表示例");
+  await expect(overview).toContainText("表示例");
+  const monthly = overview.getByRole("button", { name: "月額", exact: true });
+  const yearly = overview.getByRole("button", { name: "年額", exact: true });
+  await expect(monthly).toHaveAttribute("aria-pressed", "true");
+  await expect(yearly).toHaveAttribute("aria-pressed", "false");
+  await expect(overview).toContainText(/[￥¥]3,670/u);
+  await yearly.focus();
+  await page.keyboard.press("Enter");
+  await expect(yearly).toHaveAttribute("aria-pressed", "true");
+  await expect(monthly).toHaveAttribute("aria-pressed", "false");
+  await expect(overview).toContainText(/[￥¥]44,040/u);
+  await monthly.focus();
+  await page.keyboard.press("Space");
+  await expect(monthly).toHaveAttribute("aria-pressed", "true");
+  await expect(overview).toContainText(/[￥¥]3,670/u);
+
+  const screenshot = page.locator("#screenshots .shot-featured img");
+  for (const width of [320, 393, 768, 1280]) {
+    await page.setViewportSize({ width, height: width >= 768 ? 900 : 852 });
+    await expect(page.locator(".sublog-headline")).toBeVisible();
+    await yearly.click({ trial: true });
+    await expect(screenshot).toBeVisible();
+    await expect.poll(() => screenshot.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  }
+});
+
+test("SubLog は保存した dark でも専用配色を保ち、法務へ戻ると保存テーマに従う", async ({ page }) => {
+  await page.goto("/apps/sublog/");
+  await setStoredState(page, { theme: "dark", lang: "en" });
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator(".sublog-site")).toHaveAttribute("lang", "ja");
+  await expect(page.locator("body")).toHaveCSS("background-color", SUBLOG.paper);
+  await expectColorContrast(page);
+
+  await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
+  await expect(page).toHaveURL(/\/apps\/sublog\/privacy\/$/u);
+  await expect(page.locator(".sublog-site")).toHaveCount(0);
+  await expect(page.locator("body")).toHaveCSS("background-color", PAPER.dark);
+  await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.dark);
+  await expectColorContrast(page);
+  await page.getByRole("link", { name: "← SubLog", exact: true }).click();
+  await expect(page.locator("body")).toHaveCSS("background-color", SUBLOG.paper);
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
 });
 
 test("未生成ルートは 404", async ({ request }) => {
