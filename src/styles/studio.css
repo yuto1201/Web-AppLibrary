@@ -232,6 +232,7 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   .poster[data-desk="ready"] .sticker-slot[data-key="caflog"] { left: calc(var(--desk-play-left) + 15px); width: 82px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="dev-tools"] { left: calc(var(--desk-play-left) + var(--desk-play-width) - 97px); width: 82px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="pay-cycle"] { left: calc(var(--desk-play-left) + var(--desk-play-width) - 110px); width: 82px; }
+  .poster[data-desk="ready"] .sticker-slot[data-key="note-Tokyo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .62); }
   .poster .app-row-body { grid-template-columns: 36px minmax(0, 1fr) 29px; gap: 11px; padding: 20px; }
   .poster .app-row-icon { width: 36px; height: 36px; border-radius: 9px; }
   .poster .app-row-name { font-size: 25px; }
