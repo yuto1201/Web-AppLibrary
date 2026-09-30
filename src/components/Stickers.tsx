@@ -9,9 +9,8 @@ import { paperBounds } from "@/lib/sticker-bounds";
 import { DESK_ITEMS, statusStamp } from "@/lib/sticker-desk";
 import { VinylSticker } from "@/components/VinylSticker";
 
-/** 傾きと持ち上げ量。散らした配置が機械的に見えないように 1 枚ずつ変える。 */
+/** 遊び場に並べたシールの傾きを、1 枚ずつ変える。 */
 const TILT = [-7, 4, -3, 9, -5] as const;
-const LIFT = [0, -26, -8, -38, -16] as const;
 
 export function Stickers() {
   const { activeSlug, onActivate } = useActivate();
@@ -56,44 +55,29 @@ export function Stickers() {
 
   useLayoutEffect(() => {
     const poster = document.querySelector(".poster");
-    const appsHead = document.querySelector("#apps .section-head") ?? document.getElementById("apps");
-    const heading = document.querySelector(".hero-h1");
-    const note = document.querySelector(".hero-note");
-    const cta = document.querySelector(".cta-btn");
-    if (!(poster instanceof HTMLElement) || !(appsHead instanceof HTMLElement)) return;
+    if (!(poster instanceof HTMLElement)) return;
+    const playground = poster.querySelector(".hero-playground");
+    const hero = poster.querySelector(".hero");
+    if (!(playground instanceof HTMLElement)) return;
     const sync = () => {
       const origin = poster.getBoundingClientRect();
-      poster.style.setProperty(
-        "--desk-apps-top",
-        `${Math.round(appsHead.getBoundingClientRect().top - origin.top)}px`,
-      );
-      if (heading instanceof HTMLElement) {
-        const box = heading.getBoundingClientRect();
-        poster.style.setProperty("--desk-h1-right", `${Math.round(box.right - origin.left)}px`);
-        poster.style.setProperty("--desk-h1-top", `${Math.round(box.top - origin.top)}px`);
-      }
-      if (note instanceof HTMLElement) {
-        const box = note.getBoundingClientRect();
-        poster.style.setProperty("--desk-note-right", `${Math.round(box.right - origin.left)}px`);
-        poster.style.setProperty("--desk-note-top", `${Math.round(box.top - origin.top)}px`);
-      }
-      if (cta instanceof HTMLElement) {
-        const box = cta.getBoundingClientRect();
-        poster.style.setProperty("--desk-cta-bottom", `${Math.round(box.bottom - origin.top)}px`);
-      }
+      const box = playground.getBoundingClientRect();
+      // 初期配置だけを Hero の予約領域へ寄せる。ドラッグの範囲は引き続き poster 全体。
+      poster.style.setProperty("--desk-play-left", `${Math.round(box.left - origin.left)}px`);
+      poster.style.setProperty("--desk-play-top", `${Math.round(box.top - origin.top)}px`);
+      poster.style.setProperty("--desk-play-width", `${Math.round(box.width)}px`);
+      poster.style.setProperty("--desk-play-height", `${Math.round(box.height)}px`);
       poster.setAttribute("data-desk", "ready");
     };
     sync();
     const observer = new ResizeObserver(sync);
     observer.observe(poster);
-    observer.observe(appsHead);
-    if (heading instanceof HTMLElement) observer.observe(heading);
-    if (note instanceof HTMLElement) observer.observe(note);
-    if (cta instanceof HTMLElement) observer.observe(cta);
+    observer.observe(playground);
+    if (hero instanceof HTMLElement) observer.observe(hero);
     const mutations = new MutationObserver(sync);
     mutations.observe(document.documentElement, { attributes: true, attributeFilter: ["lang"] });
-    if (heading instanceof HTMLElement) {
-      mutations.observe(heading, { childList: true, subtree: true, characterData: true });
+    if (hero instanceof HTMLElement) {
+      mutations.observe(hero, { childList: true, subtree: true, characterData: true });
     }
     return () => {
       observer.disconnect();
@@ -136,7 +120,7 @@ export function Stickers() {
               caption={item.caption}
               stamp={item.stamp}
               tilt={TILT[index % TILT.length]!}
-              lift={LIFT[index % LIFT.length]!}
+              lift={0}
               layer={layers[deskKey] ?? index + 1}
               order={index + 1}
               offset={offsets[deskKey] ?? ORIGIN}

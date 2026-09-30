@@ -11,7 +11,7 @@ export function Nav() {
   return (
     <nav className="nav" aria-label={t.a11y_primary_nav}>
       <div className="nav-inner">
-        <a className="nav-brand" href="#top">{profile.name}</a>
+        <a className="nav-brand" href="#top"><span>AppLibrary<span className="brand-dot" aria-hidden="true">.</span></span>{" "}<span className="nav-brand-by">by {profile.name}</span></a>
         <div className="nav-links">
           <a href="#apps">{t.nav.apps}</a>
           {hasPosts && <a href="#posts">{t.nav.posts}</a>}

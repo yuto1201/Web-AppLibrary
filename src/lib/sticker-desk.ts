@@ -2,7 +2,7 @@ import { apps } from "@/data/registry";
 import type { App } from "@/data/schema";
 
 export type StickerShape = "round-rect" | "circle" | "squircle" | "round-lg";
-export type DeskAnchor = "hero" | "apps" | "pile";
+export type DeskAnchor = "hero";
 
 export type DeskAppItem = {
   key: string;
@@ -22,18 +22,18 @@ export type DeskWordItem = {
 export type DeskItem = DeskAppItem | DeskWordItem;
 
 const APP_DESK: Record<string, Pick<DeskAppItem, "shape" | "anchor">> = {
-  // 各 key に src/styles/standard.css の `.sticker-slot[data-key="…"]` が必要。
-  // 無いとデフォルトの右下の山へ落ちる。anchor はカタログ上の役割で、位置は CSS が持つ。
+  // 各 key の初期位置は src/styles/studio.css が持つ。
+  // すべて Hero の予約領域に置く。ドラッグ範囲はページ全体のまま。
   sublog: { shape: "round-rect", anchor: "hero" },
   caflog: { shape: "circle", anchor: "hero" },
-  "dev-tools": { shape: "squircle", anchor: "apps" },
-  "pay-cycle": { shape: "round-lg", anchor: "pile" },
+  "dev-tools": { shape: "squircle", anchor: "hero" },
+  "pay-cycle": { shape: "round-lg", anchor: "hero" },
 };
 
 const WORDS: DeskWordItem[] = [
-  { key: "note-Swift", kind: "word", word: "Swift", anchor: "pile" },
+  { key: "note-Swift", kind: "word", word: "Swift", anchor: "hero" },
   { key: "note-Tokyo", kind: "word", word: "Tokyo", anchor: "hero" },
-  { key: "note-solo", kind: "word", word: "一人制作", anchor: "pile" },
+  { key: "note-solo", kind: "word", word: "一人制作", anchor: "hero" },
 ];
 
 export const DESK_ITEMS: readonly DeskItem[] = [

@@ -9,7 +9,7 @@
 | [workflow.md](workflow.md) | Issue / PR / レビュー / 公開の境界 |
 | [verification.md](verification.md) | ローカルと CI の検証コマンド |
 | [architecture.md](architecture.md) | Next.js 静的出力の構成 |
-| [deploy/README.md](deploy/README.md) | Vercel 配信と Cloudflare DNS |
+| [deploy/README.md](deploy/README.md) | Cloudflare Pages 配信と DNS |
 | [design/top.md](design/top.md) | トップページ |
 | [design/app-page.md](design/app-page.md) | アプリ詳細ページ |
 | [design/components.md](design/components.md) | 共通コンポーネント |

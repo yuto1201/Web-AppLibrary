@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Vercel のドメインルートで配信する静的サイト。
+  // Cloudflare Pages のドメインルートで配信する静的サイト。
   output: "export",
   // 静的出力では Next.js の画像最適化サーバーが動かないため無効化する。
   images: { unoptimized: true },

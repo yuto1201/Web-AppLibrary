@@ -9,9 +9,9 @@
 
 - 制作: [@Yuto_Program](https://x.com/Yuto_Program)
 - リポジトリ: <https://github.com/yuto1201/Web-AppLibrary>
-- 公開先: <https://app.yutodev.com/>（Vercel + Cloudflare DNS、2026-08-31 移行）
+- 公開先: <https://app.yutodev.com/>（Cloudflare Pages）
 
-Next.js の静的出力を Vercel で配信している。サーバー処理・DB・認証は使わない。
+Next.js の静的出力を Cloudflare Pages で配信する。サーバー処理・DB・認証は使わない。
 
 ---
 
