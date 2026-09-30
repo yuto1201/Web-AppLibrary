@@ -33,6 +33,7 @@ const INK = { light: "rgb(0, 0, 0)", dark: "rgb(255, 248, 241)" } as const;
 const INK_2 = { light: "rgb(63, 59, 54)", dark: "rgb(200, 194, 184)" } as const;
 const CAFLOG = { canvas: "rgb(250, 249, 247)", ink: "rgb(32, 32, 36)", white: "rgb(255, 255, 255)" } as const;
 const SUBLOG = { paper: "rgb(247, 248, 245)" } as const;
+const PAYCYCLE = { paper: "rgb(246, 244, 240)" } as const;
 const HOME = {
   light: { paper: "rgb(220, 238, 255)", ink: "rgb(17, 17, 17)" },
   dark: { paper: "rgb(22, 35, 48)", ink: "rgb(242, 246, 250)" },
@@ -983,7 +984,7 @@ test("ホームのシールは呼吸し、個別の標本は静止する", async
   });
   expect(moved).toBeGreaterThanOrEqual(0.5);
 
-  await page.goto("/apps/pay-cycle/");
+  await page.goto("/apps/dev-tools/");
   const specimen = page.locator(".specimen-slot .sticker-slot");
   await expect(specimen).toHaveCount(1);
   expect(await specimen.evaluate((el) => getComputedStyle(el).animationName)).toMatch(/^(?:none)?$/u);
@@ -1092,6 +1093,17 @@ for (const app of apps) {
         await expect(link).toHaveAttribute("target", "_blank");
         await expect(link).toHaveAttribute("rel", /noopener/u);
       }
+    } else if (app.slug === "pay-cycle") {
+      await expect(page.locator(".paycycle-site")).toHaveAttribute("lang", "ja");
+      await expect(page.locator(".app-shell")).toHaveCount(0);
+      await expect(page.locator("body")).toHaveCSS("background-color", PAYCYCLE.paper);
+      await expect(page.locator(".paycycle-headline")).toHaveText(/お金の流れに、\s*見通しを。/u);
+      const heroImage = page.locator('.paycycle-hero img[src="/apps/pay-cycle/screenshots/1.png"]');
+      await expect(heroImage).toBeVisible();
+      await expect.poll(() => heroImage.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+      const icon = page.locator('.paycycle-site img[src="/apps/pay-cycle/icon.png"]').first();
+      await expect(icon).toBeVisible();
+      await expect.poll(() => icon.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
     } else {
       await expect(page.locator(".app-shell")).toHaveAttribute("data-tone", tone.tone);
       await expect(page.locator("body")).toHaveCSS("background-color", cssRgb(tone.wash));
@@ -1109,11 +1121,10 @@ for (const app of apps) {
     if (app.slug === "dev-tools") {
       await expect(page.locator(".feature-list")).toHaveCSS("display", "grid");
     }
-    if (app.slug === "pay-cycle") {
-      await expect(page.locator(".feature-list")).toHaveCSS("border-left-width", "2px");
-    }
     if (app.status === "release") {
       await expect(page.locator(".hero-status")).toHaveCount(0);
+    } else if (app.slug === "pay-cycle") {
+      await expect(page.locator(".paycycle-release").first()).toHaveText("リリース準備中");
     } else {
       await expect(page.locator(".hero-status")).toHaveText(statusLabel(app.status, i18n.ja));
     }
@@ -1168,12 +1179,16 @@ for (const app of apps) {
     }
     if (app.slug === "pay-cycle") {
       await expect(page.locator('a[href*="apps.apple.com"]')).toHaveCount(0);
-      await expect(page.getByRole("link", { name: "サポート", exact: true }))
+      const related = page.getByRole("navigation", { name: "PayCycle 関連リンク", exact: true });
+      await expect(related.getByRole("link", { name: "サポート", exact: true }))
         .toHaveAttribute("href", "https://app.yutodev.com/#contact");
-      await expect(page.getByRole("link", { name: "利用規約", exact: true }))
+      await expect(related.getByRole("link", { name: "利用規約", exact: true }))
         .toHaveAttribute("href", "/apps/pay-cycle/terms/");
     }
-    await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
+    const detailPrivacy = app.slug === "pay-cycle"
+      ? page.getByRole("navigation", { name: "PayCycle 関連リンク", exact: true }).getByRole("link", { name: "プライバシーポリシー", exact: true })
+      : page.getByRole("link", { name: "プライバシーポリシー", exact: true });
+    await detailPrivacy.click();
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/privacy/$`, "u"));
     await expect(page.locator(".app-shell")).not.toHaveAttribute("data-tone");
     await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
@@ -1234,7 +1249,10 @@ for (const app of apps) {
     await expectColorContrast(page);
     await page.getByRole("link", { name: `← ${app.name}`, exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/$`, "u"));
-    await page.getByRole("link", { name: "← AppLibrary", exact: true }).click();
+    const backToHome = app.slug === "pay-cycle"
+      ? page.getByRole("navigation", { name: "PayCycle 関連リンク", exact: true }).getByRole("link", { name: "AppLibrary", exact: true })
+      : page.getByRole("link", { name: "← AppLibrary", exact: true });
+    await backToHome.click();
     await expect.poll(() => new URL(page.url()).pathname).toBe("/");
     await expect(page.locator(".app-shell")).toHaveCount(0);
     // トップへ戻るとホーム専用の配色へ戻り、アプリや法務の色が残らない。
@@ -1395,6 +1413,78 @@ test("SubLog は保存した dark でも専用配色を保ち、法務へ戻る�
   await page.getByRole("link", { name: "← SubLog", exact: true }).click();
   await expect(page.locator("body")).toHaveCSS("background-color", SUBLOG.paper);
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+});
+
+test("PayCycle の案内・実画面・質問をキーボードで操作でき、狭い幅でも操作を覆わない", async ({ page }) => {
+  const app = apps.find(({ slug }) => slug === "pay-cycle")!;
+  await page.goto("/apps/pay-cycle/");
+  for (const section of ["features", "screenshots"] as const) {
+    const link = page.locator(`.paycycle-actions a[href="#${section}"]`);
+    await link.focus();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(new RegExp(`/apps/pay-cycle/#${section}$`, "u"));
+    await expect(page.locator(`#${section}`)).toBeInViewport();
+  }
+
+  const gallery = page.getByRole("group", { name: "Screenshots", exact: true });
+  const featured = gallery.locator(".shot-featured img");
+  await expect(gallery.locator(".shot-thumb")).toHaveCount(5);
+  await gallery.focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(featured).toHaveAttribute("src", `/apps/pay-cycle/screenshots/${app.screenshots.at(-1)}`);
+  await expect(gallery.locator(".shot-count")).toHaveText("5 / 5");
+  await expect(gallery.locator(".shot-thumb").last()).toHaveAttribute("aria-pressed", "true");
+  await gallery.getByRole("button", { name: "Next", exact: true }).focus();
+  await page.keyboard.press("Enter");
+  await expect(featured).toHaveAttribute("src", "/apps/pay-cycle/screenshots/1.png");
+
+  const question = page.locator("#questions details").first();
+  await question.locator("summary").focus();
+  await page.keyboard.press("Enter");
+  await expect(question).toHaveAttribute("open", "");
+  await expect(question.locator("p")).toBeVisible();
+
+  for (const width of [320, 390, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    const heroImage = page.locator(".paycycle-hero-image");
+    await expect(heroImage).toBeVisible();
+    await expect.poll(() => heroImage.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+    for (const control of [
+      page.locator('.paycycle-actions a[href="#screenshots"]'),
+      gallery.getByRole("button", { name: "Next", exact: true }),
+    ]) {
+      await control.click({ trial: true });
+      const box = (await control.boundingBox())!;
+      expect(box.width, `${width}px control width`).toBeGreaterThanOrEqual(44);
+      expect(box.height, `${width}px control height`).toBeGreaterThanOrEqual(44);
+    }
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  }
+});
+
+test("PayCycle は保存した dark と en を維持し、privacy と terms との往復で配色を切り替える", async ({ page }) => {
+  await page.goto("/apps/pay-cycle/");
+  await setStoredState(page, { theme: "dark", lang: "en" });
+  await page.reload();
+  await expect(page.locator(".paycycle-site")).toHaveAttribute("lang", "ja");
+  await expect(page.locator("body")).toHaveCSS("background-color", PAYCYCLE.paper);
+  await expectColorContrast(page);
+
+  for (const [label, route] of [["プライバシーポリシー", "privacy"], ["利用規約", "terms"]] as const) {
+    await page.getByRole("navigation", { name: "PayCycle 関連リンク", exact: true }).getByRole("link", { name: label, exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/apps/pay-cycle/${route}/$`, "u"));
+    await expect(page.locator(".paycycle-site")).toHaveCount(0);
+    await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.dark);
+    await expect(page.locator("body")).toHaveCSS("background-color", PAPER.dark);
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+    await expectColorContrast(page);
+    await page.getByRole("link", { name: "← PayCycle", exact: true }).click();
+    await expect(page.locator("body")).toHaveCSS("background-color", PAYCYCLE.paper);
+    await expect(page.locator(".paycycle-site")).toHaveAttribute("lang", "ja");
+    await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+    await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  }
 });
 
 test("未生成ルートは 404", async ({ request }) => {
