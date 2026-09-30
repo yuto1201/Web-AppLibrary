@@ -1,20 +1,35 @@
 # デプロイ — Cloudflare Pages
 
-## 目標構成
+## 現在の構成
 
 | 項目 | 設定 |
 |---|---|
 | 本番 URL | <https://app.yutodev.com/> |
 | Pages プロジェクト | `applibrary`（Cloudflare account `Yuto Dev`） |
+| Pages ホスト名 | `applibrary-ag2.pages.dev` |
+| DNS | `app` CNAME → `applibrary-ag2.pages.dev`、DNS only、TTL 自動 |
 | ソース | `yuto1201/Web-AppLibrary` の Git 連携 |
-| 本番ブランチ | `main`（移行中は自動本番デプロイを無効にする） |
+| 本番ブランチ | `main`（自動本番デプロイ有効） |
 | プレビュー | PR ブランチの Pages preview deployment |
 | ビルド | `npm run build`、出力ディレクトリ `out` |
 | Node | `.node-version` の `24.20.0`（Pages の build image v3） |
 
 Next.js は `output: "export"` で静的ファイルを生成する。Pages Functions、DB、認証は使わない。Cloudflare の build image は `.node-version` を読み、Node のバージョンを切り替える。`engines` は互換 major 範囲、ローカルと CI は `policy` で Node/npm の完全一致を検査する。
 
-## 移行手順（Issue #55）
+## 公開切替の記録（2026-09-28 / Issue #55）
+
+- PR #56 の本番コミットは `26e19fe8613349378ceff16dd20b5a43cec54947`、Pages deployment は `3d836bf0-01fb-48c1-943a-b23e565a369e`。
+- `app.yutodev.com` を Pages の Custom domains に登録後、自動更新された CNAME を DNS only に戻した。権威 DNS と公開リゾルバーの両方で Pages 向きを確認した。
+- Pages は「アクティブ」「SSL 有効」。切替直後の検証中には一時的に 522 が返り、2026-09-28 12:45 UTC に 200 応答へ移行した。
+- 本番ドメインでトップ、アプリ詳細、アプリ privacy、サイト privacy、terms、404、CSP、セキュリティヘッダ、HTML の `Cache-Control: public, max-age=0, must-revalidate`、404 の `no-store`、ハッシュ付き JS の `public, max-age=31536000, immutable` を観測した。PC / モバイル表示で JavaScript と console のエラーはなかった。
+- 12:46:34〜12:56:38 UTC の10分間、30秒間隔の21回すべてで HTTP 200、Cloudflare 配信、CSP を確認した。HTML に解析 / Zaraz script や Set-Cookie はなく、別の新規 Chromium セッションでも Cookie と外部 script は空だった。
+- 12:57 UTC に旧 Vercel `yuto16/applibrary` プロジェクトを削除（API 204）。再取得は Project not found（404）、旧標準 URL と旧本番 deployment URL も DEPLOYMENT_NOT_FOUND（404）を返した。削除後に本番ドメインの主要ページ・ヘッダを再検証した。
+- 切替後にダッシュボードと権威 DNS で再確認したゾーン設定は、Web Analytics 有効、Bot Fight Mode 無効、Rocket Loader 無効、CAA なし。ゾーン設定は変更せず、DNS only と実際の公開応答で解析の自動挿入がないことを確認した。
+- 旧配信先の削除後は、下記の旧 CNAME に戻す復旧手順は使えない。今後の復旧は Pages の正常な deployment を使う。
+
+検証範囲は Chromium の PC / モバイル表示と上記 HTTP / DNS 観測。全地域の DNS キャッシュの反映完了や Safari 実機確認を意味しない。
+
+## 移行時の手順（Issue #55）
 
 1. `npm run verify` と OpenAI / Anthropic の独立レビューを済ませる。Cloudflare の DNS、Web Analytics、Bot Management、Zaraz、Rocket Loader、CAA の現状を読み取りで確認する。
 2. 対象を示して承認を得た後、Vercel `yuto16/applibrary` の Git 連携だけを解除する。**既存の本番 deployment と custom domain は保持する。** 解除後も `app.yutodev.com` が従来の CSP・法務本文で正常に配信され、新しい Git push では Vercel がデプロイしないことを確認する。
