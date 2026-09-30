@@ -49,8 +49,9 @@ export function PayCyclePage({ app }: { app: App }) {
             </div>
 
             <div className="paycycle-stage">
-              <div className="paycycle-stage-shapes" aria-hidden="true"><span className="paycycle-shape-stem" /><span className="paycycle-shape-curve" /><span className="paycycle-shape-dot" /></div>
               <div className="paycycle-stage-note">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img className="paycycle-stage-icon" src={iconSrc} width={88} height={88} alt="PayCycle のアプリアイコン" />
                 <p className="paycycle-label" lang="en">YOUR MONEY, IN PERSPECTIVE</p>
                 <p className="paycycle-stage-serif" lang="en">From one<br />payday<br /><em>to the next.</em></p>
                 <p>給料日からはじまる、<br />自分のための見通し。</p>

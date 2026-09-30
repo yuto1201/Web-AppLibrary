@@ -44,7 +44,7 @@ Issue #72 のユーザー依頼により、[指定された参照デザイン](h
 
 - 構成: `src/components/PayCyclePage.tsx` と `src/styles/paycycle.css`。ルートは `/apps/pay-cycle/`、境界は `.paycycle-site`。実テキストの `h1` は PayCycle、大きな見出しは「お金の流れに、見通しを。」。実画面を使う Hero、紹介、機能、実画面ギャラリー、質問、サポートと法務への導線を持つ。
 - 配色: 明るい紙 `#f6f4f0` と濃紺 `#0f141b` に赤・黄のアクセントを組み合わせる。保存したテーマによらず専用の配色を保ち、本文は `lang="ja"`。保存テーマと言語は書き換えず、法務ページへ戻ると既存のテーマが適用される。
-- 素材: `public/apps/pay-cycle/icon.png` を iOS アプリの `AppIcon.appiconset/AppIcon-Default.png` にある新しい P のアイコンへ更新する。実スクリーンショット `1.png`〜`5.png` は、2026-09-30 に現行アプリ（commit `244638d0`）のサンプルデータで撮影した `screenshots-1.1-retake` を使用する。Hero は `screenshots/1.png` を使う。実画面に機能や数値を描き足さない。ギャラリーは registry の登録順で5枚を表示し、サムネイル・前後ボタン・左右キーと日本語の代替テキストを維持する。
+- 素材: `public/apps/pay-cycle/icon.png` を iOS アプリの `AppIcon.appiconset/AppIcon-Default.png` にある新しい P のアイコンへ更新する。実スクリーンショット `1.png`〜`5.png` は、2026-09-30 に現行アプリ（commit `244638d0`）のサンプルデータで撮影した `screenshots-1.1-retake` を使用する。Hero は `screenshots/1.png` を使う。アイコンはPCでは紹介文の上、スマートフォンでは実画面の上に独立して置き、画面と重ねない。実画面に機能や数値を描き足さない。ギャラリーは registry の登録順で5枚を表示し、サムネイル・前後ボタン・左右キーと日本語の代替テキストを維持する。
 - 内容: 紹介と6件の機能は registry を参照する。現在の案内は `1.1（準備中）`、状態は `alpha`、App Store URL は `null`。アプリを配布中と表示せず、ダウンロード先を捏造しない。紹介ページの公開とアプリの配布状態を混同しない。
 - 操作と導線: `#screenshots`、`#features`、`#questions` へ移動でき、質問は標準の `details` を使う。`サポート`、`/apps/pay-cycle/privacy/`、`/apps/pay-cycle/terms/`、`AppLibrary` への導線を維持する。日英の法務本文・問い合わせ先・公開 URL は変更しない。共通の OGP 画像 `public/ogp.png` は新しいアイコンを反映して再生成する。
 - 検証: 既存の直接ロード・metadata・機能・実画面・法務往復・runtime・コントラストに、ページ内リンクとギャラリーのキーボード操作、320 / 390 / 1280px の横はみ出し、保存した dark / en と法務から戻った後の配色確認を加える。標本シールの静止・ドラッグは Dev-Tools で引き続き検証する。
