@@ -75,7 +75,8 @@ body:has(.paycycle-site) { background: #f6f4f0; }
 .paycycle-site .paycycle-stage-serif em { font-weight: 400; }
 .paycycle-site .paycycle-stage-note > p:last-child { margin-top: 24px; color: #454b52; font-size: 12px; line-height: 2.05; }
 .paycycle-site .paycycle-hero-icon { justify-self: center; width: min(100%, 400px); }
-.paycycle-site .paycycle-hero-image { width: 100%; height: auto; aspect-ratio: 1; border: 1px solid #e1dfda; border-radius: 24%; box-shadow: 0 30px 50px -35px #0f141b50; }
+/* The transparent app artwork supplies the silhouette; icon.png keeps the original colors. */
+.paycycle-site .paycycle-hero-image { width: 100%; height: auto; aspect-ratio: 1; mask-image: url('/apps/pay-cycle/hero-mark-mask.png'); mask-mode: alpha; mask-size: 100% 100%; mask-position: center; mask-repeat: no-repeat; }
 .paycycle-site .paycycle-cycle-note { padding: 21px 0 21px 12px; }
 .paycycle-site .paycycle-date-line { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 22px; padding-bottom: 26px; border-bottom: 1px solid #a3a5a4; }
 .paycycle-site .paycycle-date-line > span:not(.paycycle-date-arrow) { display: grid; gap: 9px; }
