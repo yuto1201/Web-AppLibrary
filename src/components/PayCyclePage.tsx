@@ -50,15 +50,13 @@ export function PayCyclePage({ app }: { app: App }) {
 
             <div className="paycycle-stage">
               <div className="paycycle-stage-note">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="paycycle-stage-icon" src={iconSrc} width={88} height={88} alt="PayCycle のアプリアイコン" />
                 <p className="paycycle-label" lang="en">YOUR MONEY, IN PERSPECTIVE</p>
                 <p className="paycycle-stage-serif" lang="en">From one<br />payday<br /><em>to the next.</em></p>
                 <p>給料日からはじまる、<br />自分のための見通し。</p>
               </div>
-              <figure className="paycycle-hero-phone">
+              <figure className="paycycle-hero-icon">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img className="paycycle-hero-image" src={`/apps/${app.slug}/screenshots/${app.screenshots[0]}`} width={1320} height={2868} alt="PayCycle ホーム画面。給料日サイクル、登録済み支払いとの見込み差額、支払い予定を表示" fetchPriority="high" />
+                <img className="paycycle-hero-image" src={iconSrc} width={1024} height={1024} alt="PayCycle のアプリアイコン" fetchPriority="high" />
               </figure>
               <div className="paycycle-cycle-note">
                 <p className="paycycle-label" lang="en">ONE PAY CYCLE</p>
@@ -66,7 +64,6 @@ export function PayCyclePage({ app }: { app: App }) {
                 <p>月の区切りを、<br />暮らしのリズムに。</p>
                 <small>毎月25日が給料日の場合の例</small>
               </div>
-              <span className="paycycle-stage-caption">実際のアプリ画面 / サンプルデータ</span>
             </div>
             <div className="paycycle-principles">
               <div><span>01</span><p><strong>給料日を、起点に。</strong><small>カレンダーの月より、自分のサイクル。</small></p></div>

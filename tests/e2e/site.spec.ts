@@ -1098,7 +1098,7 @@ for (const app of apps) {
       await expect(page.locator(".app-shell")).toHaveCount(0);
       await expect(page.locator("body")).toHaveCSS("background-color", PAYCYCLE.paper);
       await expect(page.locator(".paycycle-headline")).toHaveText(/お金の流れに、\s*見通しを。/u);
-      const heroImage = page.locator('.paycycle-hero img[src="/apps/pay-cycle/screenshots/1.png"]');
+      const heroImage = page.locator('.paycycle-hero-icon img[src="/apps/pay-cycle/icon.png"]');
       await expect(heroImage).toBeVisible();
       await expect.poll(() => heroImage.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
       const icon = page.locator('.paycycle-site img[src="/apps/pay-cycle/icon.png"]').first();
@@ -1444,7 +1444,7 @@ test("PayCycle の案内・実画面・質問をキーボードで操作でき�
   await expect(question).toHaveAttribute("open", "");
   await expect(question.locator("p")).toBeVisible();
 
-  for (const width of [320, 390, 1280]) {
+  for (const width of [320, 390, 768, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     const heroImage = page.locator(".paycycle-hero-image");
     await expect(heroImage).toBeVisible();
