@@ -13,18 +13,18 @@ describe("apps registry", () => {
     });
   });
 
-  it("PayCycle の日英ポリシーが広告と購入権利の扱いを保持する", () => {
+  it("PayCycle の日英ポリシーが1.1の保存先と既存の広告・購入条件を示す", () => {
     const document = privacyDocuments["pay-cycle"]!;
     const japanese = document.match(/<section lang="ja">([\s\S]*?)<\/section>/u)?.[1] ?? "";
     const english = document.match(/<section lang="en">([\s\S]*?)<\/section>/u)?.[1] ?? "";
-    for (const disclosure of ["端末内データベース", "下4桁", "完全な口座番号", "CloudKit", "同期、エクスポート、バックアップ", "Google AdMob", "Google UMP", "App Tracking Transparency", "publisher first-party ID", "personalization state", "検証した購入権利", "新しい広告要求を行いません", "ローカル通知"]) {
+    for (const disclosure of ["SwiftDataデータベース", "下4桁", "完全な口座番号", "CloudKit", "プライベートデータベース", "JSONファイル", "フィードバック", "ホーム、統計、設定", "Google AdMob", "Google UMP", "App Tracking Transparency", "publisher first-party ID", "personalization state", "検証した購入権利", "新しい広告要求を行いません", "ローカル通知"]) {
       expect(japanese).toContain(disclosure);
     }
-    for (const disclosure of ["on-device database", "last four digits", "full bank account numbers", "CloudKit", "sync, export, backup", "Google AdMob", "Google UMP", "App Tracking Transparency", "publisher first-party ID", "personalization state", "Verified purchase entitlements", "No new ad requests", "scheduled locally"]) {
+    for (const disclosure of ["on-device SwiftData database", "last four digits", "full bank account numbers", "CloudKit", "private iCloud database", "JSON file", "Feedback", "Home, Statistics and Settings", "Google AdMob", "Google UMP", "App Tracking Transparency", "publisher first-party ID", "personalization state", "Verified purchase entitlements", "No new ad requests", "scheduled locally"]) {
       expect(english).toContain(disclosure);
     }
-    expect(document).not.toContain("共有機能");
-    expect(document).not.toContain("sharing feature");
+    expect(document).not.toContain("CloudKitや独自サーバーを使用しません");
+    expect(document).not.toContain("uses neither CloudKit");
   });
 
   it("PayCycle の日英利用規約が承認済み条件とApple標準EULAを保持する", () => {
