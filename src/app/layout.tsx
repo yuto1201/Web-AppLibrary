@@ -69,7 +69,8 @@ const restoreTheme = `(function(){var h=document.documentElement;h.setAttribute(
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="ja" className={`${inter.variable} ${newsreader.variable} ${jetbrainsMono.variable} ${kleeOne.variable}`}>
+    // first paint 用スクリプトが変更する html 属性だけは hydration の差分を許容する。
+    <html lang="ja" suppressHydrationWarning className={`${inter.variable} ${newsreader.variable} ${jetbrainsMono.variable} ${kleeOne.variable}`}>
       <head>
         <script dangerouslySetInnerHTML={{ __html: restoreTheme }} />
       </head>

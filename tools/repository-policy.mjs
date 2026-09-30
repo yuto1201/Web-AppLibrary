@@ -7,6 +7,7 @@ const requiredFiles = [
   "README.md", "AGENTS.md", "CLAUDE.md", ".npmrc", ".gitattributes", ".python-version",
   "specs/README.md", "specs/product.md", "specs/acceptance.md",
   "docs/workflow.md", "docs/verification.md", "docs/deploy/README.md",
+  "public/_headers",
   "config/acceptance.json", "config/github-ruleset.json", ".github/ISSUE_TEMPLATE/change.yml",
   ".github/pull_request_template.md", ".github/workflows/ci.yml",
   "tests/e2e/site.spec.ts", "tools/requirements-ogp.txt", "tools/run-ogp.mjs",
@@ -75,7 +76,7 @@ export async function checkRepository(root) {
     const next = (await import(pathToFileURL(path.join(root, "next.config.mjs")).href)).default;
     if (next.output !== "export" || next.trailingSlash !== true || next.images?.unoptimized !== true || next.basePath) errors.push("Next must retain root-only static export");
     const files = await readdir(root);
-    for (const obsolete of ["assets", "apps", "index.html", "_headers", ".nojekyll", "wrangler.toml", "wrangler.jsonc", "supabase"]) {
+    for (const obsolete of ["assets", "apps", "index.html", "_headers", ".nojekyll", "wrangler.toml", "wrangler.jsonc", "vercel.json", "supabase"]) {
       if (files.includes(obsolete)) errors.push(`Obsolete/unsupported root path: ${obsolete}`);
     }
   } catch (error) {
@@ -163,7 +164,7 @@ export function validateRuleset(workflow, ruleset) {
   return errors;
 }
 
-// Local verification is exact; Vercel's build uses the compatible engines ranges.
+// Local verification is exact; the hosted build uses compatible engines ranges.
 export function validateRuntime(pkg, nodePin, actualNode = process.versions.node, npmAgent = process.env.npm_config_user_agent) {
   const errors = [];
   const npmPin = /^npm@(\d+\.\d+\.\d+)$/u.exec(pkg.packageManager ?? "")?.[1];

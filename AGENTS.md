@@ -4,14 +4,14 @@
 
 AppLibrary は、個人開発したアプリを紹介する Web サイトです。iOS 限定ではなく、macOS / Web / CLI などプラットフォームを問わず掲載します。
 
-Next.js の静的出力 (`output: "export"`) を Vercel で配信しています。動的サーバーも DB も認証も使いません。
+Next.js の静的出力 (`output: "export"`) を Cloudflare Pages で配信します。動的サーバーも DB も認証も使いません。
 
 - 公開 URL: <https://app.yutodev.com/>
-- ホスティング: Vercel（`main` への push で自動デプロイ）
-- DNS: Cloudflare（`app` は CNAME・**DNS only**。プロキシは有効にしない）
+- ホスティング: Cloudflare Pages（`main` への push で自動デプロイ）
+- DNS: Cloudflare（`app` の Pages custom domain。DNS only とし、実際のレコードは公開切替時に確認）
 - リポジトリ: <https://github.com/yuto1201/Web-AppLibrary>
 
-2026-08-31 に Cloudflare Pages から Vercel へ移行し、同時に素の HTML/CSS/JS から Next.js へ移行しました。GitHub Pages での公開は終了しています。
+2026-08-31 に Next.js へ移行し、2026-09-27 に Cloudflare Pages へ戻す方針を採用しました。GitHub Pages での公開は終了しています。
 
 ## 読む順番
 
@@ -49,7 +49,7 @@ npm run verify     # check + E2E（初回は Playwright Chromium を install）
 npm run start      # out/ のローカル静的配信
 ```
 
-ローカル/CI の Node/npm は `.node-version` / `packageManager` に完全固定し `policy` で検査します。Vercel は minor/patch 更新を許容する `engines` の major 範囲を使い、`.npmrc` は major 不一致を拒否します。`npm run verify` と必要なレビュー・CI が通らない変更はマージしません。
+ローカル/CI の Node/npm は `.node-version` / `packageManager` に完全固定し `policy` で検査します。Cloudflare Pages は `.node-version` を読み、`engines` の major 範囲と `.npmrc` が非互換な実行環境を拒否します。`npm run verify` と必要なレビュー・CI が通らない変更はマージしません。
 
 ## ディレクトリ構成
 
@@ -127,11 +127,11 @@ App Store 審査ではプライバシーポリシー URL が必須です。各�
 
 ## 公開とデプロイ
 
-`main` への push で Vercel が自動デプロイします。`main` へ直接 push せず、ブランチと PR を通します。
+`main` への push で Cloudflare Pages が自動デプロイします。`main` へ直接 push せず、ブランチと PR を通します。
 
-`vercel.json` がセキュリティヘッダとキャッシュ制御を持ちます。CSP を緩める変更は理由を PR に書きます。
+`public/_headers` がセキュリティヘッダとキャッシュ制御を持ちます。CSP を緩める変更は理由を PR に書きます。
 
-DNS を触る場合、`app` レコードは **DNS only** を維持します。Cloudflare のプロキシを有効にすると Vercel の証明書と経路で問題が出ます。
+`app.yutodev.com` は Pages の custom domain へ登録してから DNS を切り替え、DNS only を確認します。レコードを手で Pages に向けるだけでは検証が完了しないため、公開手順に従います。
 
 ## 完了報告の原則
 
