@@ -24,7 +24,7 @@ export const html = String.raw`
 <p>フィードバックは不具合の調査と機能の改善に必要な間だけ保存します。送信者を特定する情報を受け取らないため返信や本人確認は行いません。削除を希望する場合は、下記の連絡先へ送信日時と本文の一部を知らせてください。特定できたものを削除します。フィードバックを利用者に関連付けたり、トラッキングに使用したりしません。</p>
 
 <h3>広告と第三者SDK</h3>
-<p>バージョン1.1以降、無料利用時はGoogle AdMobのアンカー型アダプティブバナーをホーム、統計、設定の3つのタブの下部だけに表示します。Google UMPの同意状態が広告要求を許可した場合にだけ広告を読み込み、同意情報を取得できない場合は読み込みません。PayCycleは位置情報の権限やApp Tracking Transparencyの許可を要求せず、Googleのpublisher first-party IDを無効にし、publisher privacy personalization stateをdisabledに設定します。</p>
+<p>バージョン1.1以降、無料利用時はGoogle AdMobの標準サイズのバナーをホーム、統計、設定の3つのタブの下部だけに表示します。Google UMPの同意状態が広告要求を許可した場合にだけ広告を読み込み、同意情報を取得できない場合は読み込みません。PayCycleは位置情報の権限やApp Tracking Transparencyの許可を要求せず、Googleのpublisher first-party IDを無効にし、publisher privacy personalization stateをdisabledに設定します。</p>
 <p>広告の配信・測定、不正防止、品質改善のため、GoogleのSDKはCoarse Location、Device ID、Product Interaction、Advertising Data、Crash Data、Performance Data、Other Diagnostic Dataを取り扱う場合があります。Googleが取り扱う情報と保持期間については<a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Googleのプライバシーポリシー</a>および<a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">Googleのサービスを使用するサイトやアプリから収集した情報の利用</a>をご確認ください。</p>
 
 <h3>購入とApple Offer Code</h3>
@@ -57,7 +57,7 @@ export const html = String.raw`
 <p>Feedback is kept only as long as needed to investigate problems and improve the App. We do not receive information that identifies the sender, so we do not reply or verify the sender’s identity. To request deletion, use the contact links below and provide the time sent and part of the message. We delete feedback we can identify. Feedback is not linked to users or used for tracking.</p>
 
 <h3>Advertising and third-party SDKs</h3>
-<p>From version 1.1, the free version displays Google AdMob anchored adaptive banners only at the bottom of the three tabs: Home, Statistics and Settings. Ads are requested only when Google UMP reports that requests are permitted; no ad is loaded if consent information cannot be obtained. PayCycle requests neither location permission nor App Tracking Transparency permission, disables Google’s publisher first-party ID and sets the publisher privacy personalization state to disabled.</p>
+<p>From version 1.1, the free version displays standard-size Google AdMob banners only at the bottom of the three tabs: Home, Statistics and Settings. Ads are requested only when Google UMP reports that requests are permitted; no ad is loaded if consent information cannot be obtained. PayCycle requests neither location permission nor App Tracking Transparency permission, disables Google’s publisher first-party ID and sets the publisher privacy personalization state to disabled.</p>
 <p>For ad delivery, measurement, fraud prevention and service quality, Google’s SDK may process Coarse Location, Device ID, Product Interaction, Advertising Data, Crash Data, Performance Data and Other Diagnostic Data. See <a href="https://policies.google.com/privacy" target="_blank" rel="noopener noreferrer">Google’s Privacy Policy</a> and <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">Google’s use of information from partner sites and apps</a> for Google’s processing and retention practices.</p>
 
 <h3>Purchases and Apple Offer Codes</h3>
