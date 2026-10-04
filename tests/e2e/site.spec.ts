@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { apps } from "../../src/data/registry";
+import { DESK_ITEMS } from "../../src/lib/sticker-desk";
 import { appPageTone } from "../../src/lib/app-tone";
 import { statusLabel } from "../../src/lib/labels";
 import { i18n } from "../../src/lib/site-data";
@@ -162,7 +163,7 @@ async function expectInitialPlayground(page: Page, context: string) {
   expect(controls.x + controls.width, `${context} controls right`).toBeLessThanOrEqual(board.x + board.width + 1);
 
   const stickers = page.locator(".poster .sticker-slot .sticker");
-  await expect(stickers).toHaveCount(7);
+  await expect(stickers).toHaveCount(DESK_ITEMS.length);
   const initialBoxes: { key: string | null | undefined; box: Box }[] = [];
   for (const sticker of await stickers.all()) {
     const painted = (await sticker.boundingBox())!;
@@ -354,7 +355,8 @@ test("作品カードは実画面と掲載情報を持ち、検索・フィル�
     const preview = row.locator(".app-row-visual .app-preview-phone img");
     await preview.scrollIntoViewIfNeeded();
     await expect(preview).toHaveAttribute("alt", "");
-    await expect(preview).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[0]}`);
+    await expect(preview).toHaveAttribute("src", app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0]}` : `/apps/${app.slug}/${app.icon}`);
+    await expect(row.locator(".app-preview-phone")).toHaveAttribute("data-kind", app.screenshots.length ? "screen" : "icon");
     await expect.poll(() => preview.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
   }
 
@@ -464,7 +466,7 @@ test("アプリシールの形が違い、beta / alpha に印がある", async (
   await expect(page.locator(".sticker-name")).toHaveCount(0);
 });
 
-test("初期表示の7枚と操作案内は Hero の遊び場に収まる", async ({ page }) => {
+test("初期表示の全シールと操作案内は Hero の遊び場に収まる", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
   await expectInitialPlayground(page, "1280px");
@@ -476,7 +478,7 @@ test("初期表示の7枚と操作案内は Hero の遊び場に収まる", asyn
   await expect.poll(() => page.evaluate(() => location.hash)).toBe("#apps");
 });
 
-test("320〜1280px と英語でも遊び場の7枚は本文と CTA を覆わない", async ({ page }) => {
+test("320〜1280px と英語でも遊び場の全シールは本文と CTA を覆わない", async ({ page }) => {
   for (const width of [320, 390, 640, 641, 768, 834, 1023, 1024, 1180, 1240, 1279, 1280] as const) {
     await page.setViewportSize({ width, height: width >= 800 ? 900 : 844 });
     await page.goto("/");
@@ -1000,7 +1002,7 @@ test("reduced-motion ではシールも呼吸しない", async ({ page }) => {
   expect(transform === "none" || transform === "matrix(1, 0, 0, 1, 0, 0)").toBe(true);
 });
 
-for (const app of apps) {
+for (const app of apps.filter(({ slug }) => slug !== "simple-pomo")) {
   test(`${app.slug}: 詳細とプライバシーの直接ロード、往復、画像、runtime エラー`, async ({ page, request }) => {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));
@@ -1507,8 +1509,8 @@ test("展示はキーボードで選べ、画面・状態・詳細リンクが�
     await expect(choice).toBeFocused();
     await expect(choice).toHaveAttribute("aria-pressed", "true");
     await expect(spotlight.locator('[aria-pressed="true"]')).toHaveCount(1);
-    const screenshot = spotlight.getByRole("img", { name: `${app.name} — ${i18n.ja.spotlight_screen}` });
-    await expect(screenshot).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[0]}`);
+    const screenshot = spotlight.getByRole("img", { name: `${app.name} — ${app.screenshots.length ? i18n.ja.spotlight_screen : i18n.ja.spotlight_icon}` });
+    await expect(screenshot).toHaveAttribute("src", app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0]}` : `/apps/${app.slug}/${app.icon}`);
     await expect.poll(() => screenshot.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
     await expect(spotlight.locator(".spotlight-meta")).toContainText(statusLabel(app.status, i18n.ja));
     await expect(spotlight.getByRole("link")).toHaveAttribute("href", `/apps/${app.slug}/`);

@@ -24,6 +24,7 @@ export type DeskItem = DeskAppItem | DeskWordItem;
 const APP_DESK: Record<string, Pick<DeskAppItem, "shape" | "anchor">> = {
   // 各 key の初期位置は src/styles/studio.css が持つ。
   // すべて Hero の予約領域に置く。ドラッグ範囲はページ全体のまま。
+  "simple-pomo": { shape: "round-lg", anchor: "hero" },
   sublog: { shape: "round-rect", anchor: "hero" },
   caflog: { shape: "circle", anchor: "hero" },
   "dev-tools": { shape: "squircle", anchor: "hero" },

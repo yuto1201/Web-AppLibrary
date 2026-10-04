@@ -249,6 +249,21 @@ const entries = [
     "appStoreUrl": null,
     "siteUrl": null
   },
+  {
+    slug: "simple-pomo", name: "SimplePomo",
+    tagline: "目の前のことに、ただ集中する。", stickerNote: "ひとつずつ、25",
+    platforms: ["iOS", "iPadOS"], status: "alpha", releaseDate: null, year: 2026,
+    icon: "icon.png", iconGlyph: "◷", color: "#FFF0E1", accent: "#FD841B", featured: false,
+    category: "仕事効率化",
+    description: "集中と休憩を、自分のリズムで。Dynamic Islandやロック画面で残り時間を確認できる、iPhoneとiPadのためのポモドーロタイマー。現在リリース準備中です。",
+    features: [
+      { icon: "◷", title: "ひとつのことに、集中。", description: "時間を区切って、目の前のひとつから。7つのSiriショートカットとコントロールセンターの操作は無料で使えます。" },
+      { icon: "↗", title: "ちらっと見れば、それで。", description: "Dynamic Island、Live Activity、ロック画面、StandByで残り時間を確認。今日の記録・連続日数・直近7日間の統計も振り返れます。" },
+      { icon: "✳", title: "ひと息つくのも、大切な時間。", description: "集中と休憩を、自分のペースで。買い切りのProでは、5つの環境音・4つのテーマ・ウィジェット・AlarmKitの終了アラームと、より長い時間設定を利用できます。" },
+    ],
+    price: "無料・買い切りのProあり", version: "1.0（準備中）", screenshots: [],
+    appStoreUrl: null, siteUrl: null,
+  },
 ] satisfies unknown[];
 
 /** ビルド時に検証する。スキーマ違反があれば build が失敗する。 */

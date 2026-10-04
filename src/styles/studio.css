@@ -366,3 +366,7 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   .poster .app-row:hover .app-preview-phone { transform: translateY(23px) rotate(-8deg); }
   .poster .app-row:hover .app-preview-phone[data-kind="icon"] { transform: rotate(-8deg); }
 }
+
+/* The eighth sticker stays inside the Hero playground, above its controls. */
+.poster[data-desk="ready"] .sticker-slot[data-key="simple-pomo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .5 - 40px); top: calc(var(--desk-play-top) + 290px); right: auto; bottom: auto; width: 80px; }
+@media (max-width: 700px) { .poster[data-desk="ready"] .sticker-slot[data-key="simple-pomo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .5 - 30px); top: calc(var(--desk-play-top) + 100px); width: 60px; } }

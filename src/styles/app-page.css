@@ -450,3 +450,6 @@ body:has(.app-shell[data-tone="cycle"]),
   .app-shell[data-tone="ledger"] .feature-row { grid-template-columns: 1fr; }
   .app-shell[data-tone="bench"] .feature-list { grid-template-columns: 1fr; }
 }
+
+.app-shell[data-tone="pomo"] { --paper: #FFF0E1; --app-accent: #9C4704; }
+html[data-theme="dark"] .app-shell[data-tone="pomo"] { --app-accent: #FD841B; }
