@@ -1,7 +1,8 @@
 # TODO — AppLibrary
 
-最終更新日: 2026-09-30
+最終更新日: 2026-10-04
 
+- [ ] SimplePomo のアプリページ・Privacy Policy・Terms of Use を公開する（Issue #79 / PR #80。ユーザー確認項目への回答、アイコンの受領と OGP 再生成、日英本文の最終承認が残る）
 - [ ] PayCycle の Hero を大きな実アイコン中心の構成へ変更する（Issue #77）
 - [x] PayCycle を新しいアイコンと現行アプリ画面を使う専用ページへ刷新する（Issue #72 / PR #73、main へ統合・本番確認済み）
 - [x] SubLog の青と黄緑の専用ページを公開する（Issue #67 / PR #68、main `86f449c` へ統合・本番確認済み）

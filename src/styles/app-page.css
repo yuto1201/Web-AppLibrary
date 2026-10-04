@@ -435,6 +435,37 @@ body:has(.app-shell[data-tone="cycle"]),
   background: #F3EDE3;
 }
 
+body:has(.app-shell[data-tone="glance"]),
+.app-shell[data-tone="glance"] { background: #E6EFE6; }
+.app-shell[data-tone="glance"] { --app-accent: #2F6B45; --app-accent-2: #2F6B45; }
+.app-shell[data-tone="glance"] .hero-title::after {
+  content: "";
+  display: inline-block;
+  width: 0.28em;
+  height: 0.28em;
+  margin-left: 0.12em;
+  border: 3px solid var(--app-accent);
+  border-radius: 50%;
+  vertical-align: 0.6em;
+}
+
+.app-shell .pomo-tagline-en { margin-top: var(--space-1); font-size: 16px; color: var(--app-ink-2); }
+.app-shell .pomo-note { margin-top: var(--space-4); font-size: 14px; color: var(--app-ink-2); }
+.app-shell .pomo-support,
+.app-shell .pomo-english { padding: var(--space-12) 0; border-top: 1px solid var(--rule); }
+.app-shell .pomo-support > p,
+.app-shell .pomo-english > p { font-size: 16px; color: var(--app-ink-2); }
+.app-shell .pomo-english .pomo-lead { margin-bottom: var(--space-6); }
+.app-shell .pomo-subtitle { margin-top: var(--space-8); margin-bottom: var(--space-3); font-size: 18px; font-weight: 400; }
+.app-shell .pomo-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2) var(--space-5);
+  margin-top: var(--space-4);
+  list-style: none;
+}
+.app-shell.pomo-page main a { text-decoration: underline; text-underline-offset: 0.15em; }
+
 .app-shell[data-tone] .page-footer a { color: var(--app-accent); }
 .app-shell[data-tone] .shot-featured { border-color: var(--app-accent); }
 
@@ -444,6 +475,7 @@ body:has(.app-shell[data-tone="cycle"]),
 [data-theme="dark"] .app-shell[data-tone="cafe"] { --app-accent: #e4c4a4; --app-accent-2: #e4c4a4; }
 [data-theme="dark"] .app-shell[data-tone="bench"] { --app-accent: #8ec5d8; --app-accent-2: #8ec5d8; }
 [data-theme="dark"] .app-shell[data-tone="cycle"] { --app-accent: #ff9a90; --app-accent-2: #ff9a90; }
+[data-theme="dark"] .app-shell[data-tone="glance"] { --app-accent: #9fd6b0; --app-accent-2: #9fd6b0; }
 [data-theme="dark"] .app-shell[data-tone="cycle"] .feature-row::before { background: var(--paper); }
 
 @media (max-width: 640px) {

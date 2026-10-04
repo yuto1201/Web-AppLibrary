@@ -27,8 +27,11 @@ describe("apps registry", () => {
     expect(document).not.toContain("uses neither CloudKit");
   });
 
+  it("アプリ固有の利用規約は PayCycle と SimplePomo だけが持つ", () => {
+    expect(Object.keys(termsDocuments)).toEqual(["pay-cycle", "simple-pomo"]);
+  });
+
   it("PayCycle の日英利用規約が承認済み条件とApple標準EULAを保持する", () => {
-    expect(Object.keys(termsDocuments)).toEqual(["pay-cycle"]);
     const document = termsDocuments["pay-cycle"]!;
     const japanese = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
     const english = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
@@ -44,12 +47,78 @@ describe("apps registry", () => {
     expect(document).not.toMatch(/example\.(?:com|org)|TODO|FIXME|雛形|記入してください/u);
   });
 
+  it("SimplePomo は開発中のまま、配布先とスクリーンショットを持たない", () => {
+    expect(getApp("simple-pomo")).toMatchObject({
+      name: "SimplePomo",
+      platforms: ["iOS", "iPadOS"],
+      status: "alpha",
+      releaseDate: null,
+      appStoreUrl: null,
+      siteUrl: null,
+      screenshots: [],
+    });
+    expect(getApp("simple-pomo")?.features).toHaveLength(7);
+  });
+
+  it("SimplePomo の日英ポリシーが Issue #79 の確定事実を示し、メールアドレスを載せない", () => {
+    const document = privacyDocuments["simple-pomo"]!;
+    const japanese = document.match(/<section lang="ja">([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    const english = document.match(/<section lang="en">([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    for (const disclosure of [
+      "アカウント登録はありません", "クラッシュ収集SDK", "iCloudによる同期も行いません", "UserDefaults", "App Group",
+      "チップの購入回数", "アプリを削除すると", "ローカル通知", "AlarmKit", "音声はAppleが処理", "モーションセンサー",
+      "マイクは使用しません", "StoreKit", "フィードバックを送る", "タイマーの記録と設定の値は送信しません",
+      "Cloudflare Workers", "非公開リポジトリ", "60秒に1件", "1日100件", "返信しません",
+    ]) {
+      expect(japanese).toContain(disclosure);
+    }
+    for (const disclosure of [
+      "no account registration", "crash-reporting SDK", "does not sync through iCloud", "UserDefaults", "App Group",
+      "number of tips purchased", "delete the App", "local notifications", "AlarmKit", "Apple processes your voice",
+      "motion sensor", "does not use the microphone", "StoreKit", "feedback option in Settings",
+      "timer records and setting values are not sent", "Cloudflare Workers", "private repository", "60 seconds",
+      "100 submissions per day", "do not reply",
+    ]) {
+      expect(english).toContain(disclosure);
+    }
+    expect(document).toContain("https://app.yutodev.com/#contact");
+    expect(document).toContain('href="/apps/simple-pomo/terms/"');
+    expect(document).not.toMatch(/mailto:|[\w.+-]+@[\w-]+\.[a-z]{2,}/u);
+  });
+
+  it("SimplePomo の日英利用規約が Pro の範囲・復元・チップ・通知の免責を示す", () => {
+    const document = termsDocuments["simple-pomo"]!;
+    const japanese = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    const english = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    for (const term of [
+      "uesugiyuuto", "非消耗型", "日本のApp Storeでの価格は500円", "ファミリー共有の対象ではありません", "5種類の環境音", "AlarmKitによる全画面アラーム",
+      "4種類のカラーテーマ", "インタラクティブウィジェット", "最長180分", "最長90分", "7種類のSiriショートカット", "購入を復元する",
+      "機能は増えません", "集中モード", "返信する義務を負いません", "未成年", "日本法", "東京地方裁判所", "日本語版", "Apple標準EULA",
+    ]) {
+      expect(japanese).toContain(term);
+    }
+    for (const term of [
+      "uesugiyuuto", "non-consumable", "¥500 on the App Store in Japan", "Family Sharing", "five ambient sounds", "full-screen AlarmKit alarms",
+      "four color themes", "interactive widgets", "up to 180 minutes", "up to 90 minutes", "seven Siri Shortcuts",
+      "App Store purchase history", "do not unlock any features", "Focus", "no obligation to reply", "minor", "laws of Japan",
+      "Tokyo District Court", "Japanese version", "Apple Standard EULA",
+    ]) {
+      expect(english).toContain(term);
+    }
+    expect(document).toContain("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/");
+    expect(document).toContain('href="/apps/simple-pomo/privacy/"');
+    expect(document).toContain("https://app.yutodev.com/#contact");
+    expect(document).not.toMatch(/example\.(?:com|org)|TODO|FIXME|雛形|記入してください/u);
+    expect(document).not.toMatch(/mailto:|[\w.+-]+@[\w-]+\.[a-z]{2,}/u);
+  });
+
   it("登録された画像が各アプリの公開ディレクトリ内に実在する", () => {
     for (const app of apps) {
+      const images = [app.icon, ...app.screenshots.map((file) => `screenshots/${file}`)]
+        .filter((file): file is string => file !== null);
+      if (images.length === 0) continue;
       const directory = realpathSync(path.resolve("public/apps", app.slug));
-      const images = [app.icon, ...app.screenshots.map((file) => `screenshots/${file}`)];
       for (const file of images) {
-        if (file === null) continue;
         const resolved = realpathSync(path.resolve(directory, file));
         const relative = path.relative(directory, resolved);
         expect(relative !== ".." && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative)).toBe(true);
@@ -195,6 +264,7 @@ describe("apps registry", () => {
     expect(getApp("caflog")?.stickerNote).toBe("今日、何杯目？");
     expect(getApp("dev-tools")?.stickerNote).toBe("ブラウザで足りる");
     expect(getApp("pay-cycle")?.stickerNote).toBe("次の給料日まで");
+    expect(getApp("simple-pomo")?.stickerNote).toBe("ちらっと見るだけ");
     for (const app of apps) {
       expect(app.stickerNote.length).toBeGreaterThanOrEqual(1);
       expect(app.stickerNote.length).toBeLessThanOrEqual(24);

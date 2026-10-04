@@ -102,6 +102,7 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 .poster:not([data-desk="ready"]) .stickers-foot { visibility: hidden; }
 .poster .sticker-slot { width: 95px; }
 .poster .sticker-slot .sticker-note { min-height: 54px; padding: 10px 5px; font: 700 14px/1.5 var(--font-sans); color: #111; }
+.poster .sticker-slot .sticker-note.sticker-glyph { aspect-ratio: 1; min-height: 0; padding: 0; font-size: 44px; line-height: 1; }
 .poster .sticker-slot[data-key="note-Swift"] .sticker { background: var(--home-yellow); border: 1px solid #111; }
 .poster .sticker-slot[data-key="note-Tokyo"] .sticker { background: var(--home-mint); border: 1px solid #111; }
 .poster .sticker-slot[data-key="note-solo"] .sticker { background: var(--home-lavender); border: 1px solid #111; }
@@ -109,6 +110,7 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 .poster[data-desk="ready"] .sticker-slot[data-key="caflog"] { left: calc(var(--desk-play-left) + 24px); top: calc(var(--desk-play-top) + 223px); right: auto; bottom: auto; width: 95px; }
 .poster[data-desk="ready"] .sticker-slot[data-key="dev-tools"] { left: calc(var(--desk-play-left) + var(--desk-play-width) - 119px); top: calc(var(--desk-play-top) + 223px); right: auto; bottom: auto; width: 95px; }
 .poster[data-desk="ready"] .sticker-slot[data-key="pay-cycle"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .83); top: calc(var(--desk-play-top) + 30px); right: auto; bottom: auto; width: 95px; }
+.poster[data-desk="ready"] .sticker-slot[data-key="simple-pomo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .66); top: calc(var(--desk-play-top) + 12px); right: auto; bottom: auto; width: 95px; }
 .poster[data-desk="ready"] .sticker-slot[data-key="note-Swift"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .24); top: calc(var(--desk-play-top) + 286px); right: auto; bottom: auto; width: 88px; }
 .poster[data-desk="ready"] .sticker-slot[data-key="note-Tokyo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .69); top: calc(var(--desk-play-top) + 290px); right: auto; bottom: auto; width: 84px; }
 .poster[data-desk="ready"] .sticker-slot[data-key="note-solo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .5 - 44px); top: calc(var(--desk-play-top) + 10px); right: auto; bottom: auto; width: 88px; }
@@ -130,12 +132,15 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 .poster .app-row-visual { position: relative; display: grid; place-items: center; width: 100%; height: 292px; overflow: hidden; background: var(--app-card); }
 .poster .app-preview-phone { display: block; height: 290px; aspect-ratio: 220 / 478; overflow: hidden; border: 5px solid #fff; border-radius: 24px; background: #fff; box-shadow: 8px 13px 0 rgb(17 17 17 / 13%); transform: translateY(23px) rotate(-8deg); transition: transform .2s ease; }
 .poster .app-preview-phone img { width: 100%; height: 100%; object-fit: contain; }
-.poster .app-preview-phone[data-kind="icon"] { height: 145px; aspect-ratio: 1; transform: rotate(-8deg); border-radius: 30px; }
+.poster .app-preview-phone[data-kind="icon"], .poster .app-preview-phone[data-kind="glyph"] { height: 145px; aspect-ratio: 1; transform: rotate(-8deg); border-radius: 30px; }
+.poster .app-preview-phone[data-kind="glyph"] { display: grid; place-items: center; }
+.poster .app-preview-glyph { font-size: 72px; line-height: 1; }
 .poster .app-row:hover .app-preview-phone { transform: translateY(17px) rotate(-4deg); }
-.poster .app-row:hover .app-preview-phone[data-kind="icon"] { transform: rotate(-4deg); }
+.poster .app-row:hover .app-preview-phone[data-kind="icon"], .poster .app-row:hover .app-preview-phone[data-kind="glyph"] { transform: rotate(-4deg); }
 .poster .app-row-visual-label { position: absolute; left: 25px; top: 22px; max-width: calc(100% - 50px); color: #111; background: var(--app-card); font: 700 9px/1.6 var(--font-sans); letter-spacing: .1em; }
 .poster .app-row-body { position: relative; display: grid; grid-template-columns: 45px minmax(0, 1fr) 33px; align-items: center; gap: 13px 17px; padding: 25px 27px 28px; background: var(--app-card); }
 .poster .app-row-icon { width: 45px; height: 45px; border: 1px solid rgb(17 17 17 / 25%); border-radius: 12px; background: #fff; }
+.poster .app-row-glyph { display: grid; place-items: center; width: 100%; height: 100%; font-size: 22px; line-height: 1; }
 .poster .app-row-category { display: block; margin-bottom: 6px; color: #26333d; font-size: 9px; line-height: 1.6; }
 .poster .app-row-category > span:first-child { font-family: var(--font-mono); }
 .poster .app-row-name { color: #111; font: 800 30px/1.16 var(--font-sans); letter-spacing: -.065em; }
@@ -161,13 +166,16 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 .poster .spotlight-stage { position: relative; display: grid; place-items: center; height: 350px; overflow: hidden; border: 1px solid #111; border-radius: 26px; background: var(--home-blue); }
 .poster .spotlight-screen { position: relative; height: 298px; aspect-ratio: 220 / 478; margin-top: 8px; overflow: hidden; border: 5px solid #fff; border-radius: 22px; background: #fff; box-shadow: 9px 12px 0 rgb(17 17 17 / 16%); transform: rotate(-8deg); }
 .poster .spotlight-screen img { width: 100%; height: 100%; object-fit: contain; }
-.poster .spotlight-screen[data-kind="icon"] { height: 145px; aspect-ratio: 1; border-radius: 30px; }
+.poster .spotlight-screen[data-kind="icon"], .poster .spotlight-screen[data-kind="glyph"] { height: 145px; aspect-ratio: 1; border-radius: 30px; }
+.poster .spotlight-screen[data-kind="glyph"] { display: grid; place-items: center; }
+.poster .spotlight-glyph { font-size: 72px; line-height: 1; }
 .poster .spotlight-seal { position: absolute; right: 15px; bottom: 19px; display: grid; place-content: center; width: 82px; height: 82px; border: 1px solid #111; border-radius: 50%; background: var(--home-yellow); color: #111; font: 700 10px/1.4 var(--font-sans); text-align: center; transform: rotate(11deg); }
 .poster .spotlight-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 19px 0; }
 .poster .spotlight-picker button { flex: 0 0 44px; height: 44px; padding: 5px; border: 1px solid transparent; border-radius: 12px; background: transparent; }
 .poster .spotlight-picker button[aria-pressed="true"] { border-color: #111; background: var(--home-yellow); }
 .poster .spotlight-picker button:hover { border-color: #111; }
 .poster .spotlight-picker img { width: 32px; height: 32px; border-radius: 7px; }
+.poster .spotlight-pick-glyph { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 7px; background: #fff; font-size: 20px; line-height: 1; }
 .poster .spotlight-pick-hint { margin-left: auto; color: #383243; font-size: 10px; }
 .poster .spotlight-info { padding-top: 17px; border-top: 1px solid #82718f; }
 .poster .spotlight-meta { display: flex; justify-content: space-between; gap: 10px; color: #383243; font-size: 10px; }
@@ -232,6 +240,7 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   .poster[data-desk="ready"] .sticker-slot[data-key="caflog"] { left: calc(var(--desk-play-left) + 15px); width: 82px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="dev-tools"] { left: calc(var(--desk-play-left) + var(--desk-play-width) - 97px); width: 82px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="pay-cycle"] { left: calc(var(--desk-play-left) + var(--desk-play-width) - 110px); width: 82px; }
+  .poster[data-desk="ready"] .sticker-slot[data-key="simple-pomo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .6); width: 82px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="note-Tokyo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .62); }
   .poster .app-row-body { grid-template-columns: 36px minmax(0, 1fr) 29px; gap: 11px; padding: 20px; }
   .poster .app-row-icon { width: 36px; height: 36px; border-radius: 9px; }
@@ -279,10 +288,12 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   .poster .studio-strip > span:first-child { flex: 0 0 100%; justify-content: center; }
   .poster .sticker-slot .sticker { padding: 5px; }
   .poster .sticker-slot .sticker-note { min-height: 41px; padding: 7px 3px; font-size: 12px; }
+  .poster .sticker-slot .sticker-note.sticker-glyph { min-height: 0; padding: 0; font-size: 32px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="sublog"] { left: calc(var(--desk-play-left) + 13px); top: calc(var(--desk-play-top) + 20px); right: auto; bottom: auto; width: 68px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="caflog"] { left: calc(var(--desk-play-left) + 13px); top: calc(var(--desk-play-top) + 190px); right: auto; bottom: auto; width: 68px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="dev-tools"] { left: calc(var(--desk-play-left) + var(--desk-play-width) - 81px); top: calc(var(--desk-play-top) + 190px); right: auto; bottom: auto; width: 68px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="pay-cycle"] { left: calc(var(--desk-play-left) + var(--desk-play-width) - 87px); top: calc(var(--desk-play-top) + 18px); right: auto; bottom: auto; width: 68px; }
+  .poster[data-desk="ready"] .sticker-slot[data-key="simple-pomo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) / 2 - 34px); top: calc(var(--desk-play-top) + 8px); right: auto; bottom: auto; width: 68px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="note-Swift"] { left: calc(var(--desk-play-left) + 15px); top: calc(var(--desk-play-top) + 270px); right: auto; bottom: auto; width: 70px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="note-Tokyo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) - 85px); top: calc(var(--desk-play-top) + 270px); right: auto; bottom: auto; width: 70px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="note-solo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) / 2 - 35px); top: calc(var(--desk-play-top) + 264px); right: auto; bottom: auto; width: 70px; }
@@ -364,5 +375,5 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 }
 @media (prefers-reduced-motion: reduce) {
   .poster .app-row:hover .app-preview-phone { transform: translateY(23px) rotate(-8deg); }
-  .poster .app-row:hover .app-preview-phone[data-kind="icon"] { transform: rotate(-8deg); }
+  .poster .app-row:hover .app-preview-phone[data-kind="icon"], .poster .app-row:hover .app-preview-phone[data-kind="glyph"] { transform: rotate(-8deg); }
 }

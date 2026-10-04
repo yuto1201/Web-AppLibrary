@@ -1,11 +1,11 @@
 # アプリ詳細ページのデザイン
 
 ステータス: 確定
-最終更新日: 2026-09-30
+最終更新日: 2026-10-04
 
-`src/app/apps/[slug]/page.tsx` が registry から `/apps/<slug>/` を静的生成する。共通ページを HTML としてコピーしない。CafLog・SubLog・PayCycle はそれぞれ専用コンポーネントとスコープした CSS を使い、アプリの情報は引き続き同じ registry から渡す。
+`src/app/apps/[slug]/page.tsx` が registry から `/apps/<slug>/` を静的生成する。共通ページを HTML としてコピーしない。CafLog・SubLog・PayCycle・SimplePomo はそれぞれ専用コンポーネントを使い、アプリの情報は引き続き同じ registry から渡す。SimplePomo は共通の紙面を使う。
 
-## 共通の紙面（現在は Dev-Tools の詳細と各アプリの法務）
+## 共通の紙面（現在は Dev-Tools と SimplePomo の詳細、各アプリの法務）
 
 - キャンバス: 法務ページの `.app-shell` は `--paper` / `--ink`。共通の詳細ページだけ `data-tone` で組みを変える。Dev-Tools は冷たい紙の升（ヒーローを 1px の枠で囲み、機能は罫線の格子。640px 以下は 1 列）。見出しの文字色はインクのまま。`[data-theme="dark"]` では共通の詳細も暗い紙へ戻し、アクセントだけ明るくする。`--app-*` の名前は残す。紫ピンクの放射グラデと `color-scheme: light` 固定は持たない。
 - Hero: 戻るリンク、名前（`--font-display`・インク・字重 400）、タグライン（`--ink-2`、グラデ文字なし）、紹介、プラットフォーム、outlined pill の CTA。行長は `--measure` で左揃え。ホームの `<Nav />` は載せない。アイコンは標本ビニール 1 枚だけ（`.specimen-slot` 120px。印刷用の `.hero-icon` は置かない）。アイコンが無いアプリには置かない。リンクではない。`aria-hidden`。`src/components/SpecimenSticker.tsx` が `VinylSticker` を `href` なしで載せ、クランプは `.app-shell`（`shellBounds`）。viewport 固定にしない。離した位置に残る。リサイズで机と同様にオフセットを捨てる。法務ページ（アプリ `/privacy/` `/terms/`、サイト `/privacy/` `/terms/`）とトップには置かない。テープ・日付印・手書き合図は置かない。標本スロットはホームの呼吸を継承しない。`status !== release` のときだけ、索引と同じ状態ラベル（`statusLabel(..., i18n.ja)`）をヒーローへ出す。
@@ -48,6 +48,17 @@ Issue #72 のユーザー依頼により、[指定された参照デザイン](h
 - 内容: 紹介と6件の機能は registry を参照する。現在の案内は `1.1（準備中）`、状態は `alpha`、App Store URL は `null`。アプリを配布中と表示せず、ダウンロード先を捏造しない。紹介ページの公開とアプリの配布状態を混同しない。
 - 操作と導線: `#screenshots`、`#features`、`#questions` へ移動でき、質問は標準の `details` を使う。`サポート`、`/apps/pay-cycle/privacy/`、`/apps/pay-cycle/terms/`、`AppLibrary` への導線を維持する。日英の法務本文・問い合わせ先・公開 URL は変更しない。共通の OGP 画像 `public/ogp.png` は新しいアイコンを反映して再生成する。
 - 検証: 既存の直接ロード・metadata・機能・実画面・法務往復・runtime・コントラストに、ページ内リンクとギャラリーのキーボード操作、320 / 390 / 1280px の横はみ出し、保存した dark / en と法務から戻った後の配色確認を加える。標本シールの静止・ドラッグは Dev-Tools で引き続き検証する。
+
+## SimplePomo の詳細ページ
+
+Issue #79 により、App Store のサポート URL として使う `/apps/simple-pomo/` を共通の紙面で作る。プライバシーポリシーと利用規約は `/apps/simple-pomo/privacy/`・`/apps/simple-pomo/terms/` に日英で置く。
+
+- 構成: `src/components/SimplePomoPage.tsx`。共通の `.app-shell` と `data-tone="glance"` を使い、専用の規則は `app-page.css` の `.pomo-*` に限る。Hero、機能、`#support`、英語の `#english`（`lang="en"`）、関連リンクの nav を持つ。
+- 配色: 淡い緑の紙 `#E6EFE6` とインク `#2F6B45`、dark では共通の暗い紙に `#9fd6b0`。アイコンを受け取るまでの仮の色味で、受領後にアイコンへ合わせ直す。
+- 内容: 日本語の紹介と7件の機能は registry、英語の紹介と機能はコンポーネントが同じ順で持つ。状態は `alpha`、版は `1.0（開発中）`、App Store URL とリリース日は `null`。Pro の機能には「（Pro）」と書き、価格はユーザー確認が済むまで詳細ページに載せない。メールアドレスは載せない。
+- 素材: アイコンは iOS-SimplePomo の `AppIcon` を受け取ってから `public/apps/simple-pomo/icon.png` に置く。それまで `icon` は `null` で、標本ビニールは置かない。スクリーンショットは Issue どおり未掲載で、`#screenshots` を出さない。
+- 導線: サポートは、アプリ内の「フィードバックを送る」（返信しない）と `https://app.yutodev.com/#contact`。詳細・privacy・terms のいずれからも互いに移動できる。
+- 検証: 共通詳細の直接ロード・metadata・機能・法務往復・runtime・コントラストに加え、日英のサポート導線、ページ内リンクのキーボード操作、320 / 390 / 768 / 1280px の横はみ出しと 44px の操作領域、保存した dark / en の配色を確認する。
 
 ## 共通の境界と公開情報
 

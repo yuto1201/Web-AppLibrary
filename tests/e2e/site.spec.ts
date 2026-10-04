@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { apps } from "../../src/data/registry";
+import { termsDocuments } from "../../src/data/terms/registry";
 import { appPageTone } from "../../src/lib/app-tone";
 import { statusLabel } from "../../src/lib/labels";
 import { i18n } from "../../src/lib/site-data";
@@ -25,6 +26,16 @@ const privacyContacts: Record<string, { label: string; url: string }> = {
     url: "https://docs.google.com/forms/d/e/1FAIpQLSfwkDqyQ_NutiUPmFnTw01q9hIgVFbHFzGJp95h6qgYd5awQQ/viewform",
   },
   "dev-tools": { label: "Dev-Tools お問い合わせ", url: "https://github.com/yuto1201/Dev-Tools/issues" },
+  "simple-pomo": { label: "開発者の連絡先", url: "https://app.yutodev.com/#contact" },
+};
+
+/** 日英の法務本文を持ち、条項の h3 で見出し階層を測れるアプリ。 */
+const BILINGUAL_LEGAL = new Set(["pay-cycle", "simple-pomo"]);
+
+/** 詳細ページのフッターに関連リンクの nav を持つアプリ。本文にも同名のリンクがあるため nav で絞る。 */
+const RELATED_NAV: Record<string, string> = {
+  "pay-cycle": "PayCycle 関連リンク",
+  "simple-pomo": "SimplePomo 関連リンク",
 };
 
 /** 紙面の配色。トークンを変えたらここも合わせる。 */
@@ -162,7 +173,7 @@ async function expectInitialPlayground(page: Page, context: string) {
   expect(controls.x + controls.width, `${context} controls right`).toBeLessThanOrEqual(board.x + board.width + 1);
 
   const stickers = page.locator(".poster .sticker-slot .sticker");
-  await expect(stickers).toHaveCount(7);
+  await expect(stickers).toHaveCount(8);
   const initialBoxes: { key: string | null | undefined; box: Box }[] = [];
   for (const sticker of await stickers.all()) {
     const painted = (await sticker.boundingBox())!;
@@ -351,11 +362,26 @@ test("作品カードは実画面と掲載情報を持ち、検索・フィル�
     await expect(row).toHaveAttribute("href", `/apps/${app.slug}/`);
     await expect(row.locator(".app-row-tagline")).toHaveText(app.tagline);
     await expect(row.locator(".app-row-year")).toHaveText(String(app.year));
-    const preview = row.locator(".app-row-visual .app-preview-phone img");
-    await preview.scrollIntoViewIfNeeded();
-    await expect(preview).toHaveAttribute("alt", "");
-    await expect(preview).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[0]}`);
-    await expect.poll(() => preview.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+    const phone = row.locator(".app-row-visual .app-preview-phone");
+    await phone.scrollIntoViewIfNeeded();
+    if (app.screenshots[0] || app.icon) {
+      const preview = phone.locator("img");
+      await expect(preview).toHaveAttribute("alt", "");
+      await expect(preview).toHaveAttribute(
+        "src",
+        app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0]}` : `/apps/${app.slug}/${app.icon}`,
+      );
+      await expect.poll(() => preview.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+    } else {
+      // アイコンも実画面も無いアプリは壊れた画像を出さず、iconGlyph を飾りとして置く。
+      await expect(phone).toHaveAttribute("data-kind", "glyph");
+      await expect(phone.locator("img")).toHaveCount(0);
+      await expect(phone.locator(".app-preview-glyph")).toHaveText(app.iconGlyph);
+      await expect(row.locator(".app-row-icon img")).toHaveCount(0);
+      await expect(row.locator(".app-row-icon .app-row-glyph")).toHaveText(app.iconGlyph);
+      await expect(row.locator(".app-row-icon .app-row-glyph")).toHaveAttribute("aria-hidden", "true");
+      expect(await row.evaluate((element) => element.textContent ?? "")).toContain(app.name);
+    }
   }
 
   const first = (await rows.nth(0).boundingBox())!;
@@ -446,6 +472,7 @@ test("アプリシールの形が違い、beta / alpha に印がある", async (
   const caflog = page.locator('.sticker[href="/apps/caflog/"]');
   const devTools = page.locator('.sticker[href="/apps/dev-tools/"]');
   const payCycle = page.locator('.sticker[href="/apps/pay-cycle/"]');
+  const simplePomo = page.locator('.sticker[href="/apps/simple-pomo/"]');
 
   const radius = async (locator: ReturnType<typeof page.locator>) =>
     locator.evaluate((el) => parseFloat(getComputedStyle(el).borderTopLeftRadius));
@@ -462,9 +489,15 @@ test("アプリシールの形が違い、beta / alpha に印がある", async (
   expect(betaPaint.replaceAll('"', "")).toBe("β");
   expect(alphaPaint.replaceAll('"', "")).toBe("α");
   await expect(page.locator(".sticker-name")).toHaveCount(0);
+
+  // アイコン未登録の間は iconGlyph を円いビニールに載せる。
+  await expect(simplePomo).toHaveAttribute("data-shape", "circle");
+  await expect(simplePomo).toHaveAttribute("aria-label", "SimplePomo");
+  await expect(simplePomo.locator(".sticker-glyph")).toHaveText(apps.find(({ slug }) => slug === "simple-pomo")!.iconGlyph);
+  await expect(simplePomo.locator(".sticker-stamp")).toHaveAttribute("data-mark", "α");
 });
 
-test("初期表示の7枚と操作案内は Hero の遊び場に収まる", async ({ page }) => {
+test("初期表示の8枚と操作案内は Hero の遊び場に収まる", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
   await page.goto("/");
   await expectInitialPlayground(page, "1280px");
@@ -476,7 +509,7 @@ test("初期表示の7枚と操作案内は Hero の遊び場に収まる", asyn
   await expect.poll(() => page.evaluate(() => location.hash)).toBe("#apps");
 });
 
-test("320〜1280px と英語でも遊び場の7枚は本文と CTA を覆わない", async ({ page }) => {
+test("320〜1280px と英語でも遊び場の8枚は本文と CTA を覆わない", async ({ page }) => {
   for (const width of [320, 390, 640, 641, 768, 834, 1023, 1024, 1180, 1240, 1279, 1280] as const) {
     await page.setViewportSize({ width, height: width >= 800 ? 900 : 844 });
     await page.goto("/");
@@ -1018,14 +1051,15 @@ for (const app of apps) {
     );
     expect(privacyHtml).toContain(`<meta property="og:title" content="プライバシーポリシー — ${app.name}"/>`);
     expect(privacyHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
-    if (app.slug === "pay-cycle") {
-      const termsResponse = await request.get("/apps/pay-cycle/terms/");
+    const hasTerms = Boolean(termsDocuments[app.slug]);
+    if (hasTerms) {
+      const termsResponse = await request.get(`/apps/${app.slug}/terms/`);
       expect(termsResponse.ok()).toBe(true);
       const termsHtml = await termsResponse.text();
       expect(termsHtml).toContain(
-        '<meta property="og:url" content="https://app.yutodev.com/apps/pay-cycle/terms/"/>',
+        `<meta property="og:url" content="https://app.yutodev.com/apps/${app.slug}/terms/"/>`,
       );
-      expect(termsHtml).toContain('<meta property="og:title" content="利用規約 — PayCycle"/>');
+      expect(termsHtml).toContain(`<meta property="og:title" content="利用規約 — ${app.name}"/>`);
       expect(termsHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
     }
     // request.get は HTML / OGP だけ。紙面 CSS は各法務 URL を直接開いて確認する。
@@ -1034,10 +1068,10 @@ for (const app of apps) {
     await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
     await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
     await expect(page.locator(".app-shell .sticker")).toHaveCount(0);
-    if (app.slug === "pay-cycle") {
-      await expectLegalHeadingHierarchy(page);
-      await page.goto("/apps/pay-cycle/terms/");
-      await expect(page).toHaveURL(/\/apps\/pay-cycle\/terms\/$/u);
+    if (BILINGUAL_LEGAL.has(app.slug)) await expectLegalHeadingHierarchy(page);
+    if (hasTerms) {
+      await page.goto(`/apps/${app.slug}/terms/`);
+      await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/terms/$`, "u"));
       await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
       await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
       await expectLegalHeadingHierarchy(page);
@@ -1155,57 +1189,64 @@ for (const app of apps) {
     await expect(features).toHaveCount(app.features.length);
     await expect(features.first()).toContainText(app.features[0]!.description);
     await expect(page.locator("#features")).not.toContainText(app.features[0]!.icon);
-    await expect(page.getByRole("heading", { name: "Screenshots", exact: true })).toBeVisible();
     const featured = page.locator("#screenshots .shot-featured img");
-    await expect(featured).toHaveCount(1);
-    await featured.scrollIntoViewIfNeeded();
-    await expect(featured).toBeVisible();
-    await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[0]}`);
-    await expect(featured).toHaveAttribute("alt", `${app.name} スクリーンショット 1`);
-    await expect.poll(() => featured.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-    await expect(page.getByRole("dialog")).toHaveCount(0);
-    if (app.screenshots.length === 1) {
-      await expect(page.locator("#screenshots .shot-thumbs")).toHaveCount(0);
+    if (app.screenshots.length === 0) {
+      await expect(page.getByRole("heading", { name: "Screenshots", exact: true })).toHaveCount(0);
+      await expect(page.locator("#screenshots")).toHaveCount(0);
     } else {
-      const thumbs = page.locator("#screenshots .shot-thumbs button");
-      await expect(thumbs).toHaveCount(app.screenshots.length);
-      await thumbs.nth(1).click();
-      await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[1]}`);
-      await expect(page.locator("#screenshots .shot-count")).toHaveText(`2 / ${app.screenshots.length}`);
-      await page.locator(".shot-gallery").focus();
-      await page.keyboard.press("ArrowRight");
-      const afterArrow = app.screenshots[2] ?? app.screenshots[0];
-      await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${afterArrow}`);
+      await expect(page.getByRole("heading", { name: "Screenshots", exact: true })).toBeVisible();
+      await expect(featured).toHaveCount(1);
+      await featured.scrollIntoViewIfNeeded();
+      await expect(featured).toBeVisible();
+      await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[0]}`);
+      await expect(featured).toHaveAttribute("alt", `${app.name} スクリーンショット 1`);
+      await expect.poll(() => featured.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+      if (app.screenshots.length === 1) {
+        await expect(page.locator("#screenshots .shot-thumbs")).toHaveCount(0);
+      } else {
+        const thumbs = page.locator("#screenshots .shot-thumbs button");
+        await expect(thumbs).toHaveCount(app.screenshots.length);
+        await thumbs.nth(1).click();
+        await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[1]}`);
+        await expect(page.locator("#screenshots .shot-count")).toHaveText(`2 / ${app.screenshots.length}`);
+        await page.locator(".shot-gallery").focus();
+        await page.keyboard.press("ArrowRight");
+        const afterArrow = app.screenshots[2] ?? app.screenshots[0];
+        await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${afterArrow}`);
+      }
     }
-    if (app.slug === "pay-cycle") {
+    await expect(page.getByRole("dialog")).toHaveCount(0);
+    const relatedName = RELATED_NAV[app.slug];
+    const related = relatedName ? page.getByRole("navigation", { name: relatedName, exact: true }) : undefined;
+    if (related) {
       await expect(page.locator('a[href*="apps.apple.com"]')).toHaveCount(0);
-      const related = page.getByRole("navigation", { name: "PayCycle 関連リンク", exact: true });
       await expect(related.getByRole("link", { name: "サポート", exact: true }))
-        .toHaveAttribute("href", "https://app.yutodev.com/#contact");
+        .toHaveAttribute("href", app.slug === "pay-cycle" ? "https://app.yutodev.com/#contact" : "#support");
       await expect(related.getByRole("link", { name: "利用規約", exact: true }))
-        .toHaveAttribute("href", "/apps/pay-cycle/terms/");
+        .toHaveAttribute("href", `/apps/${app.slug}/terms/`);
     }
-    const detailPrivacy = app.slug === "pay-cycle"
-      ? page.getByRole("navigation", { name: "PayCycle 関連リンク", exact: true }).getByRole("link", { name: "プライバシーポリシー", exact: true })
-      : page.getByRole("link", { name: "プライバシーポリシー", exact: true });
+    const detailPrivacy = (related ?? page).getByRole("link", { name: "プライバシーポリシー", exact: true });
     await detailPrivacy.click();
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/privacy/$`, "u"));
     await expect(page.locator(".app-shell")).not.toHaveAttribute("data-tone");
     await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
     await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
     await expect(page.getByRole("heading", { level: 1 })).toContainText("プライバシー");
-    if (app.slug === "pay-cycle") {
+    if (BILINGUAL_LEGAL.has(app.slug)) {
       await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese and English.");
       await expect(page.locator("section[lang='ja']")).toBeVisible();
       const englishPolicy = page.locator("section[lang='en']");
       await expect(englishPolicy).toBeVisible();
-      await expect(englishPolicy).toContainText("Google AdMob");
-      await expect(englishPolicy).toContainText("StoreKit");
+      for (const marker of app.slug === "pay-cycle" ? ["Google AdMob", "StoreKit"] : ["AlarmKit", "StoreKit"]) {
+        await expect(englishPolicy).toContainText(marker);
+      }
       await expect(englishPolicy.getByRole("link", { name: "developer's contact links", exact: true }))
         .toHaveAttribute("href", "https://app.yutodev.com/#contact");
+      await expect(page.locator("footer.page-footer").getByRole("link", { name: "サポート", exact: true }))
+        .toHaveAttribute("href", "https://app.yutodev.com/#contact");
       await page.getByRole("link", { name: "利用規約", exact: true }).click();
-      await expect(page).toHaveURL(/\/apps\/pay-cycle\/terms\/$/u);
-      await expect(page.getByRole("heading", { level: 1 })).toContainText("PayCycle 利用規約");
+      await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/terms/$`, "u"));
+      await expect(page.getByRole("heading", { level: 1 })).toContainText(`${app.name} 利用規約`);
       await expect(page.locator("section[lang='ja']")).toContainText("東京地方裁判所");
       await expect(page.locator("section[lang='en']")).toContainText("Apple Standard EULA");
       await expect(page.getByRole("link", { name: "Apple Standard EULA", exact: true }))
@@ -1214,14 +1255,14 @@ for (const app of apps) {
         .toHaveAttribute("href", "https://app.yutodev.com/#contact");
       await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
         "content",
-        "https://app.yutodev.com/apps/pay-cycle/terms/",
+        `https://app.yutodev.com/apps/${app.slug}/terms/`,
       );
       await expect
         .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
         .toBe(true);
       await expectColorContrast(page);
       await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
-      await expect(page).toHaveURL(/\/apps\/pay-cycle\/privacy\/$/u);
+      await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/privacy/$`, "u"));
       await expectLegalHeadingHierarchy(page);
     } else {
       await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese only.");
@@ -1250,7 +1291,7 @@ for (const app of apps) {
     await page.getByRole("link", { name: `← ${app.name}`, exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/$`, "u"));
     const backToHome = app.slug === "pay-cycle"
-      ? page.getByRole("navigation", { name: "PayCycle 関連リンク", exact: true }).getByRole("link", { name: "AppLibrary", exact: true })
+      ? page.getByRole("navigation", { name: RELATED_NAV["pay-cycle"]!, exact: true }).getByRole("link", { name: "AppLibrary", exact: true })
       : page.getByRole("link", { name: "← AppLibrary", exact: true });
     await backToHome.click();
     await expect.poll(() => new URL(page.url()).pathname).toBe("/");
@@ -1487,6 +1528,80 @@ test("PayCycle は保存した dark と en を維持し、privacy と terms と�
   }
 });
 
+test("SimplePomo はサポート URL として日英の紹介・問い合わせ先・法務へ届き、各幅で操作できる", async ({ page }) => {
+  const app = apps.find(({ slug }) => slug === "simple-pomo")!;
+  await page.goto("/apps/simple-pomo/");
+  const shell = page.locator(".app-shell");
+  await expect(shell).toHaveAttribute("lang", "ja");
+  await expect(page.locator('a[href*="apps.apple.com"]')).toHaveCount(0);
+  await expect(shell.locator("img")).toHaveCount(0);
+  await expect(page.locator(".hero-meta-row")).toContainText("iOS 26.4+");
+
+  const support = page.locator("#support");
+  await expect(support.getByRole("heading", { level: 2 })).toHaveText("Support");
+  await expect(support).toContainText("フィードバックを送る");
+  await expect(support).toContainText("返信はしません");
+  await expect(support.getByRole("link", { name: "開発者の連絡先", exact: true })).toHaveAttribute("href", "https://app.yutodev.com/#contact");
+  const supportLinks = support.locator(".pomo-links");
+  await expect(supportLinks.getByRole("link", { name: "プライバシーポリシー", exact: true })).toHaveAttribute("href", "/apps/simple-pomo/privacy/");
+  await expect(supportLinks.getByRole("link", { name: "利用規約", exact: true })).toHaveAttribute("href", "/apps/simple-pomo/terms/");
+  await expect(shell).not.toContainText("@");
+
+  const english = page.locator("#english");
+  await expect(english).toHaveAttribute("lang", "en");
+  await expect(english.getByRole("heading", { level: 2 })).toHaveText("In English");
+  await expect(english.locator(".feature-row")).toHaveCount(app.features.length);
+  await expect(english).toContainText("iOS 26.4 or later");
+  await expect(english.getByRole("link", { name: "developer’s contact links", exact: true })).toHaveAttribute("href", "https://app.yutodev.com/#contact");
+  await expect(page.locator(".pomo-tagline-en")).toHaveAttribute("lang", "en");
+  const englishLinks = english.locator(".pomo-links");
+  await expect(englishLinks.getByRole("link", { name: "Privacy Policy", exact: true })).toHaveAttribute("href", "/apps/simple-pomo/privacy/");
+  await expect(englishLinks.getByRole("link", { name: "Terms of Use", exact: true })).toHaveAttribute("href", "/apps/simple-pomo/terms/");
+
+  for (const [label, target] of [["機能を見る", "features"], ["サポート", "support"], ["English", "english"]] as const) {
+    const link = page.locator(".hero-actions").getByRole("link", { name: label, exact: true });
+    await link.focus();
+    await page.keyboard.press("Enter");
+    await expect(page).toHaveURL(new RegExp(`/apps/simple-pomo/#${target}$`, "u"));
+    await expect(page.locator(`#${target}`)).toBeInViewport();
+  }
+
+  for (const width of [320, 390, 768, 1280]) {
+    await page.setViewportSize({ width, height: 900 });
+    for (const control of await page.locator(".hero-actions .btn").all()) {
+      await control.click({ trial: true });
+      const box = (await control.boundingBox())!;
+      expect(box.width, `${width}px control width`).toBeGreaterThanOrEqual(44);
+      expect(box.height, `${width}px control height`).toBeGreaterThanOrEqual(44);
+    }
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  }
+});
+
+test("SimplePomo は保存した dark / en でも日英の本文を保ち、コントラストを満たす", async ({ page }) => {
+  await page.goto("/apps/simple-pomo/");
+  await setStoredState(page, { theme: "dark", lang: "en" });
+  await page.reload();
+  await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
+  await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.locator(".app-shell")).toHaveAttribute("lang", "ja");
+  await expect(page.locator("#english")).toHaveAttribute("lang", "en");
+  await expect(page.locator("body")).toHaveCSS("background-color", PAPER.dark);
+  await expect(page.locator(".app-shell .hero-title")).toHaveCSS("color", INK.dark);
+  await expectColorContrast(page);
+
+  for (const [label, route] of [["プライバシーポリシー", "privacy"], ["利用規約", "terms"]] as const) {
+    await page.getByRole("navigation", { name: RELATED_NAV["simple-pomo"]!, exact: true }).getByRole("link", { name: label, exact: true }).click();
+    await expect(page).toHaveURL(new RegExp(`/apps/simple-pomo/${route}/$`, "u"));
+    await expect(page.locator(".app-shell")).not.toHaveAttribute("data-tone");
+    await expect(page.locator("body")).toHaveCSS("background-color", PAPER.dark);
+    await expect(page.locator("section[lang='en']")).toBeVisible();
+    await expectColorContrast(page);
+    await page.getByRole("link", { name: "← SimplePomo", exact: true }).click();
+    await expect(page).toHaveURL(/\/apps\/simple-pomo\/$/u);
+  }
+});
+
 test("未生成ルートは 404", async ({ request }) => {
   expect((await request.get("/apps/does-not-exist/")).status()).toBe(404);
 });
@@ -1507,9 +1622,20 @@ test("展示はキーボードで選べ、画面・状態・詳細リンクが�
     await expect(choice).toBeFocused();
     await expect(choice).toHaveAttribute("aria-pressed", "true");
     await expect(spotlight.locator('[aria-pressed="true"]')).toHaveCount(1);
-    const screenshot = spotlight.getByRole("img", { name: `${app.name} — ${i18n.ja.spotlight_screen}` });
-    await expect(screenshot).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[0]}`);
-    await expect.poll(() => screenshot.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+    if (app.screenshots[0] || app.icon) {
+      const label = app.screenshots[0] ? i18n.ja.spotlight_screen : i18n.ja.spotlight_icon;
+      const image = spotlight.getByRole("img", { name: `${app.name} — ${label}` });
+      await expect(image).toHaveAttribute(
+        "src",
+        app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0]}` : `/apps/${app.slug}/${app.icon}`,
+      );
+      await expect.poll(() => image.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+    } else {
+      await expect(spotlight.locator(".spotlight-screen")).toHaveAttribute("data-kind", "glyph");
+      await expect(spotlight.locator(".spotlight-screen img")).toHaveCount(0);
+      await expect(spotlight.locator(".spotlight-glyph")).toHaveText(app.iconGlyph);
+      await expect(choice.locator(".spotlight-pick-glyph")).toHaveText(app.iconGlyph);
+    }
     await expect(spotlight.locator(".spotlight-meta")).toContainText(statusLabel(app.status, i18n.ja));
     await expect(spotlight.getByRole("link")).toHaveAttribute("href", `/apps/${app.slug}/`);
   }
