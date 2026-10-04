@@ -269,7 +269,7 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   .poster .hero-orbit { top: 66px; width: 410px; max-width: 94%; height: 245px; transform: translateX(-50%) rotate(-12deg); }
   .poster .hero-wordmark { top: 118px; font-size: clamp(70px, 18.3vw, 116px); line-height: .82; letter-spacing: -.095em; }
   .poster .playground-spark { top: 78px; left: calc(50% - 15px); width: 30px; height: 30px; }
-  .poster .playground-label { top: 323px; padding: 6px 11px; font-size: 8px; }
+  .poster .playground-label { top: 328px; padding: 6px 11px; font-size: 8px; transform: translateX(-50%); }
   .poster .hero-copy { width: calc(100% - 40px); padding: 12px 0 34px; }
   .poster .hero-h1 { margin-bottom: 18px; font-size: 27px; line-height: 1.45; }
   .poster .hero-bio { max-width: 34ch; font-size: 12px; }
