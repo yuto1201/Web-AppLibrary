@@ -449,6 +449,7 @@ test("アプリシールの形が違い、beta / alpha に印がある", async (
   const caflog = page.locator('.sticker[href="/apps/caflog/"]');
   const devTools = page.locator('.sticker[href="/apps/dev-tools/"]');
   const payCycle = page.locator('.sticker[href="/apps/pay-cycle/"]');
+  const simplePomo = page.locator('.sticker[href="/apps/simple-pomo/"]');
 
   const radius = async (locator: ReturnType<typeof page.locator>) =>
     locator.evaluate((el) => parseFloat(getComputedStyle(el).borderTopLeftRadius));
@@ -459,9 +460,10 @@ test("アプリシールの形が違い、beta / alpha に印がある", async (
   await expect(sublog.locator(".sticker-stamp")).toHaveCount(0);
   await expect(caflog.locator(".sticker-stamp")).toHaveCount(0);
   await expect(devTools.locator(".sticker-stamp")).toHaveAttribute("data-mark", "β");
-  await expect(payCycle.locator(".sticker-stamp")).toHaveAttribute("data-mark", "α");
+  await expect(payCycle.locator(".sticker-stamp")).toHaveCount(0);
+  await expect(simplePomo.locator(".sticker-stamp")).toHaveAttribute("data-mark", "α");
   const betaPaint = await devTools.locator(".sticker-stamp").evaluate((el) => getComputedStyle(el, "::after").content);
-  const alphaPaint = await payCycle.locator(".sticker-stamp").evaluate((el) => getComputedStyle(el, "::after").content);
+  const alphaPaint = await simplePomo.locator(".sticker-stamp").evaluate((el) => getComputedStyle(el, "::after").content);
   expect(betaPaint.replaceAll('"', "")).toBe("β");
   expect(alphaPaint.replaceAll('"', "")).toBe("α");
   await expect(page.locator(".sticker-name")).toHaveCount(0);
@@ -1181,7 +1183,14 @@ for (const app of apps.filter(({ slug }) => slug !== "simple-pomo")) {
       await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${afterArrow}`);
     }
     if (app.slug === "pay-cycle") {
-      await expect(page.locator('a[href*="apps.apple.com"]')).toHaveCount(0);
+      const storeLinks = page.locator('a[href*="apps.apple.com"]');
+      await expect(storeLinks).toHaveCount(3);
+      for (const link of await storeLinks.all()) {
+        await expect(link).toHaveAttribute("href", "https://apps.apple.com/jp/app/id6809831827");
+        await expect(link).toHaveAttribute("target", "_blank");
+        await expect(link).toHaveAttribute("rel", /noopener/u);
+      }
+      await expect(page.locator(".paycycle-site")).not.toContainText("準備中");
       const related = page.getByRole("navigation", { name: "PayCycle 関連リンク", exact: true });
       await expect(related.getByRole("link", { name: "サポート", exact: true }))
         .toHaveAttribute("href", "https://app.yutodev.com/#contact");

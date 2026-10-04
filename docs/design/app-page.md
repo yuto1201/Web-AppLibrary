@@ -45,7 +45,7 @@ Issue #72 のユーザー依頼により、[指定された参照デザイン](h
 - 構成: `src/components/PayCyclePage.tsx` と `src/styles/paycycle.css`。ルートは `/apps/pay-cycle/`、境界は `.paycycle-site`。実テキストの `h1` は PayCycle、大きな見出しは「お金の流れに、見通しを。」。大きな実アイコンを使う Hero、紹介、機能、実画面ギャラリー、質問、サポートと法務への導線を持つ。
 - 配色: 明るい紙 `#f6f4f0` と濃紺 `#0f141b` に赤・黄のアクセントを組み合わせる。保存したテーマによらず専用の配色を保ち、本文は `lang="ja"`。保存テーマと言語は書き換えず、法務ページへ戻ると既存のテーマが適用される。
 - 素材: `public/apps/pay-cycle/icon.png` を iOS アプリの `AppIcon.appiconset/AppIcon-Default.png` にある新しい P のアイコンへ更新する。実スクリーンショット `1.png`〜`5.png` は、2026-09-30 に現行アプリ（commit `244638d0`）のサンプルデータで撮影した `screenshots-1.1-retake` を使用する。Issue #77 により、Hero の中央は黒・赤・黄の P マークを大きく置き、白い台座・枠・影を表示しない。`hero-mark-mask.png` は iOS アプリの透明素材 `PayCycle-P-mark-dark-2026-09-23.png` のコピーで、alpha マスクとして使い、色は元の `icon.png` を保つ。PCでは左右の紹介文・給料日例の間に置き、スマートフォンでは給料日例の上へ配置する。小アイコンの重複、スマホの外枠、Hero のサンプル画面注記は置かない。実画面に機能や数値を描き足さない。ギャラリーは registry の登録順で5枚を表示し、サムネイル・前後ボタン・左右キーと日本語の代替テキストを維持する。
-- 内容: 紹介と6件の機能は registry を参照する。現在の案内は `1.1（準備中）`、状態は `alpha`、App Store URL は `null`。アプリを配布中と表示せず、ダウンロード先を捏造しない。紹介ページの公開とアプリの配布状態を混同しない。
+- 内容: 紹介と6件の機能は registry を参照する。Issue #82 により、公開済みの `1.1`、状態 `release`、初回公開日 `2026-09-24` と App Store URL `https://apps.apple.com/jp/app/id6809831827` を設定する。2026-10-04 に Apple の公開情報で確認済み。ヘッダー・質問・末尾に入手リンクを表示し、準備中の案内を外す。
 - 操作と導線: `#screenshots`、`#features`、`#questions` へ移動でき、質問は標準の `details` を使う。`サポート`、`/apps/pay-cycle/privacy/`、`/apps/pay-cycle/terms/`、`AppLibrary` への導線を維持する。日英の法務本文・問い合わせ先・公開 URL は変更しない。共通の OGP 画像 `public/ogp.png` は新しいアイコンを反映して再生成する。
 - 検証: 既存の直接ロード・metadata・機能・実画面・法務往復・runtime・コントラストに、ページ内リンクとギャラリーのキーボード操作、320 / 390 / 1280px の横はみ出し、保存した dark / en と法務から戻った後の配色確認を加える。標本シールの静止・ドラッグは Dev-Tools で引き続き検証する。
 
