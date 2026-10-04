@@ -449,7 +449,7 @@ body:has(.app-shell[data-tone="glance"]),
   vertical-align: 0.6em;
 }
 
-.app-shell .pomo-tagline-en { margin-top: var(--space-1); font-size: 16px; }
+.app-shell .pomo-tagline-en { margin-top: var(--space-1); font-size: 16px; color: var(--app-ink-2); }
 .app-shell .pomo-note { margin-top: var(--space-4); font-size: 14px; color: var(--app-ink-2); }
 .app-shell .pomo-support,
 .app-shell .pomo-english { padding: var(--space-12) 0; border-top: 1px solid var(--rule); }

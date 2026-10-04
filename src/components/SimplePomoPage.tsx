@@ -56,7 +56,7 @@ export function SimplePomoPage({ app }: { app: App }) {
             <div className="hero-copy">
               <h1 className="hero-title">{app.name}</h1>
               <p className="hero-tagline">{app.tagline}</p>
-              <p className="hero-tagline pomo-tagline-en" lang="en">A simple Pomodoro timer you can check at a glance.</p>
+              <p className="pomo-tagline-en" lang="en">A simple Pomodoro timer you can check at a glance.</p>
             </div>
             {app.icon ? <SpecimenSticker app={app} /> : null}
           </div>
