@@ -276,8 +276,6 @@ body:has(.paycycle-site) { background: #f6f4f0; }
 @media (max-width: 360px) {
   .paycycle-site { --pay-gutter: 18px; }
   .paycycle-site .paycycle-brand { font-size: 21px; }
-  .paycycle-site .paycycle-headline { font-size: 35px; }
-  .paycycle-site .paycycle-stage { padding-inline: 21px; }
   .paycycle-site .paycycle-actions { gap: 13px; }
   .paycycle-site .paycycle-actions .paycycle-button { padding-inline: 14px; font-size: 11px; }
   .paycycle-site .paycycle-text-link { font-size: 11px; }
@@ -290,8 +288,9 @@ body:has(.paycycle-site) { background: #f6f4f0; }
   .paycycle-site .paycycle-hero { padding-top: clamp(20px, 3svh, 32px); }
   .paycycle-site .paycycle-hero-copy { max-width: none; }
   .paycycle-site .paycycle-eyebrow { margin-bottom: 14px; }
-  .paycycle-site .paycycle-headline { font-size: clamp(44px, 5.8svh, 66px); line-height: 1.2; }
+  .paycycle-site .paycycle-headline { font-size: clamp(44px, min(5.8svh, 7.4vw), 66px); line-height: 1.2; }
   .paycycle-site .paycycle-headline br { display: none; }
+  .paycycle-site .paycycle-headline > span { white-space: nowrap; }
   .paycycle-site .paycycle-intro { margin-top: 16px; font-size: 14px; line-height: 2; }
   .paycycle-site .paycycle-actions { margin-top: 18px; }
   .paycycle-site .paycycle-hero-copy > .paycycle-meta { margin-top: 12px; }
