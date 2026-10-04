@@ -7,6 +7,7 @@ import { ScreenshotGallery } from "@/components/ScreenshotGallery";
 import { CafLogPage } from "@/components/CafLogPage";
 import { SubLogPage } from "@/components/SubLogPage";
 import { PayCyclePage } from "@/components/PayCyclePage";
+import { SimplePomoPage } from "@/components/SimplePomoPage";
 import { SpecimenSticker } from "@/components/SpecimenSticker";
 import { appTone } from "@/lib/app-tone";
 import { statusLabel } from "@/lib/labels";
@@ -45,6 +46,7 @@ export default async function AppPage({ params }: { params: Promise<{ slug: stri
   if (app.slug === "caflog") return <CafLogPage app={app} />;
   if (app.slug === "sublog") return <SubLogPage app={app} />;
   if (app.slug === "pay-cycle") return <PayCyclePage app={app} />;
+  if (app.slug === "simple-pomo") return <SimplePomoPage app={app} />;
 
   return (
     <div className="app-shell" lang="ja" data-tone={appTone(app.slug)}>

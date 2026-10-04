@@ -28,6 +28,7 @@ const APP_DESK: Record<string, Pick<DeskAppItem, "shape" | "anchor">> = {
   caflog: { shape: "circle", anchor: "hero" },
   "dev-tools": { shape: "squircle", anchor: "hero" },
   "pay-cycle": { shape: "round-lg", anchor: "hero" },
+  "simple-pomo": { shape: "circle", anchor: "hero" },
 };
 
 const WORDS: DeskWordItem[] = [

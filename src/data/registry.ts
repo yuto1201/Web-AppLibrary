@@ -249,6 +249,72 @@ const entries = [
     "appStoreUrl": null,
     "siteUrl": null
   },
+  {
+    slug: "simple-pomo",
+    name: "SimplePomo",
+    tagline: "ちら見でわかる、シンプルなポモドーロタイマー。",
+    stickerNote: "ちらっと見るだけ",
+
+    platforms: ["iOS", "iPadOS"],
+    status: "alpha",
+    releaseDate: null,
+    year: 2026,
+
+    // アイコンは iOS-SimplePomo の AppIcon を受け取ってから icon.png として置く。
+    icon: null,
+    iconGlyph: "🍅",
+    color: "#E6EFE6",
+    accent: "#2F6B45",
+    featured: false,
+
+    category: "仕事効率化",
+    description:
+      "iOS のあらゆる表面で「ちら見」できる、シンプルなポモドーロタイマーです。アプリ本体には機能を盛らず、Dynamic Island・ロック画面・StandBy・コントロールセンター・ウィジェット・Siri から、タイマーの状態を確認して操作できます。iOS 26.4 以降の iPhone・iPad に対応し、日本語と英語で使えます。現在、リリースに向けて開発中です。",
+    features: [
+      {
+        icon: "⏰",
+        title: "ロック画面でも届くアラーム",
+        description: "AlarmKit の全画面アラームで、集中・休憩の終わりをロック画面でも知らせます（Pro）。",
+      },
+      {
+        icon: "🏝️",
+        title: "Dynamic Island とライブアクティビティ",
+        description: "残り時間を Dynamic Island とライブアクティビティに表示します。",
+      },
+      {
+        icon: "🔒",
+        title: "ロック画面・StandBy・コントロールセンター",
+        description: "ロック画面、StandBy、コントロールセンターから、タイマーの状態を確認して操作できます。",
+      },
+      {
+        icon: "🧩",
+        title: "操作できるウィジェット",
+        description: "インタラクティブウィジェットで、ウィジェットの中からタイマーを操作できます（Pro）。",
+      },
+      {
+        icon: "🗣️",
+        title: "7 種類の Siri ショートカット",
+        description: "声でタイマーを開始したり、状態を確認したりできます（無料）。",
+      },
+      {
+        icon: "📊",
+        title: "今日の記録と統計",
+        description: "今日の記録、連続日数、直近 7 日の統計を確認できます。",
+      },
+      {
+        icon: "🎧",
+        title: "環境音とカラーテーマ",
+        description: "5 種類の環境音と 4 種類のカラーテーマから選べます（Pro）。",
+      },
+    ],
+    price: "無料（アプリ内課金あり）",
+    version: "1.0（開発中）",
+
+    screenshots: [],
+
+    appStoreUrl: null,
+    siteUrl: null,
+  },
 ] satisfies unknown[];
 
 /** ビルド時に検証する。スキーマ違反があれば build が失敗する。 */
