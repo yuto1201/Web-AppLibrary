@@ -1456,11 +1456,17 @@ test("PayCycle の案内・実画面・質問をキーボードで操作でき�
   await expect(question).toHaveAttribute("open", "");
   await expect(question.locator("p")).toBeVisible();
 
-  for (const width of [320, 390, 768, 1280]) {
-    await page.setViewportSize({ width, height: 900 });
+  for (const [width, height] of [[320, 640], [390, 844], [768, 1024], [1280, 720], [1613, 966]] as const) {
+    await page.setViewportSize({ width, height });
+    await page.goto("/apps/pay-cycle/");
+    await page.evaluate(() => document.fonts.ready);
     const heroImage = page.locator(".paycycle-hero-image");
     await expect(heroImage).toBeVisible();
     await expect.poll(() => heroImage.evaluate((element: HTMLImageElement) => element.complete && element.naturalWidth > 0)).toBe(true);
+    const heroBox = (await heroImage.boundingBox())!;
+    expect(heroBox.y, `${width}×${height} icon top`).toBeGreaterThanOrEqual(0);
+    expect(heroBox.y + heroBox.height, `${width}×${height} complete icon in opening`).toBeLessThanOrEqual(height);
+    await expect(page.locator(".paycycle-actions")).toBeInViewport({ ratio: 1 });
     for (const control of [
       page.locator('.paycycle-actions a[href="#screenshots"]'),
       gallery.getByRole("button", { name: "Next", exact: true }),
