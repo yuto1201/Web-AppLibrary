@@ -276,13 +276,55 @@ body:has(.paycycle-site) { background: #f6f4f0; }
 @media (max-width: 360px) {
   .paycycle-site { --pay-gutter: 18px; }
   .paycycle-site .paycycle-brand { font-size: 21px; }
-  .paycycle-site .paycycle-headline { font-size: 35px; }
-  .paycycle-site .paycycle-stage { padding-inline: 21px; }
   .paycycle-site .paycycle-actions { gap: 13px; }
   .paycycle-site .paycycle-actions .paycycle-button { padding-inline: 14px; font-size: 11px; }
   .paycycle-site .paycycle-text-link { font-size: 11px; }
   .paycycle-site .paycycle-notice { flex-direction: column; }
   .paycycle-site .shot-thumbs { gap: 8px; }
+}
+/* Keep the opening copy and complete P mark within the first screen. */
+@media (min-width: 701px) {
+  .paycycle-site .paycycle-nav { min-height: 76px; }
+  .paycycle-site .paycycle-hero { padding-top: clamp(20px, 3svh, 32px); }
+  .paycycle-site .paycycle-hero-copy { max-width: none; }
+  .paycycle-site .paycycle-eyebrow { margin-bottom: 14px; }
+  .paycycle-site .paycycle-headline { font-size: clamp(44px, min(5.8svh, 7.4vw), 66px); line-height: 1.2; }
+  .paycycle-site .paycycle-headline br { display: none; }
+  .paycycle-site .paycycle-headline > span { white-space: nowrap; }
+  .paycycle-site .paycycle-intro { margin-top: 16px; font-size: 14px; line-height: 2; }
+  .paycycle-site .paycycle-actions { margin-top: 18px; }
+  .paycycle-site .paycycle-hero-copy > .paycycle-meta { margin-top: 12px; }
+  .paycycle-site .paycycle-stage { margin-top: 24px; padding: 24px 48px; }
+  .paycycle-site .paycycle-hero-icon { width: min(100%, clamp(260px, 36svh, 360px)); }
+  .paycycle-site .paycycle-stage-serif { margin-top: 14px; font-size: clamp(36px, 4.8svh, 52px); }
+  .paycycle-site .paycycle-stage-note > p:last-child { margin-top: 14px; }
+}
+@media (min-width: 701px) and (max-height: 740px) {
+  .paycycle-site .paycycle-hero { padding-top: 16px; }
+  .paycycle-site .paycycle-eyebrow { margin-bottom: 10px; }
+  .paycycle-site .paycycle-headline { font-size: 42px; }
+  .paycycle-site .paycycle-intro { margin-top: 10px; line-height: 1.9; }
+  .paycycle-site .paycycle-intro br { display: none; }
+  .paycycle-site .paycycle-actions { margin-top: 12px; }
+  .paycycle-site .paycycle-hero-copy > .paycycle-meta { margin-top: 8px; }
+  .paycycle-site .paycycle-stage { margin-top: 20px; padding-block: 20px; }
+  .paycycle-site .paycycle-hero-icon { width: min(100%, clamp(220px, 34svh, 260px)); }
+}
+@media (max-width: 700px) {
+  .paycycle-site .paycycle-header .paycycle-button-small { gap: 8px; padding-inline: 9px; }
+  .paycycle-site .paycycle-hero { padding-top: 24px; }
+  .paycycle-site .paycycle-eyebrow { margin-bottom: 14px; }
+  .paycycle-site .paycycle-headline { font-size: clamp(32px, 9vw, 48px); line-height: 1.25; }
+  .paycycle-site .paycycle-intro { margin-top: 12px; font-size: 12px; line-height: 1.85; }
+  .paycycle-site .paycycle-actions { margin-top: 14px; }
+  .paycycle-site .paycycle-hero-copy > .paycycle-meta { margin-top: 10px; }
+  .paycycle-site .paycycle-stage { gap: 24px; margin-top: 20px; padding: 20px; }
+  .paycycle-site .paycycle-hero-icon { width: min(100%, clamp(180px, 26svh, 220px)); }
+}
+@media (max-width: 700px) and (max-height: 740px) {
+  .paycycle-site .paycycle-hero { padding-top: 16px; }
+  .paycycle-site .paycycle-stage { margin-top: 16px; padding-top: 16px; }
+  .paycycle-site .paycycle-hero-icon { width: min(100%, clamp(160px, 24svh, 200px)); }
 }
 @media (prefers-reduced-motion: reduce) {
   .paycycle-site *, .paycycle-site *::before, .paycycle-site *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }

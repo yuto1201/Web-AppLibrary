@@ -1,8 +1,9 @@
 # TODO — AppLibrary
 
-最終更新日: 2026-10-04
+最終更新日: 2026-10-05
 
-- [ ] PayCycle の掲載情報を公開済み1.1へ更新する（Issue #82）
+- [ ] PayCycle の最初の画面に主要ボタンとPマーク全体を収める（Issue #85）
+- [x] PayCycle の掲載情報を公開済み1.1へ更新する（Issue #82 / PR #84、main へ統合・本番確認済み）
 - [x] PayCycle の Hero を白枠なしの大きな実アイコンへ変更する（Issue #77 / PR #78、main へ統合・本番確認済み）
 - [x] PayCycle を新しいアイコンと現行アプリ画面を使う専用ページへ刷新する（Issue #72 / PR #73、main へ統合・本番確認済み）
 - [x] SubLog の青と黄緑の専用ページを公開する（Issue #67 / PR #68、main `86f449c` へ統合・本番確認済み）
