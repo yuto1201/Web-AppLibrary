@@ -36,7 +36,7 @@ export function Stickers() {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={`/apps/${app.slug}/${app.icon}`} alt="" draggable={false} loading="lazy" />
         ) : (
-          <span className="sticker-note">{app.iconGlyph}</span>
+          <span className="sticker-note sticker-glyph">{app.iconGlyph}</span>
         ),
       };
     }

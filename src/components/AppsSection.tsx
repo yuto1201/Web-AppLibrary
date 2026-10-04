@@ -44,16 +44,17 @@ export function AppsSection() {
             >
               <span className="app-row-visual" aria-hidden="true">
                 <span className="app-row-visual-label">{String(index + 1).padStart(2, "0")} / {app.name.toUpperCase()}</span>
-                <span className="app-preview-phone" data-kind={app.screenshots[0] ? "screen" : "icon"}>
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0]}` : `/apps/${app.slug}/${app.icon}`} alt="" width={260} height={app.screenshots[0] ? 564 : 260} loading="lazy" />
-                </span>
+                <AppPreview app={app} />
               </span>
               <span className="app-row-body">
                 <span className="app-row-icon">
-                  {/* 静的出力のため素の img を使う。next/image の最適化は使わない。 */}
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`/apps/${app.slug}/${app.icon}`} alt="" loading="lazy" />
+                  {app.icon ? (
+                    // 静的出力のため素の img を使う。next/image の最適化は使わない。
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={`/apps/${app.slug}/${app.icon}`} alt="" loading="lazy" />
+                  ) : (
+                    <span className="app-row-glyph">{app.iconGlyph}</span>
+                  )}
                 </span>
                 <span className="app-row-main">
                   <span className="app-row-category"><span aria-hidden="true">{String(index + 1).padStart(2, "0")} / </span><span lang="ja">{app.category}</span></span>
@@ -72,6 +73,32 @@ export function AppsSection() {
         ))}
       </ul>
     </section>
+  );
+}
+
+/** 実画面を優先し、無ければアイコン、どちらも無ければ iconGlyph を置く。 */
+function AppPreview({ app }: { app: App }) {
+  const screenshot = app.screenshots[0];
+  if (screenshot) {
+    return (
+      <span className="app-preview-phone" data-kind="screen">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`/apps/${app.slug}/screenshots/${screenshot}`} alt="" width={260} height={564} loading="lazy" />
+      </span>
+    );
+  }
+  if (app.icon) {
+    return (
+      <span className="app-preview-phone" data-kind="icon">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={`/apps/${app.slug}/${app.icon}`} alt="" width={260} height={260} loading="lazy" />
+      </span>
+    );
+  }
+  return (
+    <span className="app-preview-phone" data-kind="glyph">
+      <span className="app-preview-glyph">{app.iconGlyph}</span>
+    </span>
   );
 }
 

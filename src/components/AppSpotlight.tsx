@@ -14,6 +14,7 @@ export function AppSpotlight() {
   if (!app) return null;
   const index = apps.indexOf(app) + 1;
   const screenshot = app.screenshots[0];
+  const kind = screenshot ? "screen" : app.icon ? "icon" : "glyph";
 
   return (
     <section className="spotlight" aria-labelledby="spotlight-heading">
@@ -22,16 +23,21 @@ export function AppSpotlight() {
         <span className="spotlight-edition" aria-hidden="true">APP STUDY — {String(index).padStart(2, "0")}</span>
       </div>
       <div className="spotlight-stage">
-        <div className="spotlight-screen" data-kind={screenshot ? "screen" : "icon"}>
-          {/* 静的出力でも実画面を表示する。スクリーンショット内の文言は日本語。 */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            key={app.slug}
-            src={screenshot ? `/apps/${app.slug}/screenshots/${screenshot}` : `/apps/${app.slug}/${app.icon}`}
-            alt={`${app.name} — ${screenshot ? t.spotlight_screen : t.spotlight_icon}`}
-            width={220}
-            height={screenshot ? 478 : 220}
-          />
+        <div className="spotlight-screen" data-kind={kind}>
+          {kind === "glyph" ? (
+            // アイコンも実画面も無いアプリは、名前を下の詳細リンクで読ませ、ここは飾りにする。
+            <span key={app.slug} className="spotlight-glyph" aria-hidden="true">{app.iconGlyph}</span>
+          ) : (
+            // 静的出力でも実画面を表示する。スクリーンショット内の文言は日本語。
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={app.slug}
+              src={screenshot ? `/apps/${app.slug}/screenshots/${screenshot}` : `/apps/${app.slug}/${app.icon}`}
+              alt={`${app.name} — ${screenshot ? t.spotlight_screen : t.spotlight_icon}`}
+              width={220}
+              height={screenshot ? 478 : 220}
+            />
+          )}
         </div>
         <span className="spotlight-seal" aria-hidden="true">Small apps.<br />Made with care.</span>
       </div>
@@ -45,8 +51,12 @@ export function AppSpotlight() {
             aria-controls="spotlight-info"
             onClick={() => setSelected(entry.slug)}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={`/apps/${entry.slug}/${entry.icon}`} alt="" width={36} height={36} />
+            {entry.icon ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={`/apps/${entry.slug}/${entry.icon}`} alt="" width={36} height={36} />
+            ) : (
+              <span className="spotlight-pick-glyph" aria-hidden="true">{entry.iconGlyph}</span>
+            )}
           </button>
         ))}
         <span className="spotlight-pick-hint">{t.spotlight_choose}</span>
