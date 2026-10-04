@@ -21,7 +21,7 @@ export const html = String.raw`
 <p>Proの買い切り購入と3段階の投げ銭はAppleのApp StoreとStoreKitを通じて処理します。開発者はクレジットカードなどの決済情報を受け取りません。購入状態の検証は端末上で行います。Appleによる情報の取り扱いにはAppleのプライバシーポリシーが適用されます。</p>
 <h3>7. フィードバック機能の導入予定</h3>
 <p>アプリ内の「フィードバックを送る」は現在未実装です。現時点でこの機能による送信は行いません。導入時には、利用者が送信した場合にだけ、種類（不具合・要望・その他）、本文、アプリとiOSのバージョン、端末の機種、言語・地域を送信する予定です。タイマーのログや設定値、連絡先や返信先は送信項目に含めません。本文に個人情報を書かないでください。</p>
-<p>導入予定の受付処理はCloudflare Workersを経由し、開発者のGitHub非公開リポジトリにIssueとして保存します。IPアドレスは短時間の送信回数制限にだけ使用し、保存・ログ記録・Issueへの記載は行わず、受付処理の呼び出しログは無効にする予定です。全体の1日の受付上限も設けます。保存期間、削除依頼の手順、本文の上限などの確定した運用条件は、機能を公開する前に本ページへ追記します。この項目は導入予定の説明です。</p>
+<p>導入予定の受付処理はCloudflare Workersを経由し、開発者のGitHub非公開リポジトリにIssueとして保存します。IPアドレスは約60秒に1回の送信回数制限にだけ使用し、保存・ログ記録・Issueへの記載は行わず、受付処理の呼び出しログは無効にする予定です。全体で1日100件までの受付上限も設ける予定です。保存期間、削除依頼の手順、本文の上限などの確定した運用条件は、機能を公開する前に本ページへ追記します。この項目は導入予定の説明です。</p>
 <h3>8. お問い合わせと変更</h3>
 <p>現在のお問い合わせは<a href="https://app.yutodev.com/#contact" target="_blank" rel="noopener noreferrer">開発者の連絡先</a>をご利用ください。タイマーの記録や個人情報など、不要な情報をお問い合わせに含めないでください。機能や情報の取り扱いを変更する場合は本ページを更新します。利用条件は<a href="/apps/simple-pomo/terms/">SimplePomo利用規約</a>をご確認ください。</p>
 </section>
@@ -43,7 +43,7 @@ export const html = String.raw`
 <p>The one-time Pro purchase and three tip levels are processed through Apple's App Store and StoreKit. The developer does not receive payment details such as credit card information. Purchase status is verified on your device. Apple's Privacy Policy applies to Apple's processing.</p>
 <h3>7. Planned feedback feature</h3>
 <p>The in-app “Send Feedback” feature has not been implemented. No submission through this feature takes place at present. When introduced, it is planned to send only after you submit: a category (bug, request or other), your message, App and iOS versions, device model, and language and region. Timer logs, setting values, contacts and a reply address will not be included in the sent fields. Do not include personal information in your message.</p>
-<p>The planned intake service will pass submissions through Cloudflare Workers and save them as Issues in the developer's private GitHub repository. The source IP address is planned to be used only for short-term rate limiting, without storage, logging or inclusion in an Issue; intake request logs will be disabled. A daily limit will apply to all submissions. Final operational terms, including retention, deletion requests and the message limit, will be added to this page before the feature is released. This section describes a planned feature.</p>
+<p>The planned intake service will pass submissions through Cloudflare Workers and save them as Issues in the developer's private GitHub repository. The source IP address is planned to be used only for rate limiting of approximately one submission per 60 seconds, without storage, logging or inclusion in an Issue; intake request logs will be disabled. A daily limit of 100 submissions will apply across all users. Final operational terms, including retention, deletion requests and the message limit, will be added to this page before the feature is released. This section describes a planned feature.</p>
 <h3>8. Contact and updates</h3>
 <p>For questions at present, use the <a href="https://app.yutodev.com/#contact" target="_blank" rel="noopener noreferrer">developer's contact links</a>. Do not include unnecessary timer records or personal information in messages. This page will be updated when features or data practices change. See the <a href="/apps/simple-pomo/terms/">SimplePomo Terms of Use</a> for conditions of use.</p>
 </section>

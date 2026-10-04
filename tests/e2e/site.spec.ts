@@ -149,6 +149,7 @@ async function expectInitialPlayground(page: Page, context: string) {
   const board = (await page.locator(".hero-playground").boundingBox())!;
   expect(board, `${context} playground`).not.toBeNull();
   const protectedBoxes = {
+    label: (await page.locator(".playground-label").boundingBox())!,
     h1: (await page.locator(".hero-h1").boundingBox())!,
     bio: (await page.locator(".hero-bio").boundingBox())!,
     note: (await page.locator(".hero-note").boundingBox())!,

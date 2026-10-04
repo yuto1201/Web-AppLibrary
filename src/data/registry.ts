@@ -259,7 +259,7 @@ const entries = [
     features: [
       { icon: "◷", title: "ひとつのことに、集中。", description: "時間を区切って、目の前のひとつから。7つのSiriショートカットとコントロールセンターの操作は無料で使えます。" },
       { icon: "↗", title: "ちらっと見れば、それで。", description: "Dynamic Island、Live Activity、ロック画面、StandByで残り時間を確認。今日の記録・連続日数・直近7日間の統計も振り返れます。" },
-      { icon: "✳", title: "ひと息つくのも、大切な時間。", description: "集中と休憩を、自分のペースで。買い切りのProでは、5つの環境音・4つのテーマ・ウィジェット・AlarmKitの終了アラームと、より長い時間設定を利用できます。" },
+      { icon: "✳", title: "ひと息つくのも、大切な時間。", description: "集中と休憩を、自分のペースで。買い切りのProでは、5つの環境音・4つのテーマ・インタラクティブウィジェット・AlarmKitの終了アラームと、より長い時間設定を利用できます。" },
     ],
     price: "無料・買い切りのProあり", version: "1.0（準備中）", screenshots: [],
     appStoreUrl: null, siteUrl: null,

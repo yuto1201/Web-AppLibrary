@@ -451,5 +451,9 @@ body:has(.app-shell[data-tone="cycle"]),
   .app-shell[data-tone="bench"] .feature-list { grid-template-columns: 1fr; }
 }
 
-.app-shell[data-tone="pomo"] { --paper: #FFF0E1; --app-accent: #9C4704; }
-html[data-theme="dark"] .app-shell[data-tone="pomo"] { --app-accent: #FD841B; }
+body:has(.app-shell[data-tone="pomo"]),
+.app-shell[data-tone="pomo"] { background: #FFF0E1; }
+.app-shell[data-tone="pomo"] { --app-accent: #9C4704; --app-accent-2: #9C4704; }
+[data-theme="dark"] body:has(.app-shell[data-tone="pomo"]),
+[data-theme="dark"] .app-shell[data-tone="pomo"] { background: var(--paper); }
+[data-theme="dark"] .app-shell[data-tone="pomo"] { --app-accent: #FD841B; --app-accent-2: #FD841B; }

@@ -232,6 +232,7 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   .poster[data-desk="ready"] .sticker-slot[data-key="caflog"] { left: calc(var(--desk-play-left) + 15px); width: 82px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="dev-tools"] { left: calc(var(--desk-play-left) + var(--desk-play-width) - 97px); width: 82px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="pay-cycle"] { left: calc(var(--desk-play-left) + var(--desk-play-width) - 110px); width: 82px; }
+  .poster[data-desk="ready"] .sticker-slot[data-key="note-Swift"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .20); }
   .poster[data-desk="ready"] .sticker-slot[data-key="note-Tokyo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .62); }
   .poster .app-row-body { grid-template-columns: 36px minmax(0, 1fr) 29px; gap: 11px; padding: 20px; }
   .poster .app-row-icon { width: 36px; height: 36px; border-radius: 9px; }
@@ -368,5 +369,5 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 }
 
 /* The eighth sticker stays inside the Hero playground, above its controls. */
-.poster[data-desk="ready"] .sticker-slot[data-key="simple-pomo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .5 - 40px); top: calc(var(--desk-play-top) + 290px); right: auto; bottom: auto; width: 80px; }
+.poster[data-desk="ready"] .sticker-slot[data-key="simple-pomo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .5 - 40px); top: calc(var(--desk-play-top) + 190px); right: auto; bottom: auto; width: 80px; }
 @media (max-width: 700px) { .poster[data-desk="ready"] .sticker-slot[data-key="simple-pomo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .5 - 30px); top: calc(var(--desk-play-top) + 100px); width: 60px; } }

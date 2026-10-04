@@ -1,6 +1,6 @@
 # SimplePomo publication — Issue #79
 
-The user approved the animated black-and-white direction inspired by the supplied Refero page, then requested orange to match the actual app icon. They explicitly requested production publication in `yuto1201/Web-AppLibrary` on 2026-10-04. The dedicated React page uses the approved `#FD841B` accent, a moving clock, scroll entrance motion, and an accessible pause control. Reduced motion disables the animations.
+The user approved the animated black-and-white direction inspired by the supplied Refero page, then requested orange to match the actual app icon. They explicitly requested production publication in `yuto1201/Web-AppLibrary` on 2026-10-04. The dedicated React page uses the approved `#FD841B` accent, a moving clock, an animated rhythm indicator, and an accessible pause control. Reduced motion disables the animations.
 
 ## Public routes
 
