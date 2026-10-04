@@ -195,8 +195,8 @@ const entries = [
       "iOS",
       "iPadOS"
     ],
-    "status": "alpha",
-    "releaseDate": null,
+    "status": "release",
+    "releaseDate": "2026-09-24",
     "year": 2026,
     "icon": "icon.png",
     "iconGlyph": "￥",
@@ -204,7 +204,7 @@ const entries = [
     "accent": "#D8343A",
     "featured": false,
     "category": "ファイナンス",
-    "description": "給料日を基準に、カード請求・家賃・公共料金などの支払いをひとまとめに。収入と登録済み支払いの見込み差額を、ホーム・カレンダー・推移グラフで確認できます。新しいデザインの1.1をリリース準備中です。",
+    "description": "給料日を基準に、カード請求・家賃・公共料金などの支払いをひとまとめに。収入と登録済み支払いの見込み差額を、ホーム・カレンダー・推移グラフで確認できます。",
     "features": [
       {
         "icon": "📆",
@@ -237,8 +237,8 @@ const entries = [
         "description": "端末内に保存し、iCloudにサインインしていれば自分のiPhone・iPadで同期。ファイルの書き出し・読み込みにも対応します。"
       }
     ],
-    "price": "無料・広告非表示の買い切りを予定",
-    "version": "1.1（準備中）",
+    "price": "無料・広告非表示の買い切りあり",
+    "version": "1.1",
     "screenshots": [
       "1.png",
       "2.png",
@@ -246,7 +246,7 @@ const entries = [
       "4.png",
       "5.png"
     ],
-    "appStoreUrl": null,
+    "appStoreUrl": "https://apps.apple.com/jp/app/id6809831827",
     "siteUrl": null
   },
   {

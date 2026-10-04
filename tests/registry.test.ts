@@ -7,9 +7,10 @@ import { termsDocuments } from "@/data/terms/registry";
 import { appSchema } from "@/data/schema";
 
 describe("apps registry", () => {
-  it("PayCycle はストア公開前の状態を保持する", () => {
+  it("PayCycle は公開済みの1.1と配布先を示す", () => {
     expect(getApp("pay-cycle")).toMatchObject({
-      status: "alpha", releaseDate: null, appStoreUrl: null,
+      status: "release", releaseDate: "2026-09-24", version: "1.1",
+      appStoreUrl: "https://apps.apple.com/jp/app/id6809831827",
     });
   });
 
