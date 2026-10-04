@@ -28,7 +28,7 @@ describe("apps registry", () => {
   });
 
   it("PayCycle の日英利用規約が承認済み条件とApple標準EULAを保持する", () => {
-    expect(Object.keys(termsDocuments)).toEqual(["pay-cycle"]);
+    expect(Object.keys(termsDocuments).sort()).toEqual(["pay-cycle", "simple-pomo"]);
     const document = termsDocuments["pay-cycle"]!;
     const japanese = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
     const english = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
@@ -204,5 +204,32 @@ describe("apps registry", () => {
   it("空の鉛筆メモを拒否する", () => {
     const source = apps[0]!;
     expect(() => appSchema.parse({ ...source, stickerNote: "" })).toThrow();
+  });
+});
+
+
+describe("SimplePomo publication", () => {
+  it("keeps the unreleased app and real asset without invented screenshots", () => {
+    expect(getApp("simple-pomo")).toMatchObject({ name: "SimplePomo", status: "alpha", releaseDate: null, appStoreUrl: null, siteUrl: null, screenshots: [], accent: "#FD841B" });
+  });
+  it("discloses local storage and distinguishes planned feedback in both languages", () => {
+    const document = privacyDocuments["simple-pomo"]!;
+    const ja = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    const en = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    for (const term of ["UserDefaults", "App Group", "iCloud", "AlarmKit", "Siri", "StoreKit", "Cloudflare Workers", "GitHub"]) { expect(ja).toContain(term); expect(en).toContain(term); }
+    expect(ja).toContain("現在未実装"); expect(en).toContain("has not been implemented");
+    expect(ja).toContain("約60秒に1回"); expect(ja).toContain("1日100件");
+    expect(en).toContain("one submission per 60 seconds"); expect(en).toContain("100 submissions");
+    expect(document).not.toContain("mailto:");
+    expect(document).toContain('href="/apps/simple-pomo/terms/"');
+  });
+  it("covers one-time Pro, consumable tips, restoration and permissions bilingually", () => {
+    const document = termsDocuments["simple-pomo"]!;
+    for (const term of ["非消費型", "消費型", "購入を復元する", "ファミリー共有", "500円", "non-consumable", "consumable", "Restore Purchases", "Family Sharing", "JPY 500", "Apple標準EULA", "Apple Standard EULA", "AlarmKit"]) expect(document).toContain(term);
+    const ja = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    const en = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    for (const term of ["7つ", "5つ", "4つ", "3段階", "500円", "180分", "90分", "ファミリー共有に対応しません"]) expect(ja).toContain(term);
+    for (const term of ["seven Siri", "five ambient", "four themes", "three tip", "JPY 500", "180 minutes", "90 minutes", "does not support Family Sharing"]) expect(en).toContain(term);
+    expect(document).not.toMatch(/example\.(?:com|org)|TODO|FIXME|雛形|記入してください/u);
   });
 });

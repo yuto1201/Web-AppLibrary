@@ -6,6 +6,7 @@ import { termsDocuments } from "@/data/terms/registry";
 import { ScreenshotGallery } from "@/components/ScreenshotGallery";
 import { CafLogPage } from "@/components/CafLogPage";
 import { SubLogPage } from "@/components/SubLogPage";
+import { SimplePomoPage } from "@/components/SimplePomoPage";
 import { PayCyclePage } from "@/components/PayCyclePage";
 import { SpecimenSticker } from "@/components/SpecimenSticker";
 import { appTone } from "@/lib/app-tone";
@@ -42,6 +43,7 @@ export default async function AppPage({ params }: { params: Promise<{ slug: stri
   const app = getApp(slug);
   if (!app) notFound();
 
+  if (app.slug === "simple-pomo") return <SimplePomoPage app={app} />;
   if (app.slug === "caflog") return <CafLogPage app={app} />;
   if (app.slug === "sublog") return <SubLogPage app={app} />;
   if (app.slug === "pay-cycle") return <PayCyclePage app={app} />;
