@@ -1571,6 +1571,7 @@ test("SimplePomo はサポート URL として日英の紹介・問い合わせ�
     for (const control of await page.locator(".hero-actions .btn").all()) {
       await control.click({ trial: true });
       const box = (await control.boundingBox())!;
+      expect(box.width, `${width}px control width`).toBeGreaterThanOrEqual(44);
       expect(box.height, `${width}px control height`).toBeGreaterThanOrEqual(44);
     }
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);

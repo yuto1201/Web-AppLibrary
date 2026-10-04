@@ -91,14 +91,14 @@ describe("apps registry", () => {
     const japanese = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
     const english = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
     for (const term of [
-      "uesugiyuuto", "非消耗型", "500円", "ファミリー共有の対象ではありません", "5種類の環境音", "AlarmKitによる全画面アラーム",
+      "uesugiyuuto", "非消耗型", "日本のApp Storeでの価格は500円", "ファミリー共有の対象ではありません", "5種類の環境音", "AlarmKitによる全画面アラーム",
       "4種類のカラーテーマ", "インタラクティブウィジェット", "最長180分", "最長90分", "7種類のSiriショートカット", "購入を復元する",
       "機能は増えません", "集中モード", "返信する義務を負いません", "未成年", "日本法", "東京地方裁判所", "日本語版", "Apple標準EULA",
     ]) {
       expect(japanese).toContain(term);
     }
     for (const term of [
-      "uesugiyuuto", "non-consumable", "¥500", "Family Sharing", "five ambient sounds", "full-screen AlarmKit alarms",
+      "uesugiyuuto", "non-consumable", "¥500 on the App Store in Japan", "Family Sharing", "five ambient sounds", "full-screen AlarmKit alarms",
       "four color themes", "interactive widgets", "up to 180 minutes", "up to 90 minutes", "seven Siri Shortcuts",
       "App Store purchase history", "do not unlock any features", "Focus", "no obligation to reply", "minor", "laws of Japan",
       "Tokyo District Court", "Japanese version", "Apple Standard EULA",
@@ -108,7 +108,8 @@ describe("apps registry", () => {
     expect(document).toContain("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/");
     expect(document).toContain('href="/apps/simple-pomo/privacy/"');
     expect(document).toContain("https://app.yutodev.com/#contact");
-    expect(document).not.toMatch(/example\.(?:com|org)|TODO|FIXME|雛形|記入してください|mailto:/u);
+    expect(document).not.toMatch(/example\.(?:com|org)|TODO|FIXME|雛形|記入してください/u);
+    expect(document).not.toMatch(/mailto:|[\w.+-]+@[\w-]+\.[a-z]{2,}/u);
   });
 
   it("登録された画像が各アプリの公開ディレクトリ内に実在する", () => {
