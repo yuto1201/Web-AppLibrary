@@ -15,7 +15,7 @@ export const html = String.raw`
 <p>App Storeから取得した本アプリの利用許諾には、独自EULAではなく<a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener noreferrer">Apple標準EULA</a>が適用されます。本規約は本アプリ固有の利用条件を補足するものであり、Apple標準EULAを置き換えません。利用許諾に関して両者が矛盾する場合はApple標準EULAが優先します。</p>
 
 <h3>3. Pro（買い切り）</h3>
-<p>Proは、AppleのStoreKitを使用する非消耗型（買い切り）のアプリ内課金で、価格は500円です。価格と通貨は、購入時にApp Storeに表示される内容が適用されます。Proはファミリー共有の対象ではありません。</p>
+<p>Proは、AppleのStoreKitを使用する非消耗型（買い切り）のアプリ内課金で、日本のApp Storeでの価格は500円です。価格と通貨は、購入時にApp Storeに表示される内容が適用されます。Proはファミリー共有の対象ではありません。</p>
 <p>Proを購入すると、次の機能を使えるようになります。</p>
 <ul>
   <li>5種類の環境音</li>
@@ -70,7 +70,7 @@ export const html = String.raw`
 <p>本規約は日本法に準拠します。本アプリまたは本規約に関する紛争について、法令上別の管轄が強制される場合を除き、東京地方裁判所を第一審の専属的合意管轄裁判所とします。日本語版と英語版に解釈の相違がある場合は、日本語版を優先します。</p>
 
 <h3>16. お問い合わせ</h3>
-<p>本アプリと本規約に関するお問い合わせは、本アプリの設定にある「フィードバックを送る」、または<a href="https://app.yutodev.com/#contact" target="_blank" rel="noopener noreferrer">AppLibraryのContact</a>からお寄せください。</p>
+<p>本アプリの不具合や要望は、本アプリの設定にある「フィードバックを送る」から送れます（運営者は返信しません）。そのほか本アプリと本規約に関するお問い合わせは、<a href="https://app.yutodev.com/#contact" target="_blank" rel="noopener noreferrer">AppLibraryのContact</a>からお寄せください。</p>
 </section>
 
 <section id="simplepomo-terms-en" lang="en">
@@ -84,7 +84,7 @@ export const html = String.raw`
 <p>The <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener noreferrer">Apple Standard EULA</a>, rather than a custom EULA, applies to the license for the App obtained through the App Store. These Terms supplement the Standard EULA with App-specific conditions and do not replace it. If they conflict regarding the license, the Apple Standard EULA controls.</p>
 
 <h3>3. Pro (one-time purchase)</h3>
-<p>Pro is a non-consumable, one-time in-app purchase through Apple StoreKit, priced at ¥500. The price and currency shown by the App Store at the time of purchase apply. Pro is not available through Family Sharing.</p>
+<p>Pro is a non-consumable, one-time in-app purchase through Apple StoreKit, priced at ¥500 on the App Store in Japan. The price and currency shown by the App Store at the time of purchase apply. Pro is not available through Family Sharing.</p>
 <p>Purchasing Pro unlocks the following features:</p>
 <ul>
   <li>five ambient sounds;</li>
@@ -139,6 +139,6 @@ export const html = String.raw`
 <p>These Terms are governed by the laws of Japan. Unless applicable law requires another forum, the Tokyo District Court has exclusive jurisdiction as the court of first instance over disputes relating to the App or these Terms. If the Japanese and English versions differ, the Japanese version controls.</p>
 
 <h3>16. Contact</h3>
-<p>For questions about the App or these Terms, use the feedback option in the App’s Settings or the <a href="https://app.yutodev.com/#contact" target="_blank" rel="noopener noreferrer">AppLibrary Contact links</a>.</p>
+<p>You can send bug reports and requests from the feedback option in the App’s Settings; the Provider does not reply to feedback. For other questions about the App or these Terms, use the <a href="https://app.yutodev.com/#contact" target="_blank" rel="noopener noreferrer">AppLibrary Contact links</a>.</p>
 </section>
 `;

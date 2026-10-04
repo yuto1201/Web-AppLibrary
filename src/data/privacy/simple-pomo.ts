@@ -24,7 +24,7 @@ export const html = String.raw`
 
 <h3>通知・アラームとiOSの表示</h3>
 <p>集中・休憩の終わりを、端末内で登録するローカル通知でお知らせします。通知を許可するかどうかは利用者が選べ、iOSの設定から変更できます。</p>
-<p>AlarmKitによる全画面アラーム（Pro）は、利用者が設定で有効にしたときに、iOSの許可を求めます。</p>
+<p>AlarmKitによる全画面アラーム（Pro）は、利用者がアプリの設定で有効にしたときに、iOSの許可を求めます。</p>
 <p>ライブアクティビティ、Dynamic Island、ウィジェット、コントロールセンター、StandByは、端末内の共有データからタイマーの状態と統計を表示します。</p>
 <p>Siriとショートカットは、タイマーの開始・一時停止・スキップ・リセットと、状態・今日の統計の確認を端末内で実行します。音声はAppleが処理し、開発者は受け取りません。</p>
 
@@ -42,7 +42,7 @@ export const html = String.raw`
 <p>連絡先を受け取らないため、フィードバックには返信しません。</p>
 
 <h3>お問い合わせと変更</h3>
-<p>ご質問は、アプリの設定にある「フィードバックを送る」、または<a href="https://app.yutodev.com/#contact" target="_blank" rel="noopener noreferrer">開発者の連絡先</a>からお寄せください。機能や情報の取り扱いが変わる場合は本ページを更新します。利用条件は<a href="/apps/simple-pomo/terms/">SimplePomo利用規約</a>をご確認ください。</p>
+<p>不具合や要望は、アプリの設定にある「フィードバックを送る」から送れます（返信はしません）。そのほかのご質問は、<a href="https://app.yutodev.com/#contact" target="_blank" rel="noopener noreferrer">開発者の連絡先</a>からお寄せください。機能や情報の取り扱いが変わる場合は本ページを更新します。利用条件は<a href="/apps/simple-pomo/terms/">SimplePomo利用規約</a>をご確認ください。</p>
 </section>
 
 <section lang="en">
@@ -65,7 +65,7 @@ export const html = String.raw`
 
 <h3>Notifications, alarms and iOS surfaces</h3>
 <p>The App tells you when a focus or break session ends with local notifications scheduled on your device. You choose whether to allow notifications and can change this in iOS Settings.</p>
-<p>Full-screen AlarmKit alarms (Pro) request iOS permission when you turn them on in Settings.</p>
+<p>Full-screen AlarmKit alarms (Pro) request iOS permission when you turn them on in the App’s Settings.</p>
 <p>Live Activities, the Dynamic Island, widgets, Control Center and StandBy display the timer’s status and statistics from data shared on your device.</p>
 <p>Siri and Shortcuts start, pause, skip and reset the timer and check its status and today’s statistics on your device. Apple processes your voice; the developer does not receive it.</p>
 
@@ -83,6 +83,6 @@ export const html = String.raw`
 <p>Because no contact details are received, we do not reply to feedback.</p>
 
 <h3>Contact and updates</h3>
-<p>For questions, use the feedback option in the App’s Settings or the <a href="https://app.yutodev.com/#contact" target="_blank" rel="noopener noreferrer">developer&#x27;s contact links</a>. This policy will be updated when the App’s features or data practices change. See the <a href="/apps/simple-pomo/terms/">SimplePomo Terms of Use</a> for conditions of use.</p>
+<p>You can send bug reports and requests from the feedback option in the App’s Settings; we do not reply to feedback. For other questions, please use the <a href="https://app.yutodev.com/#contact" target="_blank" rel="noopener noreferrer">developer&#x27;s contact links</a>. This policy will be updated when the App’s features or data practices change. See the <a href="/apps/simple-pomo/terms/">SimplePomo Terms of Use</a> for conditions of use.</p>
 </section>
 `;
