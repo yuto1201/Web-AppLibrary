@@ -53,7 +53,7 @@ export function AppsSection() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={`/apps/${app.slug}/${app.icon}`} alt="" loading="lazy" />
                   ) : (
-                    <span className="app-row-glyph">{app.iconGlyph}</span>
+                    <span className="app-row-glyph" aria-hidden="true">{app.iconGlyph}</span>
                   )}
                 </span>
                 <span className="app-row-main">

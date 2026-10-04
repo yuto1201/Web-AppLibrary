@@ -379,6 +379,8 @@ test("作品カードは実画面と掲載情報を持ち、検索・フィル�
       await expect(phone.locator(".app-preview-glyph")).toHaveText(app.iconGlyph);
       await expect(row.locator(".app-row-icon img")).toHaveCount(0);
       await expect(row.locator(".app-row-icon .app-row-glyph")).toHaveText(app.iconGlyph);
+      await expect(row.locator(".app-row-icon .app-row-glyph")).toHaveAttribute("aria-hidden", "true");
+      expect(await row.evaluate((element) => element.textContent ?? "")).toContain(app.name);
     }
   }
 
