@@ -76,6 +76,8 @@ test("SimplePomo: motion pauses by keyboard and follows system preference", asyn
   expect(await hand.evaluate(el => getComputedStyle(el).transform)).toBe(stopped);
   await page.keyboard.press("Space");
   await expect(motion).toHaveAttribute("aria-pressed", "false");
+  await expect(hand).toHaveCSS("animation-play-state", "running");
+  await expect.poll(() => hand.evaluate(el => getComputedStyle(el).transform)).not.toBe(stopped);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(motion).toBeDisabled();
   await expect(motion).toHaveAttribute("aria-pressed", "true");
