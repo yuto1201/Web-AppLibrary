@@ -16,6 +16,7 @@ describe("sticker desk catalog", () => {
     expect(deskApp("caflog").shape).toBe("circle");
     expect(deskApp("dev-tools").shape).toBe("squircle");
     expect(deskApp("pay-cycle").shape).toBe("round-lg");
+    expect(deskApp("simple-pomo").shape).toBe("circle");
   });
 
   it("飾りに Swift / Tokyo / 一人制作を持つ", () => {
