@@ -6,6 +6,9 @@ import type { App } from "@/data/schema";
 import "@/styles/simplepomo.css";
 
 const motionQuery = "(prefers-reduced-motion: reduce)";
+const subscribeNothing = () => () => {};
+/** @property 非対応だと角度が補間されず跳ぶため、その環境では静止させる。 */
+const canAnimateSweep = () => typeof CSS !== "undefined" && "registerProperty" in CSS;
 function subscribeMotion(callback: () => void) {
   const media = window.matchMedia(motionQuery);
   media.addEventListener("change", callback);
@@ -33,9 +36,11 @@ const phases = [
 
 export function SimplePomoPage({ app }: { app: App }) {
   const reducedMotion = useSyncExternalStore(subscribeMotion, () => window.matchMedia(motionQuery).matches, () => true);
+  const sweepSupported = useSyncExternalStore(subscribeNothing, canAnimateSweep, () => false);
   const [paused, setPaused] = useState(false);
-  const motionPaused = reducedMotion || paused;
-  return <div className="simplepomo-site" id="simplepomo-top" lang="ja" data-motion={motionPaused ? "paused" : "running"}>
+  const motionLocked = reducedMotion || !sweepSupported;
+  const motionPaused = motionLocked || paused;
+  return <div className="simplepomo-site" id="simplepomo-top" lang="ja" data-motion={motionLocked ? "static" : motionPaused ? "paused" : "running"}>
     <a className="sp-skip-link" href="#simplepomo-main">本文へ移動</a>
     <header className="sp-header">
       <a className="sp-wordmark" href="#simplepomo-top" aria-label="SimplePomo ページの先頭へ">
@@ -53,7 +58,7 @@ export function SimplePomoPage({ app }: { app: App }) {
           <p className="sp-lead">時間を区切る。それだけで、日々は少し変わる。<br className="sp-wide-break" />あなたの集中に、そっと寄り添うタイマーです。</p>
           <div className="sp-hero-actions">
             <a className="sp-button" href="#rhythm">集中のかたちを見る</a>
-            <button className="sp-button sp-motion-toggle" type="button" aria-label="MOTION（アニメーションを一時停止）" aria-pressed={motionPaused} disabled={reducedMotion} onClick={() => setPaused(value => !value)}>
+            <button className="sp-button sp-motion-toggle" type="button" aria-label="動き（アニメーションを一時停止）" aria-pressed={motionPaused} disabled={motionLocked} onClick={() => setPaused(value => !value)}>
               <svg aria-hidden="true" width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6"><path d={motionPaused ? "M4 2v12l9-6z" : "M5 2v12M11 2v12"} /></svg>
               動き <span>{motionPaused ? "OFF" : "ON"}</span>
             </button>

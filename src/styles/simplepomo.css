@@ -146,6 +146,7 @@ body:has(.simplepomo-site) { background: #e9edf0; color: #343434; }
 
 @keyframes sp-drain { from { --sp-sweep: 0deg; } to { --sp-sweep: 300deg; } }
 .simplepomo-site[data-motion="paused"] .sp-drain { animation-play-state: paused; }
+.simplepomo-site[data-motion="static"] .sp-drain { animation: none; --sp-sweep: 110deg; }
 
 /* Sections */
 .simplepomo-site .sp-section { max-width: 1360px; margin: 0 auto; padding: clamp(56px, 8vw, 112px) var(--sp-gutter); }
@@ -163,7 +164,8 @@ body:has(.simplepomo-site) { background: #e9edf0; color: #343434; }
 .simplepomo-site .sp-phase-swatch {
   --phase: var(--sp-accent);
   display: grid; place-items: center; width: 100%; aspect-ratio: 16 / 9; border-radius: 18px; overflow: hidden;
-  background: conic-gradient(from 0deg, var(--sp-bg) 0 var(--phase-done, 70deg), var(--phase) var(--phase-done, 70deg));
+  background-color: var(--phase);
+  background-image: conic-gradient(from 0deg, var(--sp-bg) 0 var(--phase-done, 70deg), var(--phase) var(--phase-done, 70deg));
   box-shadow: var(--sp-inset);
 }
 .simplepomo-site .sp-phase[data-phase="break"] .sp-phase-swatch { --phase: var(--sp-break); --phase-done: 150deg; }

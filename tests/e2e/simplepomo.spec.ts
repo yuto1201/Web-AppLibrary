@@ -66,7 +66,7 @@ test("SimplePomo: published routes, bilingual legal copy and navigation", async 
 
 test("SimplePomo: motion pauses by keyboard and follows system preference", async ({ page }) => {
   await page.goto("/apps/simple-pomo/");
-  const motion = page.getByRole("button", { name: "MOTION（アニメーションを一時停止）", exact: true });
+  const motion = page.getByRole("button", { name: "動き（アニメーションを一時停止）", exact: true });
   const hand = page.locator(".sp-drain");
   await expect(motion).toHaveAttribute("aria-pressed", "false");
   await expect(hand).toHaveCSS("animation-play-state", "running");
