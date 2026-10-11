@@ -31,8 +31,12 @@ test("SimplePomo: published routes, bilingual legal copy and navigation", async 
     }
   }
   await page.goto("/apps/simple-pomo/");
-  await expect(page.locator(".simplepomo-site")).toHaveCSS("background-color", "rgb(8, 8, 8)");
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(8, 8, 8)");
+  await expect(page.locator(".simplepomo-site")).toHaveCSS("background-color", "rgb(233, 237, 240)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(233, 237, 240)");
+  await expect(page.locator(".sp-screen")).toHaveCSS("background-color", "rgb(242, 140, 51)");
+  const lightContrast = await new AxeBuilder({ page }).withRules(["color-contrast", "link-name", "button-name"]).analyze();
+  expect(lightContrast.violations).toEqual([]);
+  expect(lightContrast.incomplete.filter(({ id }) => id === "color-contrast")).toEqual([]);
   await expect(page.locator(".sp-release")).toHaveText("リリース準備中");
   await expect(page.locator('a[href*="apps.apple.com"]')).toHaveCount(0);
   await expect(page.locator("#screenshots")).toHaveCount(0);
@@ -52,7 +56,7 @@ test("SimplePomo: published routes, bilingual legal copy and navigation", async 
     if (route === "privacy") await page.getByRole("link", { name: "利用規約", exact: true }).click();
   }
   await page.getByRole("link", { name: "← SimplePomo", exact: true }).click();
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(8, 8, 8)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(233, 237, 240)");
   await page.getByRole("link", { name: "← AppLibrary", exact: true }).click();
   await expect(page).toHaveURL("/");
   await expect(page.locator("body")).toHaveCSS("background-color", "rgb(220, 238, 255)");
@@ -63,21 +67,21 @@ test("SimplePomo: published routes, bilingual legal copy and navigation", async 
 test("SimplePomo: motion pauses by keyboard and follows system preference", async ({ page }) => {
   await page.goto("/apps/simple-pomo/");
   const motion = page.getByRole("button", { name: "MOTION（アニメーションを一時停止）", exact: true });
-  const hand = page.locator(".sp-dial-hand");
+  const hand = page.locator(".sp-drain");
   await expect(motion).toHaveAttribute("aria-pressed", "false");
   await expect(hand).toHaveCSS("animation-play-state", "running");
-  const initial = await hand.evaluate(el => getComputedStyle(el).transform);
-  await expect.poll(() => hand.evaluate(el => getComputedStyle(el).transform)).not.toBe(initial);
+  const initial = await hand.evaluate(el => getComputedStyle(el).getPropertyValue("--sp-sweep"));
+  await expect.poll(() => hand.evaluate(el => getComputedStyle(el).getPropertyValue("--sp-sweep"))).not.toBe(initial);
   await motion.focus(); await page.keyboard.press("Enter");
   await expect(motion).toHaveAttribute("aria-pressed", "true");
   await expect(hand).toHaveCSS("animation-play-state", "paused");
-  const stopped = await hand.evaluate(el => getComputedStyle(el).transform);
+  const stopped = await hand.evaluate(el => getComputedStyle(el).getPropertyValue("--sp-sweep"));
   await page.waitForTimeout(150);
-  expect(await hand.evaluate(el => getComputedStyle(el).transform)).toBe(stopped);
+  expect(await hand.evaluate(el => getComputedStyle(el).getPropertyValue("--sp-sweep"))).toBe(stopped);
   await page.keyboard.press("Space");
   await expect(motion).toHaveAttribute("aria-pressed", "false");
   await expect(hand).toHaveCSS("animation-play-state", "running");
-  await expect.poll(() => hand.evaluate(el => getComputedStyle(el).transform)).not.toBe(stopped);
+  await expect.poll(() => hand.evaluate(el => getComputedStyle(el).getPropertyValue("--sp-sweep"))).not.toBe(stopped);
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(motion).toBeDisabled();
   await expect(motion).toHaveAttribute("aria-pressed", "true");
@@ -91,7 +95,7 @@ test("SimplePomo: mobile widths, contrast and saved theme survive legal navigati
     await page.setViewportSize({ width, height: 900 });
     expect(await page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth)).toBe(true);
     await expect(page.locator(".simplepomo-site")).toHaveAttribute("lang", "ja");
-    await expect(page.locator("body")).toHaveCSS("background-color", "rgb(8, 8, 8)");
+    await expect(page.locator("body")).toHaveCSS("background-color", "rgb(42, 45, 62)");
   }
   await page.addStyleTag({ content: ".simplepomo-site *, .simplepomo-site *::before, .simplepomo-site *::after { animation: none !important; transition: none !important; }" });
   const contrast = await new AxeBuilder({ page }).withRules(["color-contrast", "link-name", "button-name"]).analyze();
@@ -107,7 +111,7 @@ test("SimplePomo: mobile widths, contrast and saved theme survive legal navigati
     expect(legalContrast.passes.some(({ id }) => id === "color-contrast")).toBe(true);
   }
   await page.getByRole("link", { name: "← SimplePomo", exact: true }).click();
-  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(8, 8, 8)");
+  await expect(page.locator("body")).toHaveCSS("background-color", "rgb(42, 45, 62)");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
 });

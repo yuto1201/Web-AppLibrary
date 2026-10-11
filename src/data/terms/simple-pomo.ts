@@ -41,7 +41,7 @@ export const html = String.raw`
 <p>The App supports iOS and iPadOS 26.4 or later. Notifications, alarms and system integrations depend on iOS permissions, Focus mode, silent settings, AlarmKit, and device and operating system conditions. Delivery and exact timing are not guaranteed. Do not use the App as your only notification method for important events.</p>
 <h3>5. Data and feedback</h3>
 <p>Timer settings and records are stored locally. The App uses neither a separate account nor iCloud sync. Data may be lost if you delete the App or lose or damage your device. See the <a href="/apps/simple-pomo/privacy/">SimplePomo Privacy Policy</a> for details.</p>
-<p>You can send bug reports and requests to the Provider from “Send Feedback” in Settings. The Provider may use submitted feedback to investigate problems and improve the App, without an obligation to reply. See <a href="/apps/simple-pomo/privacy/">section 7 of the Privacy Policy</a> for what is sent and how it is handled.</p>
+<p>You can send bug reports and requests to the Provider from “Send feedback” in Settings. The Provider may use submitted feedback to investigate problems and improve the App, without an obligation to reply. See <a href="/apps/simple-pomo/privacy/">section 7 of the Privacy Policy</a> for what is sent and how it is handled.</p>
 <h3>6. Prohibited conduct and rights</h3>
 <p>You must not use the App unlawfully, interfere with the App or third-party services, gain unauthorized access, analyze or modify the App in a way not permitted by the Apple Standard EULA, or infringe the rights of the Provider or others. Copyright and other intellectual property rights belong to the Provider or the applicable rights holder.</p>
 <h3>7. Changes and responsibility</h3>

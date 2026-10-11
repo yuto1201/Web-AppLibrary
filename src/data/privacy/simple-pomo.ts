@@ -52,7 +52,7 @@ export const html = String.raw`
 <h3>6. In-app purchases</h3>
 <p>The one-time Pro purchase and three tip levels are processed through Apple's App Store and StoreKit. The developer does not receive payment details such as credit card information. Purchase status is verified on your device. Apple's Privacy Policy applies to Apple's processing.</p>
 <h3>7. Sending feedback</h3>
-<p>Only when you send feedback from “Send Feedback” in Settings does the App send the following to the developer. Nothing is sent automatically.</p>
+<p>Only when you send feedback from “Send feedback” in Settings does the App send the following to the developer. Nothing is sent automatically.</p>
 <ul>
 <li>Category (bug, request or other)</li>
 <li>Your message (as you entered it, up to 2,000 characters)</li>

@@ -23,3 +23,13 @@ The app remains unreleased: `status: alpha`, `releaseDate: null`, `appStoreUrl: 
 ## Verification scope
 
 Run the repository's full `npm run verify`. New checks cover the three exported routes, icon loading, lack of an invented download link or screenshots, legal language anchors, route navigation and theme restoration, motion pause/resume and reduced motion, 320/390/768/1280px widths, runtime errors and actual color contrast. Existing home checks include every sticker and verify the icon fallback for apps without screenshots. Production checks must confirm all three public URLs after the reviewed PR is merged and Cloudflare Pages deploys `main`.
+
+## Feedback legal update and app-matched page — Issue #89
+
+On 2026-10-11 the user asked to update the legal pages for the implemented in-app feedback and to bring the product page closer to the finished app.
+
+- Facts: [Issue #89](https://github.com/yuto1201/Web-AppLibrary/issues/89), checked against iOS-SimplePomo main `0b9d6ed` (`FeedbackClient.swift`, `FeedbackSheet.swift`, `Services/feedback-worker/wrangler.jsonc` and its README, deployed 2026-10-05).
+- Privacy Policy section 7 now describes the released feedback: the six sent fields, excluded data, the Cloudflare Workers intake and private GitHub repository, the 60-second per-sender and 100-per-UTC-day limits, retention while needed, and deletion by time sent and part of the message without identity verification. The in-app label is 「フィードバックを送る」 / “Send feedback”.
+- Terms of Use section 5 describes the feature as available and refers to Privacy Policy section 7. URLs are unchanged.
+- Policy update and Terms revision dates: `2026-10-11` (Terms effective date stays `2026-10-04`). Owner approval of the bilingual copy is required before merge.
+- The page now follows the app's neumorphic surfaces from `NeuStyle.swift` (`#E9EDF0` light, `#2A2D3E` dark) and the default Classic phase colors from `Theme.swift` (focus `#F28C33`, break `#80CC99`, long break `#338C66`). The hero reproduces the timer screen, where the phase color drains clockwise around the central disc. It follows the site's saved light/dark theme; the pause control and reduced motion still stop the animation.
