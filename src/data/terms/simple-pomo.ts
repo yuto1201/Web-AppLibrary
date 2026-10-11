@@ -1,6 +1,6 @@
 export const html = String.raw`
 <h1>SimplePomo 利用規約 / Terms of Use</h1>
-<p class="legal-meta">制定日 / Effective date: <time datetime="2026-10-04">2026-10-04</time> · 改定日 / Revised: <time datetime="2026-10-04">2026-10-04</time></p>
+<p class="legal-meta">制定日 / Effective date: <time datetime="2026-10-04">2026-10-04</time> · 改定日 / Revised: <time datetime="2026-10-11">2026-10-11</time></p>
 <p class="legal-language">本ページは日本語と英語で提供しています。 <span lang="en">This page is available in Japanese and English.</span></p>
 <nav class="legal-language-switch" aria-label="言語 / Language"><a href="#simplepomo-terms-ja">日本語</a><span> · </span><a href="#simplepomo-terms-en" lang="en">English</a></nav>
 
@@ -18,7 +18,7 @@ export const html = String.raw`
 <p>iOS・iPadOS 26.4以降に対応します。通知やアラーム、システム連携の動作は、iOSの権限、集中モード、消音設定、AlarmKit、端末やOSの状態に依存します。通知やアラームが必ず届くこと、正確な時刻で動作することを保証しません。重要な予定の唯一の通知手段にはしないでください。</p>
 <h3>5. データとフィードバック</h3>
 <p>タイマーの設定や記録は端末内に保存し、独自アカウントやiCloud同期は使用しません。アプリの削除や端末の紛失・故障などでデータが失われる場合があります。詳しくは<a href="/apps/simple-pomo/privacy/">SimplePomoプライバシーポリシー</a>をご確認ください。</p>
-<p>アプリ内フィードバック機能は現在未実装で、今後の導入を予定しています。導入後、運営者は送信された内容を不具合の調査や機能改善に使用できますが、返信の義務は負いません。送信内容と運用条件は、機能公開前にプライバシーポリシーへ記載します。</p>
+<p>本アプリでは、設定の「フィードバックを送る」から運営者へ不具合や要望を送信できます。運営者は送信された内容を不具合の調査や機能改善に使用できますが、返信の義務は負いません。送信される内容と取り扱いは、<a href="/apps/simple-pomo/privacy/">プライバシーポリシーの7項</a>をご確認ください。</p>
 <h3>6. 禁止行為と権利</h3>
 <p>法令に違反する利用、本アプリや第三者サービスの運営を妨げる行為、不正アクセス、Apple標準EULAで認められない解析・改変、運営者や第三者の権利を侵害する行為を禁止します。本アプリの著作権その他の知的財産権は運営者または正当な権利者に帰属します。</p>
 <h3>7. 変更と責任</h3>
@@ -41,7 +41,7 @@ export const html = String.raw`
 <p>The App supports iOS and iPadOS 26.4 or later. Notifications, alarms and system integrations depend on iOS permissions, Focus mode, silent settings, AlarmKit, and device and operating system conditions. Delivery and exact timing are not guaranteed. Do not use the App as your only notification method for important events.</p>
 <h3>5. Data and feedback</h3>
 <p>Timer settings and records are stored locally. The App uses neither a separate account nor iCloud sync. Data may be lost if you delete the App or lose or damage your device. See the <a href="/apps/simple-pomo/privacy/">SimplePomo Privacy Policy</a> for details.</p>
-<p>The in-app feedback feature has not been implemented and is planned for a future release. After its introduction, the Provider may use submitted feedback to investigate problems and improve the App, without an obligation to reply. Sent fields and operational terms will be described in the Privacy Policy before the feature is released.</p>
+<p>You can send bug reports and requests to the Provider from “Send feedback” in Settings. The Provider may use submitted feedback to investigate problems and improve the App, without an obligation to reply. See <a href="/apps/simple-pomo/privacy/">section 7 of the Privacy Policy</a> for what is sent and how it is handled.</p>
 <h3>6. Prohibited conduct and rights</h3>
 <p>You must not use the App unlawfully, interfere with the App or third-party services, gain unauthorized access, analyze or modify the App in a way not permitted by the Apple Standard EULA, or infringe the rights of the Provider or others. Copyright and other intellectual property rights belong to the Provider or the applicable rights holder.</p>
 <h3>7. Changes and responsibility</h3>
