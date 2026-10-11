@@ -213,14 +213,14 @@ describe("SimplePomo publication", () => {
   it("keeps the unreleased app and real asset without invented screenshots", () => {
     expect(getApp("simple-pomo")).toMatchObject({ name: "SimplePomo", status: "alpha", releaseDate: null, appStoreUrl: null, siteUrl: null, screenshots: [], accent: "#FD841B" });
   });
-  it("discloses local storage and distinguishes planned feedback in both languages", () => {
+  it("discloses local storage and the released feedback terms in both languages", () => {
     const document = privacyDocuments["simple-pomo"]!;
     const ja = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
     const en = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
     for (const term of ["UserDefaults", "App Group", "iCloud", "AlarmKit", "Siri", "StoreKit", "Cloudflare Workers", "GitHub"]) { expect(ja).toContain(term); expect(en).toContain(term); }
-    expect(ja).toContain("現在未実装"); expect(en).toContain("has not been implemented");
-    expect(ja).toContain("約60秒に1回"); expect(ja).toContain("1日100件");
-    expect(en).toContain("one submission per 60 seconds"); expect(en).toContain("100 submissions");
+    expect(document).not.toMatch(/未実装|導入予定|予定です|has not been implemented|planned feedback|planned intake/u);
+    for (const term of ["最大2,000文字", "ビルド番号は含みません", "機種名や型番は含みません", "広告ID", "60秒に1件", "1日（UTC）100件", "必要な間だけ保存", "送信した日時と本文の一部", "本人確認"]) expect(ja).toContain(term);
+    for (const term of ["up to 2,000 characters", "without the build number", "model number are not included", "advertising identifiers", "one per 60 seconds", "100 submissions per day (UTC)", "only as long as needed", "time sent and part of the message", "verify the sender's identity"]) expect(en).toContain(term);
     expect(document).not.toContain("mailto:");
     expect(document).toContain('href="/apps/simple-pomo/terms/"');
   });
@@ -232,5 +232,7 @@ describe("SimplePomo publication", () => {
     for (const term of ["7つ", "5つ", "4つ", "3段階", "500円", "180分", "90分", "ファミリー共有に対応しません"]) expect(ja).toContain(term);
     for (const term of ["seven Siri", "five ambient", "four themes", "three tip", "JPY 500", "180 minutes", "90 minutes", "does not support Family Sharing"]) expect(en).toContain(term);
     expect(document).not.toMatch(/example\.(?:com|org)|TODO|FIXME|雛形|記入してください/u);
+    expect(document).not.toMatch(/未実装|導入を予定|has not been implemented|planned for a future release/u);
+    expect(ja).toContain("プライバシーポリシーの7項"); expect(en).toContain("section 7 of the Privacy Policy");
   });
 });

@@ -1,6 +1,6 @@
 export const html = String.raw`
 <h1>SimplePomo プライバシーポリシー / Privacy Policy</h1>
-<p class="legal-meta">最終更新日 / Last updated: <time datetime="2026-10-04">2026-10-04</time></p>
+<p class="legal-meta">最終更新日 / Last updated: <time datetime="2026-10-11">2026-10-11</time></p>
 <p class="legal-language">本ページは日本語と英語で提供しています。 <span lang="en">This page is available in Japanese and English.</span></p>
 <nav class="legal-language-switch" aria-label="言語 / Language"><a href="#simplepomo-privacy-ja">日本語</a><span> · </span><a href="#simplepomo-privacy-en" lang="en">English</a></nav>
 
@@ -19,9 +19,19 @@ export const html = String.raw`
 <p>アプリが表示されている間だけ、画面の陰影表現に端末の傾き情報を使用します。この情報は保存・送信しません。環境音はバックグラウンドで再生できますが、マイクは使用せず、録音もしません。</p>
 <h3>6. アプリ内購入</h3>
 <p>Proの買い切り購入と3段階の投げ銭はAppleのApp StoreとStoreKitを通じて処理します。開発者はクレジットカードなどの決済情報を受け取りません。購入状態の検証は端末上で行います。Appleによる情報の取り扱いにはAppleのプライバシーポリシーが適用されます。</p>
-<h3>7. フィードバック機能の導入予定</h3>
-<p>アプリ内の「フィードバックを送る」は現在未実装です。現時点でこの機能による送信は行いません。導入時には、利用者が送信した場合にだけ、種類（不具合・要望・その他）、本文、アプリとiOSのバージョン、端末の機種、言語・地域を送信する予定です。タイマーのログや設定値、連絡先や返信先は送信項目に含めません。本文に個人情報を書かないでください。</p>
-<p>導入予定の受付処理はCloudflare Workersを経由し、開発者のGitHub非公開リポジトリにIssueとして保存します。IPアドレスは約60秒に1回の送信回数制限にだけ使用し、保存・ログ記録・Issueへの記載は行わず、受付処理の呼び出しログは無効にする予定です。全体で1日100件までの受付上限も設ける予定です。保存期間、削除依頼の手順、本文の上限などの確定した運用条件は、機能を公開する前に本ページへ追記します。この項目は導入予定の説明です。</p>
+<h3>7. フィードバックの送信</h3>
+<p>設定の「フィードバックを送る」から利用者が送信した場合にだけ、次の内容を開発者へ送信します。自動では送信しません。</p>
+<ul>
+<li>種類（不具合・要望・その他）</li>
+<li>本文（利用者が入力したもの。最大2,000文字）</li>
+<li>アプリのバージョン（ビルド番号は含みません）</li>
+<li>iOSのバージョン</li>
+<li>端末の種類（「iPhone」または「iPad」。機種名や型番は含みません）</li>
+<li>言語と地域の設定</li>
+</ul>
+<p>タイマーの記録、設定の値、氏名、メールアドレスなどの連絡先、端末の識別子、広告IDは送信しません。本文には個人情報を書かないでください。</p>
+<p>送信内容は、開発者がCloudflare, Inc.（米国）のCloudflare Workersで運用する受付処理を経由し、GitHub, Inc.（米国）上の開発者の非公開リポジトリにIssueとして保存します。送信元のIPアドレスは、同じ送信元から60秒に1件までとする送信回数の制限にだけ使用し、保存せず、ログにもIssueにも記録しません。受付処理の呼び出しログは無効にしています。受付は全体で1日（UTC）100件までです。</p>
+<p>フィードバックは不具合の調査と機能の改善に必要な間だけ保存します。連絡先を受け取らないため返信は行いません。送信者を特定する情報を受け取らないため、本人確認も行いません。削除を希望する場合は、8項の連絡先へ送信した日時と本文の一部を知らせてください。特定できたものを削除します。フィードバックを利用者に関連付けたり、トラッキングに使用したりしません。</p>
 <h3>8. お問い合わせと変更</h3>
 <p>現在のお問い合わせは<a href="https://app.yutodev.com/#contact" target="_blank" rel="noopener noreferrer">開発者の連絡先</a>をご利用ください。タイマーの記録や個人情報など、不要な情報をお問い合わせに含めないでください。機能や情報の取り扱いを変更する場合は本ページを更新します。利用条件は<a href="/apps/simple-pomo/terms/">SimplePomo利用規約</a>をご確認ください。</p>
 </section>
@@ -41,9 +51,19 @@ export const html = String.raw`
 <p>While the App is visible, device tilt is used for visual shading. This information is neither stored nor sent. Ambient sounds can play in the background. The App does not use the microphone or record audio.</p>
 <h3>6. In-app purchases</h3>
 <p>The one-time Pro purchase and three tip levels are processed through Apple's App Store and StoreKit. The developer does not receive payment details such as credit card information. Purchase status is verified on your device. Apple's Privacy Policy applies to Apple's processing.</p>
-<h3>7. Planned feedback feature</h3>
-<p>The in-app “Send Feedback” feature has not been implemented. No submission through this feature takes place at present. When introduced, it is planned to send only after you submit: a category (bug, request or other), your message, App and iOS versions, device model, and language and region. Timer logs, setting values, contacts and a reply address will not be included in the sent fields. Do not include personal information in your message.</p>
-<p>The planned intake service will pass submissions through Cloudflare Workers and save them as Issues in the developer's private GitHub repository. The source IP address is planned to be used only for rate limiting of approximately one submission per 60 seconds, without storage, logging or inclusion in an Issue; intake request logs will be disabled. A daily limit of 100 submissions will apply across all users. Final operational terms, including retention, deletion requests and the message limit, will be added to this page before the feature is released. This section describes a planned feature.</p>
+<h3>7. Sending feedback</h3>
+<p>Only when you send feedback from “Send Feedback” in Settings does the App send the following to the developer. Nothing is sent automatically.</p>
+<ul>
+<li>Category (bug, request or other)</li>
+<li>Your message (as you entered it, up to 2,000 characters)</li>
+<li>App version (without the build number)</li>
+<li>iOS version</li>
+<li>Device type (“iPhone” or “iPad”; the model name and model number are not included)</li>
+<li>Language and region settings</li>
+</ul>
+<p>Timer records, setting values, your name, contact details such as an email address, device identifiers and advertising identifiers are not sent. Do not include personal information in your message.</p>
+<p>Submissions pass through an intake service that the developer operates on Cloudflare Workers, provided by Cloudflare, Inc. (United States), and are saved as Issues in the developer's private repository on GitHub, provided by GitHub, Inc. (United States). The source IP address is used only to limit submissions to one per 60 seconds from the same source; it is not stored and is not recorded in logs or Issues. Request logs for the intake service are disabled. The service accepts up to 100 submissions per day (UTC) across all users.</p>
+<p>Feedback is kept only as long as needed to investigate problems and improve the App. We do not receive contact details, so we do not reply. We do not receive information that identifies the sender, so we do not verify the sender's identity. To request deletion, use the contact links in section 8 and provide the time sent and part of the message. We delete feedback we can identify. Feedback is not linked to users or used for tracking.</p>
 <h3>8. Contact and updates</h3>
 <p>For questions at present, use the <a href="https://app.yutodev.com/#contact" target="_blank" rel="noopener noreferrer">developer's contact links</a>. Do not include unnecessary timer records or personal information in messages. This page will be updated when features or data practices change. See the <a href="/apps/simple-pomo/terms/">SimplePomo Terms of Use</a> for conditions of use.</p>
 </section>
