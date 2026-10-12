@@ -91,10 +91,22 @@ describe("法務 Markdown の描画", () => {
       "<https://example.net/>", "<b>HTML</b>", "http://example.net/", "https://example.net/a(b) の URL",
       "  # 字下げの見出し", "   - 字下げの箇条書き", "  > 字下げの引用", "  ---", " \t混ざった字下げ", "## 閉じの記号 ##",
       "~打ち消し~", "** 太字**", "https://example.net/a)b の URL", "https://example.net/a'b の URL",
+      "##\tタブの見出し", "#", "##", "-", "+", "1.", "# 本文中の大見出し", "##  ", "(https://example.net/x)b の URL",
+      "https://example.net/?q=end! の URL", "https://example.net/café の URL", "https://example.net/a. の URL",
     ]) {
       expect(() => renderLegalMarkdown(`${confirmed}${block}\n`), block).toThrow();
     }
     expect(() => renderLegalMarkdown("# Title\r\n\r\nStatus: Confirmed\r\n")).toThrow(/LF/u);
+    for (const title of ["# Title #", "# Title ##", "#\tTitle", "#  "]) {
+      expect(() => renderLegalMarkdown(`${title}\n\nStatus: Confirmed\n`), title).toThrow();
+    }
+  });
+
+  it("URL は文の区切りや対になる括弧の手前で終わる", () => {
+    const external = (url: string) => `<a href="${url}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    expect(renderLegalMarkdown(`${confirmed}(https://example.net/x).\n`).body).toBe(`<p>(${external("https://example.net/x")}).</p>`);
+    expect(renderLegalMarkdown(`${confirmed}（https://example.net/x）\n`).body).toBe(`<p>（${external("https://example.net/x")}）</p>`);
+    expect(renderLegalMarkdown(`${confirmed}https://example.net/x、続き\n`).body).toBe(`<p>${external("https://example.net/x")}、続き</p>`);
   });
 
   it("リンク先は表示した URL の検索部分と断片まで保ち、属性値をエスケープする", () => {

@@ -8,12 +8,14 @@ import project from "../../config/project.json";
  */
 
 const CONFIRMED = "Status: Confirmed";
-const UNSUPPORTED_BLOCK = /^(?:\s|#\s|#{3,}|[-*+]\s|\d+[.)]\s|>|\||```|~~~|<|[-_=*]{3,}\s*$)/u;
+/** 対応する `## ` 見出しを先に取り出した後に、# で始まるものはすべて拒む。 */
+const UNSUPPORTED_BLOCK = /^(?:\s|#|[-*+](?:\s|$)|\d+[.)](?:\s|$)|>|\||```|~~~|<|[-_=*]{3,}\s*$)/u;
 const CLOSING_HASHES = /\s#+\s*$/u;
 /** 単語の中の `_`（@Yuto_Program）は文字として許し、単語の端の `_` は強調とみなして拒む。 */
 const UNSUPPORTED_INLINE = /[*`[\]\\<~]|&(?:#\d+|#x[\da-f]+|[a-z][a-z\d]*);|(?:^|[^\p{L}\p{N}])_|_(?:[^\p{L}\p{N}]|$)|http:\/\//iu;
 const URL_PATTERN = /https:\/\/[A-Za-z0-9\-._~:/?#@!$&+,;=%]+/gu;
-const TRAILING_PUNCTUATION = /[.,;:!?]+$/u;
+/** 句読点で終わる URL は、その記号が URL の一部か文の区切りかが曖昧になる。 */
+const AMBIGUOUS_URL_END = /[.,;:!?]$/u;
 const productionOrigin = new URL(project.productionUrl).origin;
 
 export type RenderedLegalMarkdown = { title: string; body: string };
@@ -35,21 +37,39 @@ function link(url: string): string {
   return `<a href="${escapeAttribute(url)}" target="_blank" rel="noopener noreferrer">${escapeText(url)}</a>`;
 }
 
+const isBreak = (char: string | undefined) => char === undefined || /\s/u.test(char);
+
+/**
+ * URL の直後に続いてよいのは、文の終わり・空白・全角の句読点だけ。
+ * ASCII の記号や文字が続くと、どこまでが URL かが曖昧になり、表示と行き先がずれる。
+ * 「(https://…/).」のように前の ( と対になる ) は、その後ろが区切りなら URL の外とみなす。
+ */
+function urlEndsAt(text: string, start: number, end: number): boolean {
+  const next = text[end];
+  if (isBreak(next) || (/\p{P}/u.test(next!) && !/[!-~]/u.test(next!))) return true;
+  const after = text[end + 1];
+  return next === ")" && text[start - 1] === "(" && (isBreak(after) || /\p{P}/u.test(after!));
+}
+
 function inline(text: string): string {
   if (UNSUPPORTED_INLINE.test(text)) throw new Error(`未対応のインライン書式: ${text}`);
   let html = "";
   let cursor = 0;
   for (const match of text.matchAll(URL_PATTERN)) {
-    // URL の直後に ASCII の記号が続くと途中で切れて別の行き先になるため、描かずに失敗させる。
-    // 「(https://…/)」のように前の ( と対になる ) だけは許す。
-    const next = text[match.index + match[0].length];
-    const closesParenthesis = next === ")" && text[match.index - 1] === "(";
-    if (next !== undefined && /[!-~]/u.test(next) && !closesParenthesis) throw new Error(`URL の直後の記号は未対応: ${text}`);
-    const url = match[0].replace(TRAILING_PUNCTUATION, "");
+    const url = match[0];
+    const end = match.index + url.length;
+    if (AMBIGUOUS_URL_END.test(url) || !urlEndsAt(text, match.index, end)) throw new Error(`URL の終わりが曖昧: ${text}`);
     html += escapeText(text.slice(cursor, match.index)) + link(url);
-    cursor = match.index + url.length;
+    cursor = end;
   }
   return html + escapeText(text.slice(cursor));
+}
+
+/** `# ` / `## ` の後に本文が続き、閉じの # を持たない見出しだけを受け付ける。 */
+function heading(block: string, marker: "# " | "## "): string {
+  const text = block.slice(marker.length);
+  if (!/^\S/u.test(text) || CLOSING_HASHES.test(block)) throw new Error(`未対応の見出し: ${block}`);
+  return inline(text);
 }
 
 /** `# 見出し` / `Status: Confirmed` で始まる承認済みの原文だけを受け付ける。 */
@@ -62,17 +82,14 @@ export function renderLegalMarkdown(source: string): RenderedLegalMarkdown {
 
   const body = blocks.map((block) => {
     if (block.includes("\n")) throw new Error(`段落内の改行は未対応: ${block}`);
-    if (block.startsWith("## ")) {
-      if (CLOSING_HASHES.test(block)) throw new Error(`閉じの # は未対応: ${block}`);
-      return `<h3>${inline(block.slice(3))}</h3>`;
-    }
+    if (block.startsWith("## ")) return `<h3>${heading(block, "## ")}</h3>`;
     if (UNSUPPORTED_BLOCK.test(block)) throw new Error(`未対応のブロック書式: ${block}`);
     const strong = /^\*\*([^*\s](?:[^*]*[^*\s])?)\*\*$/u.exec(block);
     if (strong) return `<p><strong>${inline(strong[1]!)}</strong></p>`;
     return `<p>${inline(block)}</p>`;
   });
 
-  return { title: inline(titleBlock.slice(2)), body: body.join("\n") };
+  return { title: heading(titleBlock, "# "), body: body.join("\n") };
 }
 
 /** 日英の原文を 1 ページに並べ、ページ内の言語切替を付ける。 */
