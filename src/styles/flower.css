@@ -46,6 +46,8 @@ html:has(.flower-site) { scroll-behavior: smooth; scroll-padding-top: 24px; }
 }
 .flower-site .fl-skip-link:focus { top: 16px; }
 .flower-site .fl-phrase { display: inline-block; }
+/* 日本語を文節で折り返し、行末に「す。」だけが残らないようにする（未対応のブラウザは通常の折り返し）。 */
+.flower-site :is(.fl-lead, .fl-section-lead, .fl-note, .fl-hero-visual figcaption, .fl-flower p, .fl-feature p, .fl-quiet-list p) { word-break: auto-phrase; text-wrap: pretty; }
 .flower-site .fl-card { background: var(--fl-white); border: 1px solid var(--fl-rule); border-radius: 24px; }
 
 /* Header */
@@ -54,7 +56,7 @@ html:has(.flower-site) { scroll-behavior: smooth; scroll-padding-top: 24px; }
   width: min(var(--fl-measure), calc(100% - var(--fl-gutter) * 2)); margin: 0 auto; padding: 24px 0;
 }
 .flower-site :is(.fl-wordmark, .fl-footer-mark) {
-  display: inline-flex; align-items: center; gap: 10px; font-family: var(--fl-serif); font-size: 20px; font-weight: 600; white-space: nowrap;
+  display: inline-flex; align-items: center; gap: 10px; min-height: 44px; font-family: var(--fl-serif); font-size: 20px; font-weight: 600; white-space: nowrap;
 }
 .flower-site :is(.fl-wordmark, .fl-footer-mark) img { border-radius: 23%; }
 .flower-site :is(.fl-wordmark, .fl-footer-mark) span {

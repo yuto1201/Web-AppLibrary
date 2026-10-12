@@ -71,6 +71,7 @@ src/
     privacy/registry.ts   掲載 slug と法務本文の対応
     terms/<slug>.ts       承認済みのアプリ固有利用規約
     terms/registry.ts     利用規約を持つ slug の対応
+    support/<slug>.ts     承認済みのアプリ固有サポート
     support/registry.ts   固有サポートを持つ slug の対応
     legal-sources/<slug>/ アプリ側で承認された法務 Markdown の原文
   lib/
@@ -79,6 +80,7 @@ src/
     activate.tsx          一覧行とシールの相互ハイライト
     sticker-desk.ts       机の配置カタログ
     drag.ts               掴みとクランプ
+    legal-markdown.ts     承認済み法務 Markdown を日英 1 ページへ描く
   styles/                 デザインシステム（tokens / standard / app-page / legal）
 public/
   apps/<slug>/            アイコンとスクリーンショット

@@ -14,8 +14,8 @@ describe("Flower の空", () => {
     }
   });
 
-  it("時計は時と分だけを 24 時間表示で出す", () => {
-    expect(clockText(new Date(2026, 9, 12, 6, 5, 59))).toBe("6:05");
+  it("時計はアプリの 24 時間表示と同じく時と分を 2 桁で出す", () => {
+    expect(clockText(new Date(2026, 9, 12, 6, 5, 59))).toBe("06:05");
     expect(clockText(new Date(2026, 9, 12, 22, 48))).toBe("22:48");
   });
 });

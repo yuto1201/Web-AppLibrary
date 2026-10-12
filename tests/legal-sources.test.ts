@@ -73,9 +73,9 @@ describe("Flower の承認済み法務原文", () => {
 
 describe("法務 Markdown の描画", () => {
   it("見出し・太字の段落・本文を、文言を変えずに描く", () => {
-    expect(renderLegalMarkdown(`${confirmed}## 見出し\n\n**質問 & 答え**\n\n本文 <b>\n`)).toEqual({
+    expect(renderLegalMarkdown(`${confirmed}## 見出し\n\n**質問 & 答え**\n\n本文 3 > 2、@Yuto_Program\n`)).toEqual({
       title: "Title",
-      body: "<h3>見出し</h3>\n<p><strong>質問 &amp; 答え</strong></p>\n<p>本文 &lt;b&gt;</p>",
+      body: "<h3>見出し</h3>\n<p><strong>質問 &amp; 答え</strong></p>\n<p>本文 3 &gt; 2、@Yuto_Program</p>",
     });
   });
 
@@ -85,10 +85,21 @@ describe("法務 Markdown の描画", () => {
   });
 
   it("対応していない書式は推測で描かずに失敗する", () => {
-    for (const block of ["- 箇条書き", "1. 番号", "> 引用", "### 小見出し", "[リンク](https://example.net/)", "`code`", "一部だけ **太字**", "1 行目\n2 行目"]) {
+    for (const block of [
+      "- 箇条書き", "1. 番号", "> 引用", "### 小見出し", "[リンク](https://example.net/)", "`code`", "一部だけ **太字**", "1 行目\n2 行目",
+      "---", "___", "    字下げのコード", "\t字下げのコード", "_強調_ の文", "文の __強調__", "~~打ち消し~~", "1\\. エスケープ", "&copy; 実体参照",
+      "<https://example.net/>", "<b>HTML</b>", "http://example.net/", "https://example.net/a(b) の URL",
+    ]) {
       expect(() => renderLegalMarkdown(`${confirmed}${block}\n`), block).toThrow();
     }
     expect(() => renderLegalMarkdown("# Title\r\n\r\nStatus: Confirmed\r\n")).toThrow(/LF/u);
+  });
+
+  it("リンク先は表示した URL の検索部分と断片まで保ち、属性値をエスケープする", () => {
+    expect(renderLegalMarkdown(`${confirmed}https://app.yutodev.com/apps/flower/support/?topic=weather#contact\n`).body)
+      .toBe('<p><a href="/apps/flower/support/?topic=weather#contact">https://app.yutodev.com/apps/flower/support/?topic=weather#contact</a></p>');
+    expect(renderLegalMarkdown(`${confirmed}https://example.net/?q=1&amp=2\n`).body)
+      .toBe('<p><a href="https://example.net/?q=1&amp;amp=2" target="_blank" rel="noopener noreferrer">https://example.net/?q=1&amp;amp=2</a></p>');
   });
 
   it("日英を 1 ページに並べて言語切替を付ける", () => {

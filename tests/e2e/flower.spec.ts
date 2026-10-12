@@ -101,7 +101,7 @@ test("Flower: the product page follows the visitor's time and offers a sky previ
   await expect(picker.getByRole("button", { name: "いま", exact: true })).toHaveAttribute("aria-pressed", "true");
   await picker.getByRole("button", { name: "朝", exact: true }).click();
   await expect(site).toHaveAttribute("data-sky", "morning");
-  await expect(page.locator(".fl-clock")).toHaveAttribute("data-clock", "6:30");
+  await expect(page.locator(".fl-clock")).toHaveAttribute("data-clock", "06:30");
   await expect(page.locator(".fl-hero-visual figcaption")).toContainText("朝の空のイメージ");
   const dusk = picker.getByRole("button", { name: "夕方", exact: true });
   await dusk.focus();
@@ -113,6 +113,8 @@ test("Flower: the product page follows the visitor's time and offers a sky previ
   await expect(site).toHaveAttribute("data-sky", "night");
   await expect(page.locator(".fl-clock")).toHaveAttribute("data-clock", "22:15");
 
+  await expect(page.locator(".fl-availability")).toContainText("iOS / iPadOS 27以降");
+  await expect(page.locator("#quiet")).toContainText("WeatherKit");
   await expect(page.locator(".fl-release")).toHaveText("リリース準備中");
   await expect(page.locator('a[href*="apps.apple.com"]')).toHaveCount(0);
   await expect(page.locator("#screenshots")).toHaveCount(0);
@@ -154,9 +156,10 @@ test("Flower: the product page keeps its palette at every width, in the saved da
     await expectNoHorizontalScroll(page);
     await expect(page.locator("body")).toHaveCSS("background-color", FLOWER_PAPER);
     await expect(page.locator(".flower-site")).toHaveAttribute("lang", "ja");
-    for (const button of await page.getByRole("group", { name: "空の時間を選ぶ", exact: true }).getByRole("button").all()) {
-      const box = (await button.boundingBox())!;
-      expect(box.height).toBeGreaterThanOrEqual(44);
+    // 文中のリンクを除く、単独で押す操作はすべて 44px 以上の高さを持つ。
+    for (const control of await page.locator(".flower-site :is(header a, .fl-button, .fl-sky-picker button, footer a)").all()) {
+      const box = (await control.boundingBox())!;
+      expect(box.height, await control.textContent() ?? "").toBeGreaterThanOrEqual(44);
     }
   }
   await expectContrast(page);
@@ -175,4 +178,16 @@ test("Flower: the legal pages use the saved dark theme and hand it back to the p
   await expect(page.locator("body")).toHaveCSS("background-color", FLOWER_PAPER);
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
+});
+
+test("Flower: the clock and sky keep following the visitor's time", async ({ page }) => {
+  await page.clock.install({ time: new Date("2026-10-12T19:59:20+09:00") });
+  await page.goto("/apps/flower/");
+  const site = page.locator(".flower-site");
+  await expect(site).toHaveAttribute("data-sky", "dusk");
+  await expect(page.locator(".fl-clock")).toHaveAttribute("data-clock", "19:59");
+  await page.clock.runFor(60_000);
+  await expect(page.locator(".fl-clock")).toHaveAttribute("data-clock", "20:00");
+  await expect(site).toHaveAttribute("data-sky", "night");
+  await expect(page.locator(".fl-hero-visual figcaption")).toContainText("いまの時刻に合わせた空のイメージ");
 });

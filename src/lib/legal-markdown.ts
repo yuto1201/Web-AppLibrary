@@ -3,12 +3,14 @@ import project from "../../config/project.json";
 /**
  * アプリ側で承認された法務 Markdown を、文言を変えずに HTML へ写す。
  * 使える書式は見出し（# / ##）、1 行の段落、段落全体の太字、裸の https URL だけ。
- * それ以外の書式が来たら推測で描かずに失敗させ、原文と表示がずれないようにする。
+ * 箇条書き・引用・コード・罫線・強調・リンク記法・HTML・実体参照・エスケープ・http URL が来たら
+ * 推測で描かずに失敗させ、原文と表示がずれないようにする。
  */
 
 const CONFIRMED = "Status: Confirmed";
-const UNSUPPORTED_BLOCK = /^(?:#{1}\s|#{3,}|[-*+]\s|\d+[.)]\s|>|\||```|<)/u;
-const UNSUPPORTED_INLINE = /[*`[\]]/u;
+const UNSUPPORTED_BLOCK = /^(?:#\s|#{3,}|[-*+]\s|\d+[.)]\s|>|\||```|~~~|<| {4}|\t|[-_=*]{3,}\s*$)/u;
+/** 単語の中の `_`（@Yuto_Program）は文字として許し、単語の端の `_` は強調とみなして拒む。 */
+const UNSUPPORTED_INLINE = /[*`[\]\\<]|~~|&(?:#\d+|#x[\da-f]+|[a-z][a-z\d]*);|(?:^|[^\p{L}\p{N}])_|_(?:[^\p{L}\p{N}]|$)|http:\/\//iu;
 const URL_PATTERN = /https:\/\/[A-Za-z0-9\-._~:/?#@!$&+,;=%]+/gu;
 const TRAILING_PUNCTUATION = /[.,;:!?]+$/u;
 const productionOrigin = new URL(project.productionUrl).origin;
@@ -19,11 +21,17 @@ function escapeText(text: string): string {
   return text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 }
 
+function escapeAttribute(value: string): string {
+  return escapeText(value).replaceAll('"', "&quot;");
+}
+
 function link(url: string): string {
   const parsed = new URL(url);
   // 自サイトの URL は表示を原文のまま保ち、遷移先だけ相対にしてプレビューでも辿れるようにする。
-  if (parsed.origin === productionOrigin) return `<a href="${parsed.pathname}">${escapeText(url)}</a>`;
-  return `<a href="${url}" target="_blank" rel="noopener noreferrer">${escapeText(url)}</a>`;
+  if (parsed.origin === productionOrigin) {
+    return `<a href="${escapeAttribute(parsed.pathname + parsed.search + parsed.hash)}">${escapeText(url)}</a>`;
+  }
+  return `<a href="${escapeAttribute(url)}" target="_blank" rel="noopener noreferrer">${escapeText(url)}</a>`;
 }
 
 function inline(text: string): string {
@@ -31,6 +39,8 @@ function inline(text: string): string {
   let html = "";
   let cursor = 0;
   for (const match of text.matchAll(URL_PATTERN)) {
+    // 括弧を含む URL は途中で切れて別の行き先になるため、描かずに失敗させる。
+    if (text[match.index + match[0].length] === "(") throw new Error(`括弧を含む URL は未対応: ${text}`);
     const url = match[0].replace(TRAILING_PUNCTUATION, "");
     html += escapeText(text.slice(cursor, match.index)) + link(url);
     cursor = match.index + url.length;

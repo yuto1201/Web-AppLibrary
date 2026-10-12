@@ -8,7 +8,7 @@ export type SkyPhase = (typeof SKY_PHASES)[number];
 
 /** 時間帯を選んだときに時計へ出す、それらしい時刻。 */
 export const SKY_PRESETS: Readonly<Record<SkyPhase, { label: string; clock: string }>> = {
-  morning: { label: "朝", clock: "6:30" },
+  morning: { label: "朝", clock: "06:30" },
   day: { label: "昼", clock: "12:00" },
   dusk: { label: "夕方", clock: "18:30" },
   night: { label: "夜", clock: "22:00" },
@@ -21,7 +21,7 @@ export function skyPhase(hour: number): SkyPhase {
   return "night";
 }
 
-/** アプリの時計と同じく時と分だけを出す（24 時間表示、時は 0 埋めしない）。 */
+/** アプリの 24 時間表示（`HH:mm`）と同じく、時と分だけを 2 桁で出す。 */
 export function clockText(date: Date): string {
-  return `${date.getHours()}:${String(date.getMinutes()).padStart(2, "0")}`;
+  return `${String(date.getHours()).padStart(2, "0")}:${String(date.getMinutes()).padStart(2, "0")}`;
 }

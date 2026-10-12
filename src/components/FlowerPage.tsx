@@ -84,7 +84,7 @@ export function FlowerPage({ app }: { app: App }) {
         <div className="fl-hero-visual">
           <figure>
             <SkyWindow clock={clock} />
-            <figcaption>{choice === "now" ? "いまの時刻に合わせた空のイメージ。" : `${SKY_PRESETS[choice].label}の空のイメージ。`}アプリでは、空が時刻と天気に合わせて移り変わります。</figcaption>
+            <figcaption>{choice !== "now" ? `${SKY_PRESETS[choice].label}の空のイメージ。` : now ? "いまの時刻に合わせた空のイメージ。" : "空のイメージ。"}アプリでは、空が時刻と天気に合わせて移り変わります。</figcaption>
           </figure>
           <div className="fl-sky-picker" role="group" aria-label="空の時間を選ぶ">
             {(["now", ...SKY_PHASES] as const).map(option => <button type="button" key={option} aria-pressed={choice === option} onClick={() => setChoice(option)}>
@@ -127,13 +127,13 @@ export function FlowerPage({ app }: { app: App }) {
         <h2 id="flower-quiet-title"><span className="fl-phrase">静かに、</span><span className="fl-phrase">眺められるように。</span></h2>
         <ul className="fl-quiet-list">
           <li className="fl-card"><h3>アカウントはいりません</h3><p>名前やメールアドレスを入力することはありません。</p></li>
-          <li className="fl-card"><h3>位置情報は、オンにしたときだけ</h3><p>太陽と月・現在地の天気の設定をオンにしたときだけ、おおよその位置を使います。開発者には届かず、アプリにも保存しません。</p></li>
+          <li className="fl-card"><h3>位置情報は、オンにしたときだけ</h3><p>太陽と月・現在地の天気の設定をオンにしたときだけ、おおよその位置を使います。天気はAppleのWeatherKitに位置を送って受け取ります。開発者には届かず、アプリにも保存しません。</p></li>
           <li className="fl-card"><h3>解析・広告・追跡はしません</h3><p>利用状況の解析や広告を行わず、ほかのアプリやウェブサイトをまたいだ追跡もしません。</p></li>
         </ul>
         <p className="fl-note">くわしくは<Link href={`/apps/${app.slug}/privacy/`}>プライバシーポリシー</Link>をご覧ください。</p>
       </section>
 
-      <p className="fl-availability">{app.platforms.join(" / ")} · iOS 27以降 · 日本語 / English<br />現在開発中です。配布開始後、このページにApp Storeへのリンクを掲載します。</p>
+      <p className="fl-availability">{app.platforms.join(" / ")} 27以降 · 日本語 / English<br />現在開発中です。配布開始後、このページにApp Storeへのリンクを掲載します。</p>
     </main>
     <footer className="fl-footer">
       <div className="fl-card fl-footer-card">
