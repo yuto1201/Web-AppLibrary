@@ -50,11 +50,11 @@ Issue #72 のユーザー依頼により、[指定された参照デザイン](h
 - 操作と導線: `#screenshots`、`#features`、`#questions` へ移動でき、質問は標準の `details` を使う。`サポート`、`/apps/pay-cycle/privacy/`、`/apps/pay-cycle/terms/`、`AppLibrary` への導線を維持する。日英の法務本文・問い合わせ先・公開 URL は変更しない。共通の OGP 画像 `public/ogp.png` は新しいアイコンを反映して再生成する。
 - 検証: 既存の直接ロード・metadata・機能・実画面・法務往復・runtime・コントラストに、ページ内リンクとギャラリーのキーボード操作、320 / 390 / 1280px の横はみ出し、保存した dark / en と法務から戻った後の配色確認を加える。標本シールの静止・ドラッグは Dev-Tools で引き続き検証する。
 
-## 花の島 — Flower の専用ページ
+## 花島 / Flower Island: Living Sky の専用ページ
 
-Issue #92 のユーザー依頼により、法務 3 ページと合わせて紹介ページを作る。記録は [Flower の公開記録](../flower-publication.md)。
+Issue #92 のユーザー依頼により、法務 3 ページと合わせて紹介ページを作る。Issue #96 でアプリ名を「花の島 — Flower」から変えた。記録は [Flower の公開記録](../flower-publication.md)。
 
-- 構成: `src/components/FlowerPage.tsx` と `src/styles/flower.css`。ルートは `/apps/flower/`、境界は `.flower-site`。実テキストの `h1` は「花の島 — Flower — 浮かぶ島で、花と空を眺める。」で、アプリ名は読み上げ用に含める。Hero、図鑑の 6 種、registry の機能、プライバシーの要点、配布状況、サポートと法務への導線を持つ。
+- 構成: `src/components/FlowerPage.tsx` と `src/styles/flower.css`。ルートは `/apps/flower/`、境界は `.flower-site`。実テキストの `h1` は「花島 — 浮かぶ島で、花と空を眺める。」で、アプリ名は読み上げ用に含める。その下に日英のアプリ名（`src/data/flower-name.ts`）を出し、ヘッダーの英語名は幅 1000px 以上だけ添える。Hero、図鑑の 6 種、registry の機能、プライバシーの要点、配布状況、サポートと法務への導線を持つ。
 - 空の窓: アプリのホーム（浮かぶ島・細い時計・花）を写した装飾で `aria-hidden`。閲覧者の端末時刻で朝・昼・夕方・夜（アプリの 5・8・17・20 時の区切り）を選び、ボタンで各時間帯を見比べられる。窓の文字は CSS の生成内容で描く。静的 HTML に時刻を焼き込まない。
 - 配色: 雲のような淡い地色 `#f4f7fc`、文字は起動画面の紺 `#18213d`、補助の青 `#1f4e8c`、課金の印は深紅 `#b0123a`。見出しは明朝。保存した light / dark によらず専用配色と `color-scheme: light` を保ち、法務ページへ戻ると保存テーマが適用される。
 - 素材: 実アイコンと図鑑の花の画像（出典は公開記録）。スクリーンショットは公開用のものが無いため置かない。価格は App Store Connect への登録前のため書かない。

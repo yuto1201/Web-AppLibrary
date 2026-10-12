@@ -92,12 +92,12 @@ export function renderLegalMarkdown(source: string): RenderedLegalMarkdown {
   return { title: heading(titleBlock, "# "), body: body.join("\n") };
 }
 
-/** 日英の原文を 1 ページに並べ、ページ内の言語切替を付ける。 */
-export function bilingualLegalHtml({ id, appName, ja, en }: { id: string; appName: string; ja: string; en: string }): string {
+/** 日英の原文を 1 ページに並べ、ページ内の言語切替を付ける。題には各言語のアプリ名を添える。 */
+export function bilingualLegalHtml({ id, appName, ja, en }: { id: string; appName: { ja: string; en: string }; ja: string; en: string }): string {
   const japanese = renderLegalMarkdown(ja);
   const english = renderLegalMarkdown(en);
   return `
-<h1>${escapeText(appName)} ${japanese.title} / <span lang="en">${english.title}</span></h1>
+<h1>${escapeText(appName.ja)} ${japanese.title} / <span lang="en">${escapeText(appName.en)} ${english.title}</span></h1>
 <p class="legal-language">本ページは日本語と英語で提供しています。 <span lang="en">This page is available in Japanese and English.</span></p>
 <nav class="legal-language-switch" aria-label="言語 / Language"><a href="#${id}-ja">日本語</a><span> · </span><a href="#${id}-en" lang="en">English</a></nav>
 

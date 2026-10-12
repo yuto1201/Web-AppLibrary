@@ -25,6 +25,10 @@ async function expectNoHorizontalScroll(page: Page) {
 }
 
 test("Flower: the fixed URLs answer 200 without redirects and carry their own metadata", async ({ request }) => {
+  // v2（Issue #96）: ホームのカタログとシールにも旧名を残さない。
+  const home = await (await request.get("/")).text();
+  expect(home).toContain(">花島<");
+  expect(home).not.toContain("花の島");
   for (const route of ["", "support/", "privacy/", "terms/"]) {
     const response = await request.get(`/apps/flower/${route}`, { maxRedirects: 0 });
     expect(response.status(), route).toBe(200);
@@ -34,6 +38,9 @@ test("Flower: the fixed URLs answer 200 without redirects and carry their own me
     expect(html).toContain(`<meta property="og:title" content="${title ? `${title} — ${app.name}` : `${app.name} — AppLibrary`}"/>`);
     expect(html).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
     expect(html).not.toContain("Status: Confirmed");
+    // v2（Issue #96）: 旧名を残さない。
+    expect(html).not.toContain("花の島");
+    expect(html).not.toMatch(/Flower Island(?!: Living Sky)/u);
   }
 });
 
@@ -44,7 +51,7 @@ test("Flower: each legal page shows both languages, switches in place and links 
     await page.goto(`/apps/flower/${legal.route}/`);
     await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
     await expect(page.locator(".app-shell")).not.toHaveAttribute("data-tone");
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(`花の島 — Flower ${legal.title} / ${legal.english}`);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(`花島 ${legal.title} / Flower Island: Living Sky ${legal.english}`);
     const japanese = page.locator(`section#flower-${legal.route}-ja[lang='ja']`);
     const english = page.locator(`section#flower-${legal.route}-en[lang='en']`);
     await expect(japanese.getByRole("heading", { level: 2 })).toHaveText(legal.title);
@@ -62,7 +69,7 @@ test("Flower: each legal page shows both languages, switches in place and links 
     for (const other of LEGAL.filter(({ route }) => route !== legal.route)) {
       await expect(footer.getByRole("link", { name: other.title, exact: true })).toHaveAttribute("href", `/apps/flower/${other.route}/`);
     }
-    await expect(page.getByRole("link", { name: "← 花の島 — Flower", exact: true })).toHaveAttribute("href", "/apps/flower/");
+    await expect(page.getByRole("link", { name: "← 花島", exact: true })).toHaveAttribute("href", "/apps/flower/");
 
     const sizes = await page.evaluate(() => ["h2", "h3", "p"].map((tag) => parseFloat(getComputedStyle(document.querySelector(`.privacy-page section ${tag}`)!).fontSize)));
     expect(sizes[0]!).toBeGreaterThan(sizes[1]!);
@@ -113,6 +120,8 @@ test("Flower: the product page follows the visitor's time and offers a sky previ
   await expect(site).toHaveAttribute("data-sky", "night");
   await expect(page.locator(".fl-clock")).toHaveAttribute("data-clock", "22:15");
 
+  await expect(page.locator(".fl-name")).toHaveText("花島Flower Island: Living Sky");
+  await expect(page.locator(".fl-name [lang='en']")).toBeVisible();
   await expect(page.locator(".fl-availability")).toContainText("iOS / iPadOS 27以降");
   await expect(page.locator("#quiet")).toContainText("WeatherKit");
   await expect(page.locator(".fl-release")).toHaveText("リリース準備中");
@@ -131,14 +140,14 @@ test("Flower: the product page follows the visitor's time and offers a sky previ
   await expect(page.locator("#features .feature-row")).toHaveCount(app.features.length);
   await expectContrast(page);
 
-  const related = page.getByRole("navigation", { name: "花の島 関連リンク", exact: true });
+  const related = page.getByRole("navigation", { name: "花島 関連リンク", exact: true });
   for (const legal of LEGAL) {
     await expect(related.getByRole("link", { name: legal.title, exact: true })).toHaveAttribute("href", `/apps/flower/${legal.route}/`);
   }
   await related.getByRole("link", { name: "サポート", exact: true }).click();
   await expect(page).toHaveURL(/\/apps\/flower\/support\/$/u);
   await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
-  await page.getByRole("link", { name: "← 花の島 — Flower", exact: true }).click();
+  await page.getByRole("link", { name: "← 花島", exact: true }).click();
   await expect(page.locator("body")).toHaveCSS("background-color", FLOWER_PAPER);
   await page.getByRole("link", { name: "← AppLibrary", exact: true }).click();
   await expect(page).toHaveURL("/");
@@ -151,9 +160,19 @@ test("Flower: the product page keeps its palette at every width, in the saved da
   await page.clock.setFixedTime(new Date("2026-10-12T12:00:00+09:00"));
   await page.goto("/apps/flower/");
   await expect(page.locator(".flower-site")).toHaveAttribute("data-sky", "day");
-  for (const width of [320, 390, 768, 1280]) {
+  for (const width of [320, 390, 768, 999, 1000, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     await expectNoHorizontalScroll(page);
+    // 英語名はヘッダーでは 1000px 以上だけ添え、リンク名は表示されている名前を含む。
+    const wordmarkEnglish = page.locator(".fl-wordmark [lang='en']");
+    if (width >= 1000) await expect(wordmarkEnglish).toBeVisible();
+    else await expect(wordmarkEnglish).toBeHidden();
+    await expect(page.locator(".fl-wordmark")).toHaveAccessibleName("花島 Flower Island: Living Sky ページの先頭へ");
+    const header = (await page.locator(".fl-header").boundingBox())!;
+    for (const part of await page.locator(".fl-header > *").all()) {
+      const box = (await part.boundingBox())!;
+      expect(box.x + box.width, `${width}px header`).toBeLessThanOrEqual(header.x + header.width + 1);
+    }
     await expect(page.locator("body")).toHaveCSS("background-color", FLOWER_PAPER);
     await expect(page.locator(".flower-site")).toHaveAttribute("lang", "ja");
     // 文中のリンクを除く、単独で押す操作はすべて 44px 以上の高さを持つ。
@@ -174,7 +193,7 @@ test("Flower: the legal pages use the saved dark theme and hand it back to the p
     await expect(page.locator("body")).toHaveCSS("background-color", PAPER.dark);
     await expectContrast(page);
   }
-  await page.getByRole("link", { name: "← 花の島 — Flower", exact: true }).click();
+  await page.getByRole("link", { name: "← 花島", exact: true }).click();
   await expect(page.locator("body")).toHaveCSS("background-color", FLOWER_PAPER);
   await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
