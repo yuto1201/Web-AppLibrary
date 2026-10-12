@@ -3,14 +3,15 @@ import project from "../../config/project.json";
 /**
  * アプリ側で承認された法務 Markdown を、文言を変えずに HTML へ写す。
  * 使える書式は見出し（# / ##）、1 行の段落、段落全体の太字、裸の https URL だけ。
- * 箇条書き・引用・コード・罫線・強調・リンク記法・HTML・実体参照・エスケープ・http URL が来たら
+ * 字下げ・箇条書き・引用・コード・罫線・強調・打ち消し線・リンク記法・HTML・実体参照・エスケープ・http URL が来たら
  * 推測で描かずに失敗させ、原文と表示がずれないようにする。
  */
 
 const CONFIRMED = "Status: Confirmed";
-const UNSUPPORTED_BLOCK = /^(?:#\s|#{3,}|[-*+]\s|\d+[.)]\s|>|\||```|~~~|<| {4}|\t|[-_=*]{3,}\s*$)/u;
+const UNSUPPORTED_BLOCK = /^(?:\s|#\s|#{3,}|[-*+]\s|\d+[.)]\s|>|\||```|~~~|<|[-_=*]{3,}\s*$)/u;
+const CLOSING_HASHES = /\s#+\s*$/u;
 /** 単語の中の `_`（@Yuto_Program）は文字として許し、単語の端の `_` は強調とみなして拒む。 */
-const UNSUPPORTED_INLINE = /[*`[\]\\<]|~~|&(?:#\d+|#x[\da-f]+|[a-z][a-z\d]*);|(?:^|[^\p{L}\p{N}])_|_(?:[^\p{L}\p{N}]|$)|http:\/\//iu;
+const UNSUPPORTED_INLINE = /[*`[\]\\<~]|&(?:#\d+|#x[\da-f]+|[a-z][a-z\d]*);|(?:^|[^\p{L}\p{N}])_|_(?:[^\p{L}\p{N}]|$)|http:\/\//iu;
 const URL_PATTERN = /https:\/\/[A-Za-z0-9\-._~:/?#@!$&+,;=%]+/gu;
 const TRAILING_PUNCTUATION = /[.,;:!?]+$/u;
 const productionOrigin = new URL(project.productionUrl).origin;
@@ -39,8 +40,11 @@ function inline(text: string): string {
   let html = "";
   let cursor = 0;
   for (const match of text.matchAll(URL_PATTERN)) {
-    // 括弧を含む URL は途中で切れて別の行き先になるため、描かずに失敗させる。
-    if (text[match.index + match[0].length] === "(") throw new Error(`括弧を含む URL は未対応: ${text}`);
+    // URL の直後に ASCII の記号が続くと途中で切れて別の行き先になるため、描かずに失敗させる。
+    // 「(https://…/)」のように前の ( と対になる ) だけは許す。
+    const next = text[match.index + match[0].length];
+    const closesParenthesis = next === ")" && text[match.index - 1] === "(";
+    if (next !== undefined && /[!-~]/u.test(next) && !closesParenthesis) throw new Error(`URL の直後の記号は未対応: ${text}`);
     const url = match[0].replace(TRAILING_PUNCTUATION, "");
     html += escapeText(text.slice(cursor, match.index)) + link(url);
     cursor = match.index + url.length;
@@ -58,9 +62,12 @@ export function renderLegalMarkdown(source: string): RenderedLegalMarkdown {
 
   const body = blocks.map((block) => {
     if (block.includes("\n")) throw new Error(`段落内の改行は未対応: ${block}`);
-    if (block.startsWith("## ")) return `<h3>${inline(block.slice(3))}</h3>`;
+    if (block.startsWith("## ")) {
+      if (CLOSING_HASHES.test(block)) throw new Error(`閉じの # は未対応: ${block}`);
+      return `<h3>${inline(block.slice(3))}</h3>`;
+    }
     if (UNSUPPORTED_BLOCK.test(block)) throw new Error(`未対応のブロック書式: ${block}`);
-    const strong = /^\*\*([^*]+)\*\*$/u.exec(block);
+    const strong = /^\*\*([^*\s](?:[^*]*[^*\s])?)\*\*$/u.exec(block);
     if (strong) return `<p><strong>${inline(strong[1]!)}</strong></p>`;
     return `<p>${inline(block)}</p>`;
   });

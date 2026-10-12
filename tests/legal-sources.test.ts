@@ -89,6 +89,8 @@ describe("法務 Markdown の描画", () => {
       "- 箇条書き", "1. 番号", "> 引用", "### 小見出し", "[リンク](https://example.net/)", "`code`", "一部だけ **太字**", "1 行目\n2 行目",
       "---", "___", "    字下げのコード", "\t字下げのコード", "_強調_ の文", "文の __強調__", "~~打ち消し~~", "1\\. エスケープ", "&copy; 実体参照",
       "<https://example.net/>", "<b>HTML</b>", "http://example.net/", "https://example.net/a(b) の URL",
+      "  # 字下げの見出し", "   - 字下げの箇条書き", "  > 字下げの引用", "  ---", " \t混ざった字下げ", "## 閉じの記号 ##",
+      "~打ち消し~", "** 太字**", "https://example.net/a)b の URL", "https://example.net/a'b の URL",
     ]) {
       expect(() => renderLegalMarkdown(`${confirmed}${block}\n`), block).toThrow();
     }
