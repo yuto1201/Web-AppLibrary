@@ -2,7 +2,7 @@
 
 Status: Confirmed
 
-Flower Island lets you watch flowers and a clock on a floating island, with the sky changing with the time and weather.
+Flower Island: Living Sky lets you watch flowers and a clock on a floating island, with the sky changing with the time and weather.
 
 ## Contact
 

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
+import { FLOWER_NAME } from "@/data/flower-name";
 import type { App } from "@/data/schema";
 import { SKY_PHASES, SKY_PRESETS, clockText, skyPhase, type SkyPhase } from "@/lib/flower-sky";
 import "@/styles/flower.css";
@@ -66,11 +67,11 @@ export function FlowerPage({ app }: { app: App }) {
   return <div className="flower-site" id="flower-top" lang="ja" data-sky={phase}>
     <a className="fl-skip-link" href="#flower-main">本文へ移動</a>
     <header className="fl-header">
-      <a className="fl-wordmark" href="#flower-top" aria-label="花の島 — Flower ページの先頭へ">
+      <a className="fl-wordmark" href="#flower-top" aria-label={`${FLOWER_NAME.ja} ページの先頭へ`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={`/apps/${app.slug}/${app.icon}`} width={34} height={34} alt="" />花の島<span lang="en">Flower</span>
+        <img src={`/apps/${app.slug}/${app.icon}`} width={34} height={34} alt="" />{FLOWER_NAME.ja}<span lang="en">{FLOWER_NAME.en}</span>
       </a>
-      <nav aria-label="花の島 ページ内ナビゲーション"><a href="#flowers">花たち</a><a href="#features">できること</a><a href="#quiet">プライバシー</a></nav>
+      <nav aria-label={`${FLOWER_NAME.ja} ページ内ナビゲーション`}><a href="#flowers">花たち</a><a href="#features">できること</a><a href="#quiet">プライバシー</a></nav>
       <span className="fl-release">リリース準備中</span>
     </header>
     <main id="flower-main" tabIndex={-1}>
@@ -78,6 +79,7 @@ export function FlowerPage({ app }: { app: App }) {
         <div className="fl-hero-copy">
           <p className="fl-eyebrow">iPhone・iPad で、花を眺めるアプリ</p>
           <h1 id="flower-title"><span className="fl-sr-only">{app.name} — </span><span className="fl-phrase">浮かぶ島で、</span><span className="fl-phrase">花と空を眺める。</span></h1>
+          <p className="fl-name">{FLOWER_NAME.ja}<span lang="en">{FLOWER_NAME.en}</span></p>
           <p className="fl-lead">浮かぶ島に咲く花と時計を、空の時刻や天気とともに眺めるアプリです。<br className="fl-wide-break" />花を調べるのではなく、ただ眺める時間のために。</p>
           <a className="fl-button" href="#flowers">咲いている花を見る</a>
         </div>
@@ -139,9 +141,9 @@ export function FlowerPage({ app }: { app: App }) {
       <div className="fl-card fl-footer-card">
         <a className="fl-footer-mark" href="#flower-top">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={`/apps/${app.slug}/${app.icon}`} width={28} height={28} alt="" />花の島<span lang="en">Flower</span>
+          <img src={`/apps/${app.slug}/${app.icon}`} width={28} height={28} alt="" />{FLOWER_NAME.ja}<span lang="en">{FLOWER_NAME.en}</span>
         </a>
-        <nav aria-label="花の島 関連リンク"><Link href={`/apps/${app.slug}/support/`}>サポート</Link><Link href={`/apps/${app.slug}/terms/`}>利用規約</Link><Link href={`/apps/${app.slug}/privacy/`}>プライバシーポリシー</Link><Link href="/">← AppLibrary</Link></nav>
+        <nav aria-label={`${FLOWER_NAME.ja} 関連リンク`}><Link href={`/apps/${app.slug}/support/`}>サポート</Link><Link href={`/apps/${app.slug}/terms/`}>利用規約</Link><Link href={`/apps/${app.slug}/privacy/`}>プライバシーポリシー</Link><Link href="/">← AppLibrary</Link></nav>
         <span className="fl-credit">Made by uesugiyuuto · 2026</span>
       </div>
     </footer>

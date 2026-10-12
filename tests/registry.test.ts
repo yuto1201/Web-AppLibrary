@@ -241,7 +241,7 @@ describe("SimplePomo publication", () => {
 describe("Flower publication", () => {
   it("未公開の iPhone・iPad アプリとして、実アイコンと承認済みの3ページを持つ", () => {
     expect(getApp("flower")).toMatchObject({
-      name: "花の島 — Flower", platforms: ["iOS", "iPadOS"], status: "alpha", releaseDate: null,
+      name: "花島", platforms: ["iOS", "iPadOS"], status: "alpha", releaseDate: null,
       icon: "icon.png", screenshots: [], appStoreUrl: null, siteUrl: null,
     });
     expect(Object.keys(supportDocuments)).toEqual(["flower"]);
