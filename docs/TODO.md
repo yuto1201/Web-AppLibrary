@@ -2,8 +2,8 @@
 
 最終更新日: 2026-10-12
 
-- [ ] 花の島 — Flower の紹介ページと日英の support・privacy・terms を公開する（Issue #92）
 - [ ] PayCycle の最初の画面に主要ボタンとPマーク全体を収める（Issue #85）
+- [x] 花の島 — Flower の紹介ページと日英の support・privacy・terms を公開する（Issue #92 / PR #93、main へ統合・本番確認済み）
 - [x] PayCycle の掲載情報を公開済み1.1へ更新する（Issue #82 / PR #84、main へ統合・本番確認済み）
 - [x] PayCycle の Hero を白枠なしの大きな実アイコンへ変更する（Issue #77 / PR #78、main へ統合・本番確認済み）
 - [x] PayCycle を新しいアイコンと現行アプリ画面を使う専用ページへ刷新する（Issue #72 / PR #73、main へ統合・本番確認済み）
