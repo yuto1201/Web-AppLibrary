@@ -1,4 +1,4 @@
-/* 花の島 — Flower: the app's floating island, thin clock and time-of-day sky (iOS-Flower SkyProfile.swift),
+/* 花島 / Flower Island: Living Sky: the app's floating island, thin clock and time-of-day sky (iOS-Flower SkyProfile.swift),
    low-poly flower art and card gradients (FlowerLook.swift). The page keeps its own light palette in either
    site theme; only the decorative sky window follows the time. All product styles stay inside this route. */
 body:has(.flower-site) { background: #f4f7fc; color: #18213d; }
@@ -61,6 +61,15 @@ html:has(.flower-site) { scroll-behavior: smooth; scroll-padding-top: 24px; }
 .flower-site :is(.fl-wordmark, .fl-footer-mark) img { border-radius: 23%; }
 .flower-site :is(.fl-wordmark, .fl-footer-mark) span {
   color: var(--fl-ink-2); font-family: Didot, "Bodoni 72", Georgia, serif; font-size: .62em; font-weight: 400; letter-spacing: .22em; text-transform: uppercase;
+}
+/* 英語名は長いので、ヘッダーでは横幅に余裕があるときだけ添える。Hero とフッターでは常に出す。 */
+.flower-site .fl-wordmark span { display: none; }
+.flower-site .fl-name {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; margin-top: 18px;
+  color: var(--fl-ink); font-family: var(--fl-serif); font-size: 18px; font-weight: 600;
+}
+.flower-site .fl-name span {
+  color: var(--fl-ink-2); font-family: Didot, "Bodoni 72", Georgia, serif; font-size: 13px; font-weight: 400; letter-spacing: .18em; text-transform: uppercase;
 }
 .flower-site .fl-header nav { display: flex; gap: 22px; font-size: 14px; color: var(--fl-ink-2); }
 .flower-site .fl-header nav a { display: inline-flex; align-items: center; min-height: 44px; }
@@ -227,6 +236,8 @@ html:has(.flower-site) { scroll-behavior: smooth; scroll-padding-top: 24px; }
 
 /* Footer */
 .flower-site .fl-footer { width: min(var(--fl-measure), calc(100% - var(--fl-gutter) * 2)); margin: 0 auto; padding: 24px 0 48px; }
+/* 長い英語名は、狭い幅では和名の下へ折り返してカードの内側に収める。 */
+.flower-site .fl-footer-mark { flex-wrap: wrap; row-gap: 0; white-space: normal; }
 .flower-site .fl-footer-card { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 28px; padding: 20px 28px; }
 .flower-site .fl-footer-card nav { display: flex; flex-wrap: wrap; gap: 0 22px; font-size: 14px; color: var(--fl-ink-2); }
 .flower-site .fl-footer-card nav a { display: inline-flex; align-items: center; min-height: 44px; }
@@ -238,6 +249,9 @@ html:has(.flower-site) { scroll-behavior: smooth; scroll-padding-top: 24px; }
 }
 @media (min-width: 760px) {
   .flower-site .fl-feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1000px) {
+  .flower-site .fl-wordmark span { display: inline; }
 }
 @media (min-width: 900px) {
   .flower-site .fl-hero { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 56px; padding-top: 40px; }

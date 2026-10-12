@@ -2,7 +2,7 @@
 
 Status: Confirmed
 
-This policy explains what information Flower Island ("the app") handles and how. The app has no accounts and never asks for your name, email address, or similar details.
+This policy explains what information Flower Island: Living Sky ("the app") handles and how. The app has no accounts and never asks for your name, email address, or similar details.
 
 ## Location
 

@@ -2,7 +2,7 @@
 
 Status: Confirmed
 
-These terms apply to your use of Flower Island ("the app"). By using the app, you agree to these terms.
+These terms apply to your use of Flower Island: Living Sky ("the app"). By using the app, you agree to these terms.
 
 ## Flower Purchases
 

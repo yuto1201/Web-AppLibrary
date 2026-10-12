@@ -265,7 +265,7 @@ const entries = [
     appStoreUrl: null, siteUrl: null,
   },
   {
-    slug: "flower", name: "花の島 — Flower",
+    slug: "flower", name: "花島",
     tagline: "浮かぶ島で、花と空を眺める。", stickerNote: "今日のそら、なにいろ？",
     platforms: ["iOS", "iPadOS"], status: "alpha", releaseDate: null, year: 2026,
     icon: "icon.png", iconGlyph: "✿", color: "#E6F0FB", accent: "#B0123A", featured: false,

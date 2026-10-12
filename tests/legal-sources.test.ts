@@ -39,6 +39,16 @@ function sourceBlocks(source: string): string[] {
 const confirmed = "# Title\n\nStatus: Confirmed\n\n";
 
 describe("Flower の承認済み法務原文", () => {
+  it("v2 の名前（花島 / Flower Island: Living Sky）だけを使い、旧名を残さない", () => {
+    for (const kind of kinds) {
+      const page = pages[kind]!;
+      expect(page).toContain(`<h1>花島 `);
+      expect(page).toContain(`<span lang="en">Flower Island: Living Sky `);
+      expect(page).not.toContain("花の島");
+      expect(page).not.toMatch(/Flower Island(?!: Living Sky)/u);
+    }
+  });
+
   it("iOS-Flower #428 で承認されたファイルを digest どおりに保持する", () => {
     for (const kind of kinds) {
       for (const language of Object.keys(languages) as FlowerLegalLanguage[]) {
@@ -117,8 +127,8 @@ describe("法務 Markdown の描画", () => {
   });
 
   it("日英を 1 ページに並べて言語切替を付ける", () => {
-    const html = bilingualLegalHtml({ id: "app-terms", appName: "App", ja: `# 規約\n\nStatus: Confirmed\n\n本文\n`, en: `# Terms\n\nStatus: Confirmed\n\nBody\n` });
-    expect(html).toContain('<h1>App 規約 / <span lang="en">Terms</span></h1>');
+    const html = bilingualLegalHtml({ id: "app-terms", appName: { ja: "アプリ", en: "App" }, ja: `# 規約\n\nStatus: Confirmed\n\n本文\n`, en: `# Terms\n\nStatus: Confirmed\n\nBody\n` });
+    expect(html).toContain('<h1>アプリ 規約 / <span lang="en">App Terms</span></h1>');
     expect(section(html, "app-terms-ja")).toContain("<p>本文</p>");
     expect(section(html, "app-terms-en")).toContain("<p>Body</p>");
   });
