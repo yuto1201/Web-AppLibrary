@@ -50,10 +50,21 @@ Issue #72 のユーザー依頼により、[指定された参照デザイン](h
 - 操作と導線: `#screenshots`、`#features`、`#questions` へ移動でき、質問は標準の `details` を使う。`サポート`、`/apps/pay-cycle/privacy/`、`/apps/pay-cycle/terms/`、`AppLibrary` への導線を維持する。日英の法務本文・問い合わせ先・公開 URL は変更しない。共通の OGP 画像 `public/ogp.png` は新しいアイコンを反映して再生成する。
 - 検証: 既存の直接ロード・metadata・機能・実画面・法務往復・runtime・コントラストに、ページ内リンクとギャラリーのキーボード操作、320 / 390 / 1280px の横はみ出し、保存した dark / en と法務から戻った後の配色確認を加える。標本シールの静止・ドラッグは Dev-Tools で引き続き検証する。
 
+## 花の島 — Flower の専用ページ
+
+Issue #92 のユーザー依頼により、法務 3 ページと合わせて紹介ページを作る。記録は [Flower の公開記録](../flower-publication.md)。
+
+- 構成: `src/components/FlowerPage.tsx` と `src/styles/flower.css`。ルートは `/apps/flower/`、境界は `.flower-site`。実テキストの `h1` は「花の島 — Flower — 浮かぶ島で、花と空を眺める。」で、アプリ名は読み上げ用に含める。Hero、図鑑の 6 種、registry の機能、プライバシーの要点、配布状況、サポートと法務への導線を持つ。
+- 空の窓: アプリのホーム（浮かぶ島・細い時計・花）を写した装飾で `aria-hidden`。閲覧者の端末時刻で朝・昼・夕方・夜（アプリの 5・8・17・20 時の区切り）を選び、ボタンで各時間帯を見比べられる。窓の文字は CSS の生成内容で描く。静的 HTML に時刻を焼き込まない。
+- 配色: 雲のような淡い地色 `#f4f7fc`、文字は起動画面の紺 `#18213d`、補助の青 `#1f4e8c`、課金の印は深紅 `#b0123a`。見出しは明朝。保存した light / dark によらず専用配色と `color-scheme: light` を保ち、法務ページへ戻ると保存テーマが適用される。
+- 素材: 実アイコンと図鑑の花の画像（出典は公開記録）。スクリーンショットは公開用のものが無いため置かない。価格は App Store Connect への登録前のため書かない。
+
 ## 共通の境界と公開情報
 
-共通 CSS は `src/styles/app-page.css`、基本トークンは `src/styles/tokens.css`。App Router は遷移後も読み込んだ global CSS を保持するため、共通のアプリ詳細と全アプリの privacy / terms は `.app-shell`、CafLog 詳細は `.caflog-site`、SubLog 詳細は `.sublog-site`、PayCycle 詳細は `.paycycle-site` で包み、各コンポーネント規則をその配下へスコープする。ブラウザ余白とオーバースクロールの色は `body:has(.app-shell)` / `body:has(.caflog-site)` / `body:has(.sublog-site)` / `body:has(.paycycle-site)` の条件付き指定に限る。`:root` や無条件の `body`、汎用の `.hero` などへアプリ固有の規則を追加しない。`--app-*` / `--glass-*` の既存名を維持する。掲載画像は正方形アイコン（128px 以上）と縦長スクリーンショットを使用する。
+共通 CSS は `src/styles/app-page.css`、基本トークンは `src/styles/tokens.css`。App Router は遷移後も読み込んだ global CSS を保持するため、共通のアプリ詳細と全アプリの privacy / terms は `.app-shell`、CafLog 詳細は `.caflog-site`、SubLog 詳細は `.sublog-site`、PayCycle 詳細は `.paycycle-site`、Flower 詳細は `.flower-site` で包み、各コンポーネント規則をその配下へスコープする。ブラウザ余白とオーバースクロールの色は `body:has(.app-shell)` / `body:has(.caflog-site)` / `body:has(.sublog-site)` / `body:has(.paycycle-site)` / `body:has(.flower-site)` の条件付き指定に限る。`:root` や無条件の `body`、汎用の `.hero` などへアプリ固有の規則を追加しない。`--app-*` / `--glass-*` の既存名を維持する。掲載画像は正方形アイコン（128px 以上）と縦長スクリーンショットを使用する。
 
 プライバシー本文は `src/data/privacy/<slug>.ts` に保持し、`src/data/privacy/registry.ts` へ同じ slug で登録する。現在の詳細ページは常に privacy リンクを表示するので、追加時には本文と生成 URL が実在することを必ず検証する。registry のアプリと本文の対応はテストで完全一致を要求する。
+
+アプリ側で承認された Markdown をそのまま公開する場合は `src/data/legal-sources/<slug>/` に原文を置き、`src/lib/legal-markdown.ts` で日英 1 ページへ描く。digest はテストで照合する。固有のサポートページは `src/data/support/registry.ts` に登録したアプリだけ `/apps/<slug>/support/` を生成し、privacy / terms のフッターから辿れる。
 
 URL・見出し・戻り導線・画像読み込みに加え、アプリ詳細からトップとサイト法務ページへ client-side navigation した後の配色を `tests/e2e/site.spec.ts` で確認する。過去の設計は [旧仕様](../superpowers/completed/specs/2026-05-09-app-page-design.md) に残すが、現行の実装手順ではない。

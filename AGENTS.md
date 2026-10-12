@@ -60,6 +60,7 @@ src/
     apps/[slug]/          アプリ詳細（registry から静的生成）
     apps/[slug]/privacy/  プライバシーポリシー
     apps/[slug]/terms/    登録済みアプリの固有利用規約
+    apps/[slug]/support/  登録済みアプリの固有サポート
     privacy/              サイト全体のプライバシーポリシー
     terms/                サイト全体の利用規約
   components/             UI コンポーネント
@@ -70,12 +71,16 @@ src/
     privacy/registry.ts   掲載 slug と法務本文の対応
     terms/<slug>.ts       承認済みのアプリ固有利用規約
     terms/registry.ts     利用規約を持つ slug の対応
+    support/<slug>.ts     承認済みのアプリ固有サポート
+    support/registry.ts   固有サポートを持つ slug の対応
+    legal-sources/<slug>/ アプリ側で承認された法務 Markdown の原文
   lib/
     site-data.ts          プロフィール / お知らせ / SNS / i18n
     state.tsx             テーマと言語の永続化
     activate.tsx          一覧行とシールの相互ハイライト
     sticker-desk.ts       机の配置カタログ
     drag.ts               掴みとクランプ
+    legal-markdown.ts     承認済み法務 Markdown を日英 1 ページへ描く
   styles/                 デザインシステム（tokens / standard / app-page / legal）
 public/
   apps/<slug>/            アイコンとスクリーンショット

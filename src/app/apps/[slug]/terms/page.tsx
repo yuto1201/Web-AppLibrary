@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { apps, getApp } from "@/data/registry";
+import { supportDocuments } from "@/data/support/registry";
 import { termsDocuments } from "@/data/terms/registry";
 import "@/styles/app-page.css";
 
@@ -46,7 +47,10 @@ export default async function TermsPage({ params }: { params: Promise<{ slug: st
       <footer className="page-footer">
         <Link href={`/apps/${app.slug}/`}>{app.name}</Link><span> · </span>
         <Link href={`/apps/${app.slug}/privacy/`}>プライバシーポリシー</Link><span> · </span>
-        <a href="https://app.yutodev.com/#contact">サポート</a><span> · </span>
+        {supportDocuments[app.slug]
+          ? <Link href={`/apps/${app.slug}/support/`}>サポート</Link>
+          : <a href="https://app.yutodev.com/#contact">サポート</a>}
+        <span> · </span>
         <Link href="/">AppLibrary</Link>
       </footer>
     </div>

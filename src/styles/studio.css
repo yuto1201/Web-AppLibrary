@@ -371,3 +371,9 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 /* The eighth sticker stays inside the Hero playground, above its controls. */
 .poster[data-desk="ready"] .sticker-slot[data-key="simple-pomo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .5 - 40px); top: calc(var(--desk-play-top) + 190px); right: auto; bottom: auto; width: 80px; }
 @media (max-width: 700px) { .poster[data-desk="ready"] .sticker-slot[data-key="simple-pomo"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .5 - 30px); top: calc(var(--desk-play-top) + 100px); width: 60px; } }
+
+/* The ninth sticker takes the open space between SubLog and the centre on wide desks,
+   and the left column between SubLog and CafLog on phones. */
+.poster[data-desk="ready"] .sticker-slot[data-key="flower"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .3); top: calc(var(--desk-play-top) + 112px); right: auto; bottom: auto; width: 88px; }
+@media (min-width: 641px) and (max-width: 900px) { .poster[data-desk="ready"] .sticker-slot[data-key="flower"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .26); top: calc(var(--desk-play-top) + 96px); width: 76px; } }
+@media (max-width: 640px) { .poster[data-desk="ready"] .sticker-slot[data-key="flower"] { left: calc(var(--desk-play-left) + 13px); top: calc(var(--desk-play-top) + 106px); width: 64px; } }
