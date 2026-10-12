@@ -25,6 +25,10 @@ async function expectNoHorizontalScroll(page: Page) {
 }
 
 test("Flower: the fixed URLs answer 200 without redirects and carry their own metadata", async ({ request }) => {
+  // v2（Issue #96）: ホームのカタログとシールにも旧名を残さない。
+  const home = await (await request.get("/")).text();
+  expect(home).toContain(">花島<");
+  expect(home).not.toContain("花の島");
   for (const route of ["", "support/", "privacy/", "terms/"]) {
     const response = await request.get(`/apps/flower/${route}`, { maxRedirects: 0 });
     expect(response.status(), route).toBe(200);
@@ -156,9 +160,19 @@ test("Flower: the product page keeps its palette at every width, in the saved da
   await page.clock.setFixedTime(new Date("2026-10-12T12:00:00+09:00"));
   await page.goto("/apps/flower/");
   await expect(page.locator(".flower-site")).toHaveAttribute("data-sky", "day");
-  for (const width of [320, 390, 768, 1280]) {
+  for (const width of [320, 390, 768, 999, 1000, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     await expectNoHorizontalScroll(page);
+    // 英語名はヘッダーでは 1000px 以上だけ添え、リンク名は表示されている名前を含む。
+    const wordmarkEnglish = page.locator(".fl-wordmark [lang='en']");
+    if (width >= 1000) await expect(wordmarkEnglish).toBeVisible();
+    else await expect(wordmarkEnglish).toBeHidden();
+    await expect(page.locator(".fl-wordmark")).toHaveAccessibleName("花島 Flower Island: Living Sky ページの先頭へ");
+    const header = (await page.locator(".fl-header").boundingBox())!;
+    for (const part of await page.locator(".fl-header > *").all()) {
+      const box = (await part.boundingBox())!;
+      expect(box.x + box.width, `${width}px header`).toBeLessThanOrEqual(header.x + header.width + 1);
+    }
     await expect(page.locator("body")).toHaveCSS("background-color", FLOWER_PAPER);
     await expect(page.locator(".flower-site")).toHaveAttribute("lang", "ja");
     // 文中のリンクを除く、単独で押す操作はすべて 44px 以上の高さを持つ。

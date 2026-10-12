@@ -67,7 +67,7 @@ export function FlowerPage({ app }: { app: App }) {
   return <div className="flower-site" id="flower-top" lang="ja" data-sky={phase}>
     <a className="fl-skip-link" href="#flower-main">本文へ移動</a>
     <header className="fl-header">
-      <a className="fl-wordmark" href="#flower-top" aria-label={`${FLOWER_NAME.ja} ページの先頭へ`}>
+      <a className="fl-wordmark" href="#flower-top" aria-label={`${FLOWER_NAME.ja} ${FLOWER_NAME.en} ページの先頭へ`}>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={`/apps/${app.slug}/${app.icon}`} width={34} height={34} alt="" />{FLOWER_NAME.ja}<span lang="en">{FLOWER_NAME.en}</span>
       </a>
