@@ -3,6 +3,7 @@
  * CSS の同じ hex とテストが対応する。
  */
 export const APP_PAGE_TONE = {
+  flower: { tone: "sky", wash: "#E6F0FB", ink: "#1F4E8C", darkInk: "#9CC4F2" },
   "simple-pomo": { tone: "pomo", wash: "#FFF0E1", ink: "#9C4704", darkInk: "#FD841B" },
   sublog: { tone: "ledger", wash: "#E8E1F2", ink: "#6B5B8E", darkInk: "#cbbbe0" },
   caflog: { tone: "cafe", wash: "#F5EBDD", ink: "#8B5E3C", darkInk: "#e4c4a4" },

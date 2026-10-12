@@ -264,6 +264,22 @@ const entries = [
     price: "無料・買い切りのProあり", version: "1.0（準備中）", screenshots: [],
     appStoreUrl: null, siteUrl: null,
   },
+  {
+    slug: "flower", name: "花の島 — Flower",
+    tagline: "浮かぶ島で、花と空を眺める。", stickerNote: "今日のそら、なにいろ？",
+    platforms: ["iOS", "iPadOS"], status: "alpha", releaseDate: null, year: 2026,
+    icon: "icon.png", iconGlyph: "✿", color: "#E6F0FB", accent: "#B0123A", featured: false,
+    category: "ライフスタイル",
+    description: "浮かぶ島に咲く花と時計を、空の時刻や天気とともに眺めるアプリ。アカウントも広告もなく、iPhoneとiPadで静かに花を眺める時間を届けます。現在リリース準備中です。",
+    features: [
+      { icon: "✿", title: "島に咲く、一輪の花", description: "浮かぶ島に咲く3Dの花が、風にそっと揺れます。指で回したり近づいたりして、好きな角度から眺められます。" },
+      { icon: "◐", title: "時刻と天気で変わる空", description: "空は時刻に合わせて朝・昼・夜へ移り変わります。設定をオンにすると、おおよその現在地で太陽と月を置き、Apple WeatherKitで現在地の天気に合わせます。" },
+      { icon: "◷", title: "好みの時計", description: "12時間・24時間表示や日付の有無、7種類の書体から、花のそばに置く時計を選べます。" },
+      { icon: "✦", title: "花を加える", description: "椿・バラ・ダリアははじめから。アネモネ・ハイビスカス・彼岸花は、買い切りのアプリ内課金で島に加えられます。" },
+    ],
+    price: "無料・一部の花は買い切りのアプリ内課金", version: "1.0（準備中）", screenshots: [],
+    appStoreUrl: null, siteUrl: null,
+  },
 ] satisfies unknown[];
 
 /** ビルド時に検証する。スキーマ違反があれば build が失敗する。 */

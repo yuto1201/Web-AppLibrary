@@ -1005,7 +1005,8 @@ test("reduced-motion ではシールも呼吸しない", async ({ page }) => {
   expect(transform === "none" || transform === "matrix(1, 0, 0, 1, 0, 0)").toBe(true);
 });
 
-for (const app of apps.filter(({ slug }) => slug !== "simple-pomo")) {
+// SimplePomo と Flower は専用の spec が詳細・法務・往復を確かめる。
+for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(slug))) {
   test(`${app.slug}: 詳細とプライバシーの直接ロード、往復、画像、runtime エラー`, async ({ page, request }) => {
     const errors: string[] = [];
     page.on("pageerror", (error) => errors.push(error.message));

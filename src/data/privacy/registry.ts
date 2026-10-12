@@ -1,3 +1,4 @@
+import { html as flowerPrivacy } from "./flower";
 import { html as simplePomoPrivacy } from "./simple-pomo";
 import { html as payCyclePrivacy } from "./pay-cycle";
 import { html as caflogPrivacy } from "./caflog";
@@ -9,6 +10,7 @@ import { html as sublogPrivacy } from "./sublog";
  * 掲載アプリは必ずここへ同じ slug で登録し、テストで registry と完全一致させる。
  */
 export const privacyDocuments: Readonly<Record<string, string>> = {
+  flower: flowerPrivacy,
   "simple-pomo": simplePomoPrivacy,
   "pay-cycle": payCyclePrivacy,
   sublog: sublogPrivacy,

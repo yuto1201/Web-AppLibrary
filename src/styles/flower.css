@@ -1,0 +1,256 @@
+/* 花の島 — Flower: the app's floating island, thin clock and time-of-day sky (iOS-Flower SkyProfile.swift),
+   low-poly flower art and card gradients (FlowerLook.swift). The page keeps its own light palette in either
+   site theme; only the decorative sky window follows the time. All product styles stay inside this route. */
+body:has(.flower-site) { background: #f4f7fc; color: #18213d; }
+
+.flower-site {
+  --fl-paper: #f4f7fc;
+  --fl-white: #fff;
+  --fl-ink: #18213d;
+  --fl-ink-2: #45506b;
+  --fl-rule: #d3dbe8;
+  --fl-sky-ink: #1f4e8c;
+  --fl-rose: #b0123a;
+  --fl-leaf: #2f6e4a;
+  --fl-serif: "Hiragino Mincho ProN", "Yu Mincho", "Noto Serif JP", "Noto Serif CJK JP", serif;
+  --fl-clock: ui-rounded, "SF Pro Rounded", "Hiragino Maru Gothic ProN", "Hiragino Sans", system-ui, sans-serif;
+  --fl-gutter: clamp(16px, 5vw, 72px);
+  --fl-measure: 1120px;
+  color-scheme: light;
+  min-height: 100svh;
+  background: var(--fl-paper);
+  color: var(--fl-ink);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  line-height: 1.8;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: clip;
+}
+
+html:has(.flower-site) { scroll-behavior: smooth; scroll-padding-top: 24px; }
+.flower-site *, .flower-site *::before, .flower-site *::after { box-sizing: border-box; }
+.flower-site :where(h1, h2, h3, p, ul, figure) { margin: 0; }
+.flower-site :where(ul) { padding: 0; list-style: none; }
+.flower-site img { display: block; max-width: 100%; }
+.flower-site a { color: inherit; text-decoration: none; }
+.flower-site button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+.flower-site :is(a, button):focus-visible { outline: 2px solid var(--fl-sky-ink); outline-offset: 4px; border-radius: 12px; }
+.flower-site ::selection { background: #f4bfca; color: var(--fl-ink); }
+
+.flower-site .fl-sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.flower-site .fl-skip-link {
+  position: fixed; top: -90px; left: 16px; z-index: 10; padding: 14px 18px; border-radius: 14px;
+  background: var(--fl-white); border: 1px solid var(--fl-ink); font-weight: 600;
+}
+.flower-site .fl-skip-link:focus { top: 16px; }
+.flower-site .fl-phrase { display: inline-block; }
+.flower-site .fl-card { background: var(--fl-white); border: 1px solid var(--fl-rule); border-radius: 24px; }
+
+/* Header */
+.flower-site .fl-header {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px 24px;
+  width: min(var(--fl-measure), calc(100% - var(--fl-gutter) * 2)); margin: 0 auto; padding: 24px 0;
+}
+.flower-site :is(.fl-wordmark, .fl-footer-mark) {
+  display: inline-flex; align-items: center; gap: 10px; font-family: var(--fl-serif); font-size: 20px; font-weight: 600; white-space: nowrap;
+}
+.flower-site :is(.fl-wordmark, .fl-footer-mark) img { border-radius: 23%; }
+.flower-site :is(.fl-wordmark, .fl-footer-mark) span {
+  color: var(--fl-ink-2); font-family: Didot, "Bodoni 72", Georgia, serif; font-size: .62em; font-weight: 400; letter-spacing: .22em; text-transform: uppercase;
+}
+.flower-site .fl-header nav { display: flex; gap: 22px; font-size: 14px; color: var(--fl-ink-2); }
+.flower-site .fl-header nav a { display: inline-flex; align-items: center; min-height: 44px; }
+.flower-site .fl-header nav a:hover { color: var(--fl-ink); }
+.flower-site .fl-release {
+  padding: 6px 14px; border: 1px solid var(--fl-rose); border-radius: 999px; color: var(--fl-rose); font-size: 13px; font-weight: 600; white-space: nowrap;
+}
+
+/* Hero */
+.flower-site .fl-hero {
+  display: grid; grid-template-columns: minmax(0, 1fr); gap: 40px; align-items: center;
+  width: min(var(--fl-measure), calc(100% - var(--fl-gutter) * 2)); margin: 0 auto; padding: 24px 0 72px;
+}
+.flower-site .fl-eyebrow { margin-bottom: 14px; color: var(--fl-sky-ink); font-size: 13px; font-weight: 700; letter-spacing: .08em; }
+.flower-site h1 {
+  font-family: var(--fl-serif); font-size: clamp(38px, 6.4vw, 68px); font-weight: 600; line-height: 1.25; letter-spacing: .01em;
+}
+.flower-site .fl-lead { margin-top: 22px; color: var(--fl-ink-2); font-size: clamp(15px, 1.6vw, 17px); line-height: 2; }
+.flower-site .fl-wide-break { display: none; }
+.flower-site .fl-button {
+  display: inline-flex; align-items: center; justify-content: center; min-height: 48px; margin-top: 30px; padding: 0 26px;
+  border-radius: 999px; background: var(--fl-ink); color: var(--fl-white); font-size: 15px; font-weight: 600;
+  transition: background-color .2s ease;
+}
+.flower-site .fl-button:hover { background: var(--fl-sky-ink); }
+
+.flower-site .fl-hero-visual { display: grid; justify-items: center; gap: 18px; }
+.flower-site .fl-hero-visual figure { display: grid; justify-items: center; gap: 14px; width: min(100%, 440px); }
+.flower-site .fl-hero-visual figcaption { color: var(--fl-ink-2); font-size: 13px; line-height: 1.7; text-align: center; }
+
+/* The decorative sky window. Each phase is its own layer so the sky can cross-fade. */
+.flower-site .fl-window {
+  position: relative; width: 100%; aspect-ratio: 4 / 5; overflow: hidden; border-radius: 40px;
+  box-shadow: 0 30px 60px -28px rgb(24 33 61 / .45), inset 0 0 0 1px rgb(255 255 255 / .25);
+  isolation: isolate;
+}
+.flower-site .fl-sky, .flower-site .fl-stars { position: absolute; inset: 0; opacity: 0; transition: opacity .9s ease; }
+.flower-site .fl-sky[data-layer="morning"] { background: linear-gradient(180deg, #5f7fc0 0%, #a9b9e0 55%, #f3cdb8 100%); }
+.flower-site .fl-sky[data-layer="day"] { background: linear-gradient(180deg, #4a86d6 0%, #79aae6 52%, #bfdaf3 100%); }
+.flower-site .fl-sky[data-layer="dusk"] { background: linear-gradient(180deg, #2c3672 0%, #5b5395 58%, #c88e8a 100%); }
+.flower-site .fl-sky[data-layer="night"] { background: linear-gradient(180deg, #0b1230 0%, #151f43 62%, #24305a 100%); }
+.flower-site[data-sky="morning"] .fl-sky[data-layer="morning"],
+.flower-site[data-sky="day"] .fl-sky[data-layer="day"],
+.flower-site[data-sky="dusk"] .fl-sky[data-layer="dusk"],
+.flower-site[data-sky="night"] .fl-sky[data-layer="night"] { opacity: 1; }
+.flower-site .fl-stars {
+  background:
+    radial-gradient(1.5px 1.5px at 12% 8%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 28% 18%, #fff 99%, transparent),
+    radial-gradient(1.5px 1.5px at 46% 6%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 63% 15%, #fff 99%, transparent),
+    radial-gradient(1.5px 1.5px at 81% 9%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 90% 24%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 7% 30%, #fff 99%, transparent),
+    radial-gradient(1.5px 1.5px at 37% 34%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 72% 36%, #fff 99%, transparent),
+    radial-gradient(5px 5px at 22% 62%, rgb(214 246 141 / .9), transparent),
+    radial-gradient(4px 4px at 78% 56%, rgb(214 246 141 / .8), transparent);
+}
+.flower-site[data-sky="night"] .fl-stars { opacity: 1; }
+.flower-site[data-sky="dusk"] .fl-stars { opacity: .55; }
+
+.flower-site .fl-cloud {
+  position: absolute; height: 9%; border-radius: 50%; background: #fff; filter: blur(10px); opacity: 0; transition: opacity .9s ease;
+}
+.flower-site .fl-cloud[data-cloud="a"] { top: 6%; left: 8%; width: 42%; }
+.flower-site .fl-cloud[data-cloud="b"] { top: 44%; right: -6%; width: 52%; }
+.flower-site[data-sky="day"] .fl-cloud { opacity: .55; }
+.flower-site[data-sky="morning"] .fl-cloud { opacity: .45; }
+.flower-site[data-sky="dusk"] .fl-cloud { opacity: .12; }
+
+.flower-site .fl-islands { position: absolute; top: 22%; left: 0; width: 100%; }
+.flower-site .fl-island-rock { fill: #a3abb6; transition: fill .9s ease; }
+.flower-site .fl-island-top { fill: #78ad62; transition: fill .9s ease; }
+.flower-site .fl-island-tree { fill: #4f7b45; stroke: #6c5844; stroke-width: 2; transition: fill .9s ease, stroke .9s ease; }
+.flower-site[data-sky="dusk"] :is(.fl-island-rock, .fl-island-top, .fl-island-tree) { fill: #3e3a6d; stroke: #3e3a6d; }
+.flower-site[data-sky="night"] :is(.fl-island-rock, .fl-island-top, .fl-island-tree) { fill: #1c2547; stroke: #1c2547; }
+.flower-site[data-sky="morning"] .fl-island-rock { fill: #a9a8bd; }
+
+.flower-site .fl-clock {
+  position: absolute; top: 9%; left: 50%; transform: translateX(-50%);
+  color: #fff; font-family: var(--fl-clock); font-size: clamp(44px, 10vw, 64px); font-weight: 200; line-height: 1; letter-spacing: .04em;
+  font-variant-numeric: tabular-nums; white-space: nowrap;
+  text-shadow: 0 0 24px rgb(255 255 255 / .55);
+}
+.flower-site .fl-clock::after { content: attr(data-clock); }
+.flower-site .fl-clock-flower::after { content: attr(data-name); }
+.flower-site .fl-clock::before {
+  content: ""; position: absolute; inset: -40% -30%; z-index: -1; border-radius: 50%;
+  background: radial-gradient(closest-side, rgb(255 255 255 / .38), transparent);
+}
+.flower-site:is([data-sky="dusk"], [data-sky="night"]) .fl-clock { text-shadow: none; }
+.flower-site:is([data-sky="dusk"], [data-sky="night"]) .fl-clock::before { background: radial-gradient(closest-side, rgb(5 8 25 / .45), transparent); }
+.flower-site .fl-clock-flower {
+  position: absolute; top: calc(9% + clamp(56px, 12vw, 78px)); left: 50%; transform: translateX(-50%);
+  color: #fff; font-size: 14px; font-weight: 700; letter-spacing: .08em;
+}
+
+.flower-site .fl-ground { position: absolute; left: 0; bottom: 0; width: 100%; height: 42%; }
+.flower-site .fl-grass { fill: #86c552; transition: fill .9s ease; }
+.flower-site .fl-stem { fill: none; stroke: #3d6b2c; stroke-width: 6; stroke-linecap: round; }
+.flower-site .fl-leaf { fill: #2f5d3a; }
+.flower-site[data-sky="morning"] .fl-grass { fill: #8dbb63; }
+.flower-site[data-sky="dusk"] .fl-grass { fill: #556f3d; }
+.flower-site[data-sky="night"] .fl-grass { fill: #2c4a2e; }
+.flower-site .fl-hero-flower {
+  position: absolute; left: 50%; bottom: 20%; width: 54%; height: auto; transform: translateX(-50%) rotate(-4deg);
+  filter: drop-shadow(0 18px 18px rgb(24 33 61 / .25)); transition: filter .9s ease;
+}
+.flower-site[data-sky="dusk"] .fl-hero-flower { filter: brightness(.86) drop-shadow(0 18px 18px rgb(24 33 61 / .3)); }
+.flower-site[data-sky="night"] .fl-hero-flower { filter: brightness(.68) saturate(.9) drop-shadow(0 18px 18px rgb(0 0 0 / .35)); }
+
+.flower-site .fl-sky-picker {
+  display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; padding: 4px;
+  border: 1px solid var(--fl-rule); border-radius: 999px; background: var(--fl-white);
+}
+.flower-site .fl-sky-picker button {
+  min-width: 52px; min-height: 44px; padding: 0 14px; border-radius: 999px; color: var(--fl-ink-2); font-size: 14px; font-weight: 600;
+  transition: background-color .2s ease, color .2s ease;
+}
+.flower-site .fl-sky-picker button:hover { color: var(--fl-ink); }
+.flower-site .fl-sky-picker button[aria-pressed="true"] { background: var(--fl-ink); color: var(--fl-white); }
+
+/* Sections */
+.flower-site .fl-section { width: min(var(--fl-measure), calc(100% - var(--fl-gutter) * 2)); margin: 0 auto; padding: 72px 0; border-top: 1px solid var(--fl-rule); }
+.flower-site h2 { font-family: var(--fl-serif); font-size: clamp(30px, 4.4vw, 46px); font-weight: 600; line-height: 1.35; }
+.flower-site .fl-section-lead { max-width: 640px; margin-top: 18px; color: var(--fl-ink-2); line-height: 2; }
+.flower-site .fl-note { margin-top: 26px; color: var(--fl-ink-2); font-size: 14px; }
+.flower-site .fl-note a { color: var(--fl-sky-ink); text-decoration: underline; text-underline-offset: .2em; }
+
+.flower-site .fl-flower-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 20px; margin-top: 40px; }
+.flower-site .fl-flower { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--fl-rule); border-radius: 28px; background: var(--fl-white); }
+.flower-site .fl-flower-art { display: grid; place-items: center; aspect-ratio: 4 / 3; }
+.flower-site .fl-flower-art img { width: 62%; height: auto; filter: drop-shadow(0 12px 14px rgb(59 47 44 / .18)); }
+.flower-site .fl-flower[data-flower="rose"] .fl-flower-art { background: linear-gradient(160deg, #fde3e6, #f4bfca); }
+.flower-site .fl-flower[data-flower="camellia"] .fl-flower-art { background: linear-gradient(160deg, #fde5e2, #fbe4bd); }
+.flower-site .fl-flower[data-flower="dahlia"] .fl-flower-art { background: linear-gradient(160deg, #fde7ef, #fcd6c9); }
+.flower-site .fl-flower[data-flower="anemone"] .fl-flower-art { background: linear-gradient(160deg, #fbe3f3, #e3d8f8); }
+.flower-site .fl-flower[data-flower="hibiscus"] .fl-flower-art { background: linear-gradient(160deg, #fee5da, #fde4c3); }
+.flower-site .fl-flower[data-flower="spider-lily"] .fl-flower-art { background: linear-gradient(160deg, #fde2e3, #efd3e6); }
+.flower-site .fl-flower-text { display: grid; gap: 8px; align-content: start; flex: 1; padding: 20px 22px 22px; }
+.flower-site .fl-flower h3 { display: grid; gap: 2px; font-family: var(--fl-serif); font-size: 22px; font-weight: 600; line-height: 1.4; }
+.flower-site .fl-flower h3 span {
+  color: var(--fl-ink-2); font-family: Didot, "Bodoni 72", Georgia, serif; font-size: 12px; font-weight: 400; letter-spacing: .2em; text-transform: uppercase;
+}
+.flower-site .fl-flower p { color: var(--fl-ink-2); font-size: 14px; line-height: 1.8; }
+.flower-site .fl-flower-tag {
+  justify-self: start; margin-top: 4px; padding: 3px 12px; border: 1px solid var(--fl-leaf); border-radius: 999px; color: var(--fl-leaf); font-size: 12px; font-weight: 700;
+}
+.flower-site .fl-flower-tag[data-paid] { border-color: var(--fl-rose); color: var(--fl-rose); }
+
+.flower-site .fl-feature-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; margin-top: 40px; }
+.flower-site .fl-feature { padding: 26px 28px; }
+.flower-site :is(.fl-feature, .fl-quiet-list li) h3 { font-family: var(--fl-serif); font-size: 21px; font-weight: 600; line-height: 1.45; }
+.flower-site :is(.fl-feature, .fl-quiet-list li) p { margin-top: 10px; color: var(--fl-ink-2); font-size: 15px; line-height: 1.9; }
+
+.flower-site .fl-quiet-list { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; margin-top: 40px; }
+.flower-site .fl-quiet-list li { padding: 26px 28px; }
+
+.flower-site .fl-availability {
+  width: min(var(--fl-measure), calc(100% - var(--fl-gutter) * 2)); margin: 0 auto; padding: 40px 0 24px; border-top: 1px solid var(--fl-rule);
+  color: var(--fl-ink-2); font-size: 14px; line-height: 1.9; text-align: center;
+}
+
+/* Footer */
+.flower-site .fl-footer { width: min(var(--fl-measure), calc(100% - var(--fl-gutter) * 2)); margin: 0 auto; padding: 24px 0 48px; }
+.flower-site .fl-footer-card { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 28px; padding: 20px 28px; }
+.flower-site .fl-footer-card nav { display: flex; flex-wrap: wrap; gap: 0 22px; font-size: 14px; color: var(--fl-ink-2); }
+.flower-site .fl-footer-card nav a { display: inline-flex; align-items: center; min-height: 44px; }
+.flower-site .fl-footer-card nav a:hover { color: var(--fl-ink); }
+.flower-site .fl-credit { color: var(--fl-ink-2); font-size: 12px; }
+
+@media (min-width: 560px) {
+  .flower-site .fl-flower-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 760px) {
+  .flower-site .fl-feature-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 900px) {
+  .flower-site .fl-hero { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: 56px; padding-top: 40px; }
+  .flower-site .fl-wide-break { display: inline; }
+  .flower-site .fl-quiet-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  /* 3 列にすると、はじめから咲く 3 種と課金で加える 3 種が段で分かれる。 */
+  .flower-site .fl-flower-list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .flower-site .fl-header { flex-wrap: wrap; }
+  .flower-site .fl-header nav { order: 3; width: 100%; gap: 18px; }
+  .flower-site .fl-window { border-radius: 32px; }
+  .flower-site .fl-section { padding: 56px 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:has(.flower-site) { scroll-behavior: auto; }
+  .flower-site *, .flower-site *::before, .flower-site *::after { transition: none !important; }
+}

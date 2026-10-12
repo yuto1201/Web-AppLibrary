@@ -3,6 +3,7 @@ import { readFileSync, realpathSync, statSync } from "node:fs";
 import path from "node:path";
 import { apps, getApp } from "@/data/registry";
 import { privacyDocuments } from "@/data/privacy/registry";
+import { supportDocuments } from "@/data/support/registry";
 import { termsDocuments } from "@/data/terms/registry";
 import { appSchema } from "@/data/schema";
 
@@ -29,7 +30,7 @@ describe("apps registry", () => {
   });
 
   it("PayCycle の日英利用規約が承認済み条件とApple標準EULAを保持する", () => {
-    expect(Object.keys(termsDocuments).sort()).toEqual(["pay-cycle", "simple-pomo"]);
+    expect(Object.keys(termsDocuments).sort()).toEqual(["flower", "pay-cycle", "simple-pomo"]);
     const document = termsDocuments["pay-cycle"]!;
     const japanese = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
     const english = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
@@ -234,5 +235,29 @@ describe("SimplePomo publication", () => {
     expect(document).not.toMatch(/example\.(?:com|org)|TODO|FIXME|雛形|記入してください/u);
     expect(document).not.toMatch(/未実装|導入を予定|has not been implemented|planned for a future release/u);
     expect(ja).toContain("プライバシーポリシーの7項"); expect(en).toContain("section 7 of the Privacy Policy");
+  });
+});
+
+describe("Flower publication", () => {
+  it("未公開の iPhone・iPad アプリとして、実アイコンと承認済みの3ページを持つ", () => {
+    expect(getApp("flower")).toMatchObject({
+      name: "花の島 — Flower", platforms: ["iOS", "iPadOS"], status: "alpha", releaseDate: null,
+      icon: "icon.png", screenshots: [], appStoreUrl: null, siteUrl: null,
+    });
+    expect(Object.keys(supportDocuments)).toEqual(["flower"]);
+    for (const document of [supportDocuments.flower, privacyDocuments.flower, termsDocuments.flower]) {
+      expect(document).toMatch(/<section id="flower-(?:support|privacy|terms)-ja" lang="ja">/u);
+      expect(document).toMatch(/<section id="flower-(?:support|privacy|terms)-en" lang="en">/u);
+      expect(document).not.toMatch(/example\.(?:com|org)|TODO|FIXME|雛形|記入してください/u);
+    }
+  });
+
+  it("紹介ページの画像は承認時のアプリ素材から作り、実在する", () => {
+    for (const file of ["icon.png", ...["rose", "camellia", "dahlia", "anemone", "hibiscus", "spider-lily"].map((id) => `flowers/${id}.webp`)]) {
+      expect(statSync(path.resolve("public/apps/flower", file)).isFile(), file).toBe(true);
+    }
+    const icon = readFileSync("public/apps/flower/icon.png");
+    expect(icon.readUInt32BE(16)).toBe(512);
+    expect(icon.readUInt32BE(20)).toBe(512);
   });
 });

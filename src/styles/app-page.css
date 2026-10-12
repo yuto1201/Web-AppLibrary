@@ -457,3 +457,9 @@ body:has(.app-shell[data-tone="pomo"]),
 [data-theme="dark"] body:has(.app-shell[data-tone="pomo"]),
 [data-theme="dark"] .app-shell[data-tone="pomo"] { background: var(--paper); }
 [data-theme="dark"] .app-shell[data-tone="pomo"] { --app-accent: #FD841B; --app-accent-2: #FD841B; }
+body:has(.app-shell[data-tone="sky"]),
+.app-shell[data-tone="sky"] { background: #E6F0FB; }
+.app-shell[data-tone="sky"] { --app-accent: #1F4E8C; --app-accent-2: #1F4E8C; }
+[data-theme="dark"] body:has(.app-shell[data-tone="sky"]),
+[data-theme="dark"] .app-shell[data-tone="sky"] { background: var(--paper); }
+[data-theme="dark"] .app-shell[data-tone="sky"] { --app-accent: #9CC4F2; --app-accent-2: #9CC4F2; }

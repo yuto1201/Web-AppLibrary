@@ -920,3 +920,4 @@ html[data-hero-opening="play"] .poster .sticker-slot:has(.is-held) {
 }
 
 .sticker-slot[data-key="simple-pomo"] { left: 30%; top: 35%; right: auto; bottom: auto; }
+.sticker-slot[data-key="flower"] { left: 22%; top: 20%; right: auto; bottom: auto; }
