@@ -1,6 +1,6 @@
 export const html = String.raw`
 <h1>SimplePomo 利用規約 / Terms of Use</h1>
-<p class="legal-meta">制定日 / Effective date: <time datetime="2026-10-04">2026-10-04</time> · 改定日 / Revised: <time datetime="2026-10-11">2026-10-11</time></p>
+<p class="legal-meta">制定日 / Effective date: <time datetime="2026-10-04">2026-10-04</time> · 改定日 / Revised: <time datetime="2026-10-12">2026-10-12</time></p>
 <p class="legal-language">本ページは日本語と英語で提供しています。 <span lang="en">This page is available in Japanese and English.</span></p>
 <nav class="legal-language-switch" aria-label="言語 / Language"><a href="#simplepomo-terms-ja">日本語</a><span> · </span><a href="#simplepomo-terms-en" lang="en">English</a></nav>
 
@@ -11,7 +11,7 @@ export const html = String.raw`
 <p>本アプリは、集中と休憩の時間を区切り、日々の集中記録を確認するためのタイマーです。App Storeから取得する本アプリの利用許諾には<a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener noreferrer">Apple標準EULA</a>が適用されます。本規約は本アプリ固有の条件を補足し、Apple標準EULAを置き換えません。利用許諾について矛盾する場合はApple標準EULAが優先します。</p>
 <h3>2. 無料機能とPro</h3>
 <p>本アプリは無料で利用でき、コントロールセンターの操作と7つのSiriショートカットは無料機能に含まれます。Proは非消費型の買い切りアプリ内課金として提供します。日本向けの予定価格は500円です。実際の価格と通貨は購入時のApp Store表示を確認してください。</p>
-<p>Proには、5つの環境音、4つのテーマ、インタラクティブウィジェット、AlarmKitによる終了アラーム、90分を超えて最大180分までの集中時間、60分を超えて最大90分までの長い休憩の設定が含まれます。Proはファミリー共有に対応しません。購入の復元は「購入を復元する」からAppleの購入情報を同期して行います。</p>
+<p>Proには、5種類の環境音（雨・カフェ・森・波・ホワイトノイズ）、90分を超えて最大180分までの集中時間と60分を超えて最大90分までの長い休憩の設定、AlarmKitによる全画面アラーム、6種類のカラーテーマ（サンセット・フォレスト・ベリー・モノクローム・ミッドナイト・オータム）、5種類のタイマーのフォント（ラウンド・セリフ・コンデンス・エクスパンド・ボールド）、インタラクティブウィジェット（ホーム画面から開始・一時停止・スキップ）、集中ヒートマップのウィジェット、プリセットの追加・編集・削除と追加したプリセットの選択が含まれます。クラシックとオーシャンのテーマ、標準とモノスペースのフォント、プリセットの「標準」は無料で利用できます。Proはファミリー共有に対応しません。購入の復元は「購入を復元する」からAppleの購入情報を同期して行います。</p>
 <h3>3. 投げ銭、決済と返金</h3>
 <p>3段階の投げ銭は消費型のアプリ内課金です。開発を応援するための任意の購入であり、機能の解放やProの購入にはなりません。決済はAppleが処理します。返金の可否と手続きは、法令上の権利を妨げない範囲でAppleの規約と手続きに従います。</p>
 <h3>4. 通知、アラームと動作環境</h3>
@@ -34,7 +34,7 @@ export const html = String.raw`
 <p>The App is a timer for structuring focus and rest periods and reviewing daily focus records. The <a href="https://www.apple.com/legal/internet-services/itunes/dev/stdeula/" target="_blank" rel="noopener noreferrer">Apple Standard EULA</a> applies to the license for the App obtained through the App Store. These Terms supplement it with App-specific conditions and do not replace it. The Apple Standard EULA controls if the license terms conflict.</p>
 <h3>2. Free features and Pro</h3>
 <p>The App can be used for free. Control Center controls and seven Siri shortcuts are included in the free features. Pro is offered as a non-consumable, one-time in-app purchase. The planned price in Japan is JPY 500. Check the actual price and currency displayed by the App Store before purchasing.</p>
-<p>Pro includes five ambient sounds, four themes, interactive widgets, AlarmKit end alarms, focus durations above 90 minutes up to 180 minutes, and long breaks above 60 minutes up to 90 minutes. Pro does not support Family Sharing. Use “Restore Purchases” to sync purchase information through Apple and restore Pro.</p>
+<p>Pro includes five ambient sounds (Rain, Cafe, Forest, Ocean, White Noise), focus durations above 90 minutes up to 180 minutes and long breaks above 60 minutes up to 90 minutes, full-screen alarms using AlarmKit, six color themes (Sunset, Forest, Berry, Monochrome, Midnight, Autumn), five timer fonts (Rounded, Serif, Condensed, Expanded, Bold Rounded), interactive widgets to start, pause and skip from the Home Screen, the Focus Heatmap widget, and adding, editing and deleting presets and selecting added presets. The Classic and Ocean themes, the Standard and Monospaced fonts, and the Standard preset are free. Pro does not support Family Sharing. Use “Restore Purchases” to sync purchase information through Apple and restore Pro.</p>
 <h3>3. Tips, payment and refunds</h3>
 <p>The three tip levels are consumable in-app purchases. Tips are optional purchases to support development; they do not unlock features or purchase Pro. Apple processes payments. Subject to rights that cannot be limited by law, refund eligibility and procedures follow Apple's terms and processes.</p>
 <h3>4. Notifications, alarms and system requirements</h3>
