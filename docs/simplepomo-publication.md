@@ -33,3 +33,12 @@ On 2026-10-11 the user asked to update the legal pages for the implemented in-ap
 - Terms of Use section 5 describes the feature as available and refers to Privacy Policy section 7. URLs are unchanged.
 - Policy update and Terms revision dates: `2026-10-11` (Terms effective date stays `2026-10-04`). Owner approval of the bilingual copy is required before merge.
 - The page now follows the app's neumorphic surfaces from `NeuStyle.swift` (`#E9EDF0` light, `#2A2D3E` dark) and the default Classic phase colors from `Theme.swift` (focus `#F28C33`, break `#80CC99`, long break `#338C66`). The hero reproduces the timer screen, where the phase color drains clockwise around the central disc. It follows the site's saved light/dark theme; the pause control and reduced motion still stop the animation.
+
+## Terms Pro list — Issue #91
+
+On 2026-10-12 the user asked to bring the Pro list in Terms of Use section 2 in line with the current app.
+
+- Facts: [Issue #91](https://github.com/yuto1201/Web-AppLibrary/issues/91), checked against iOS-SimplePomo main `be62b71` (`SimplePomo/StoreKit/ProPaywallView.swift`, `specs/features/storekit.md` §3, decisions D-112, D-113 and D-115). English names follow the app's `Localizable.xcstrings`.
+- The second paragraph of section 2 now lists five ambient sounds, focus up to 180 minutes and long breaks up to 90 minutes, full-screen AlarmKit alarms, six color themes, five timer fonts, interactive widgets, the Focus Heatmap widget, and adding, editing, deleting and selecting added presets. It also names what stays free: the Classic and Ocean themes, the Standard and Monospaced fonts and the Standard preset. The planned Apple Watch support is not listed because the app shows it as planned, not as an available feature (D-112).
+- The Family Sharing and restoration sentences, the price, the Privacy Policy and the URL are unchanged.
+- Terms revision date: `2026-10-12` (effective date stays `2026-10-04`). Owner approval of the bilingual copy is required before merge.

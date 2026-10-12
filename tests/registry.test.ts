@@ -230,8 +230,18 @@ describe("SimplePomo publication", () => {
     for (const term of ["非消費型", "消費型", "購入を復元する", "ファミリー共有", "500円", "non-consumable", "consumable", "Restore Purchases", "Family Sharing", "JPY 500", "Apple標準EULA", "Apple Standard EULA", "AlarmKit"]) expect(document).toContain(term);
     const ja = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
     const en = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
-    for (const term of ["7つ", "5つ", "4つ", "3段階", "500円", "180分", "90分", "ファミリー共有に対応しません"]) expect(ja).toContain(term);
-    for (const term of ["seven Siri", "five ambient", "four themes", "three tip", "JPY 500", "180 minutes", "90 minutes", "does not support Family Sharing"]) expect(en).toContain(term);
+    for (const term of ["7つ", "3段階", "500円", "180分", "90分", "ファミリー共有に対応しません"]) expect(ja).toContain(term);
+    for (const term of ["seven Siri", "three tip", "JPY 500", "180 minutes", "90 minutes", "does not support Family Sharing"]) expect(en).toContain(term);
+  });
+  it("lists the current Pro features and the free themes, fonts and preset bilingually (Issue #91)", () => {
+    const document = termsDocuments["simple-pomo"]!;
+    const ja = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    const en = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    for (const term of ["5種類の環境音（雨・カフェ・森・波・ホワイトノイズ）", "AlarmKitによる全画面アラーム", "6種類のカラーテーマ（サンセット・フォレスト・ベリー・モノクローム・ミッドナイト・オータム）", "5種類のタイマーのフォント（ラウンド・セリフ・コンデンス・エクスパンド・ボールド）", "インタラクティブウィジェット（ホーム画面から開始・一時停止・スキップ）", "集中ヒートマップのウィジェット", "プリセットの追加・編集・削除", "クラシックとオーシャンのテーマ", "標準とモノスペースのフォント", "プリセットの「標準」"]) expect(ja).toContain(term);
+    for (const term of ["five ambient sounds (Rain, Cafe, Forest, Ocean, White Noise)", "full-screen alarms using AlarmKit", "six color themes (Sunset, Forest, Berry, Monochrome, Midnight, Autumn)", "five timer fonts (Rounded, Serif, Condensed, Expanded, Bold Rounded)", "interactive widgets to start, pause and skip from the Home Screen", "Focus Heatmap widget", "adding, editing and deleting presets", "Classic and Ocean themes", "Standard and Monospaced fonts", "Standard preset"]) expect(en).toContain(term);
+    expect(document).not.toMatch(/4つのテーマ|four themes|Apple Watch/u);
+    expect(document).toContain('<time datetime="2026-10-12">2026-10-12</time>');
+    expect(document).toContain('制定日 / Effective date: <time datetime="2026-10-04">2026-10-04</time>');
     expect(document).not.toMatch(/example\.(?:com|org)|TODO|FIXME|雛形|記入してください/u);
     expect(document).not.toMatch(/未実装|導入を予定|has not been implemented|planned for a future release/u);
     expect(ja).toContain("プライバシーポリシーの7項"); expect(en).toContain("section 7 of the Privacy Policy");
