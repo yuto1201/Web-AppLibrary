@@ -1,6 +1,6 @@
 export const html = String.raw`
 <h1>PayCycle プライバシーポリシー / Privacy Policy</h1>
-<p class="legal-meta">最終更新日 / Last updated: <time datetime="2026-09-30">2026-09-30</time></p>
+<p class="legal-meta">最終更新日 / Last updated: <time datetime="2026-10-19">2026-10-19</time></p>
 <p class="legal-language">本ページは日本語と英語で提供しています。 <span lang="en">This page is available in Japanese and English.</span></p>
 <nav class="legal-language-switch" aria-label="言語 / Language"><a href="#paycycle-privacy-ja">日本語</a><span> · </span><a href="#paycycle-privacy-en" lang="en">English</a></nav>
 
@@ -10,12 +10,12 @@ export const html = String.raw`
 
 <h3>保存する情報とiCloud同期</h3>
 <p>給料日の設定、給料の表示名・見込み額・確定額・予定日・実際の入金日、支払いの表示名・見込み額・確定額・手数料・予定日・実際の支払日・確認状態・繰り返し設定・最終回の日付、臨時収入の表示名・見込み額・確定額・予定日・実際の入金日、銀行口座とカードの表示名および任意の下4桁を端末内のSwiftDataデータベースに保存します。通知の有効状態と通知時刻も端末内に保存します。</p>
-<p>バージョン1.1以降、家計データは利用者自身のiCloudのプライベートデータベースとCloudKitで常に同期します。この同期はアプリ内でオフにできません。開発者はプライベートデータベースの内容にアクセスできず、家計データは開発者のサーバーや広告SDKには送られません。iCloudにサインインしていない端末やiCloudが制限されている端末では、端末内だけで動作し、サインイン後に同期されます。通知の有効状態と通知時刻は端末ごとの設定で、同期しません。</p>
+<p>バージョン1.2以降、設定の「iCloud同期」をオンにした端末だけ、家計データを利用者自身のiCloudのプライベートデータベースとCloudKitで同期します。同期は端末ごとにオン・オフでき、初期値はオフです（以前のバージョンから更新した端末も同じです）。オフの端末では、家計データをiCloudへ送らず、端末内だけに保存します。オフにしても、すでにiCloudにあるデータは削除されません。開発者はプライベートデータベースの内容にアクセスできず、家計データは開発者のサーバーや広告SDKには送られません。同期をオンにしていても、iCloudにサインインしていない端末やiCloudが制限されている端末では端末内だけで動作し、サインイン後に同期されます。iCloud同期の選択、通知の有効状態と通知時刻は端末ごとの設定で、同期しません。</p>
 <p>完全な口座番号、カード番号、暗証番号、認証情報、銀行取引明細は保存しません。PayCycleは独自のアカウントを作成せず、銀行やカード会社へ接続しません。</p>
 
 <h3>データの書き出し、読み込みと削除</h3>
 <p>バージョン1.1以降、利用者が設定から操作したときだけ、すべての家計記録を1つのJSONファイルに書き出します。端末ごとの通知設定は含めません。ファイルは端末上で作成され、共有シートで利用者が選んだ保存先・送信先に渡されます。開発者には送られません。ファイルは暗号化されないため、保存と共有は利用者が管理してください。</p>
-<p>読み込みは利用者の確認後、現在の家計データをファイルの内容ですべて置き換えます。置き換え前のデータの写しを端末内のアプリ領域に直近3件まで残し、iCloudへは送りません。読み込んだデータは通常の家計データと同様に同期します。また、1.0から1.1への更新時には、更新前のデータの写しを端末内のアプリ領域に最大3件残し、iCloudへは送りません。</p>
+<p>読み込みは利用者の確認後、現在の家計データをファイルの内容ですべて置き換えます。置き換え前のデータの写しを端末内のアプリ領域に直近3件まで残し、iCloudへは送りません。iCloud同期をオンにしている端末では、読み込んだデータも通常の家計データと同様に同期します。また、1.0から1.1への更新時には、更新前のデータの写しを端末内のアプリ領域に最大3件残し、iCloudへは送りません。</p>
 <p>アプリを削除すると端末内のアプリデータは削除されますが、iCloud上のデータは残ります。iCloud上のデータを削除するには、iPhoneの「設定」 &gt; 「ユーザー名」 &gt; 「iCloud」 &gt; 「ストレージを管理」 &gt; 「PayCycle」から削除してください。表示はiOSのバージョンにより異なる場合があります。詳しくは<a href="https://support.apple.com/ja-jp/guide/icloud/mm62d92d6b3e/icloud" target="_blank" rel="noopener noreferrer">Appleのサポート</a>をご確認ください。</p>
 
 <h3>フィードバック</h3>
@@ -43,12 +43,12 @@ export const html = String.raw`
 
 <h3>Information stored and iCloud sync</h3>
 <p>The on-device SwiftData database stores payday settings; salary names, estimated and confirmed amounts, scheduled and actual payment dates; bill names, estimated and confirmed amounts, fees, scheduled and actual payment dates, confirmation status, recurrence and the final date of a recurring bill; extra-income names, estimated and confirmed amounts, scheduled and actual receipt dates; and bank/card display names and optional last four digits. Notification status and times are also stored on the device.</p>
-<p>From version 1.1, financial planning data continuously syncs through CloudKit with your private iCloud database. This sync cannot be turned off in the App. The developer cannot access the contents of your private database, and this data is not sent to the developer’s server or the advertising SDK. On devices that are not signed in to iCloud or where iCloud is restricted, the App works locally and syncs after sign-in. Notification status and times are per-device settings and do not sync.</p>
+<p>From version 1.2, financial planning data syncs through CloudKit with your private iCloud database only on devices where you turn on iCloud sync in Settings. You can turn sync on or off on each device, and it starts off, including on devices updated from an earlier version. With sync off, the App keeps financial planning data on the device and does not send it to iCloud. Turning sync off does not delete data already in iCloud. The developer cannot access the contents of your private database, and this data is not sent to the developer’s server or the advertising SDK. Even with sync on, devices that are not signed in to iCloud or where iCloud is restricted work locally and sync after sign-in. The iCloud sync choice, notification status and times are per-device settings and do not sync.</p>
 <p>PayCycle does not store full bank account numbers, card numbers, PINs, credentials or bank transaction records. It creates no separate account and does not connect to banks or card issuers.</p>
 
 <h3>Export, import and deletion</h3>
 <p>From version 1.1, only when you choose the action in Settings, the App exports all financial planning records into one JSON file. Per-device notification settings are excluded. The file is created on your device and handed to the destination you choose in the share sheet. It is not sent to the developer. The file is not encrypted, so you are responsible for where you store and share it.</p>
-<p>After your confirmation, importing replaces all current financial planning data with the file’s contents. The App keeps up to three most recent copies of replaced data in its storage on the device, without sending them to iCloud. Imported data syncs like other financial planning data. When updating from 1.0 to 1.1, the App also keeps up to three copies of pre-update data in its storage on the device; these are not sent to iCloud.</p>
+<p>After your confirmation, importing replaces all current financial planning data with the file’s contents. The App keeps up to three most recent copies of replaced data in its storage on the device, without sending them to iCloud. On devices with iCloud sync on, imported data syncs like other financial planning data. When updating from 1.0 to 1.1, the App also keeps up to three copies of pre-update data in its storage on the device; these are not sent to iCloud.</p>
 <p>Deleting the App removes its local app data, but data in iCloud remains. To delete iCloud data, go to iPhone Settings &gt; your name &gt; iCloud &gt; Manage Storage &gt; PayCycle. Labels may vary by iOS version. See <a href="https://support.apple.com/en-gb/guide/icloud/mm62d92d6b3e/icloud" target="_blank" rel="noopener noreferrer">Apple Support</a> for more information.</p>
 
 <h3>Feedback</h3>
