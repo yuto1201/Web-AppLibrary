@@ -1,6 +1,6 @@
 export const html = String.raw`
 <h1>PayCycle 利用規約 / Terms of Use</h1>
-<p class="legal-meta">制定日 / Effective date: <time datetime="2026-09-15">2026-09-15</time> · 改定日 / Revised: <time datetime="2026-09-30">2026-09-30</time></p>
+<p class="legal-meta">制定日 / Effective date: <time datetime="2026-09-15">2026-09-15</time> · 改定日 / Revised: <time datetime="2026-10-19">2026-10-19</time></p>
 <p class="legal-language">本ページは日本語と英語で提供しています。 <span lang="en">This page is available in Japanese and English.</span></p>
 <nav class="legal-language-switch" aria-label="言語 / Language"><a href="#paycycle-terms-ja">日本語</a><span> · </span><a href="#paycycle-terms-en" lang="en">English</a></nav>
 
@@ -21,7 +21,7 @@ export const html = String.raw`
 <p>広告非表示は、AppleのStoreKitを使用する非消費型アプリ内課金として提供します。価格と通貨は購入時にApp Storeへ表示される内容が適用されます。購入処理、購入の復元、対象となるApple Offer Codeの利用はAppleの仕組みを通じて行われます。返金の可否と手続きは、法令上の権利を妨げない範囲でAppleの規約と手続きに従います。本アプリは独自の決済情報やクレジットカード情報を収集しません。</p>
 
 <h3>5. データ、iCloud同期と書き出し</h3>
-<p>本アプリは独自のアカウントを作成せず、入力した家計データを端末内に保存します。バージョン1.1以降、家計データは利用者自身のiCloudのプライベートデータベースと同期します。同期はAppleのサービスに依存し、通信状況やiCloudの状態により反映が遅れたり、一時的に端末ごとに内容が異なったりする場合があります。</p>
+<p>本アプリは独自のアカウントを作成せず、入力した家計データを端末内に保存します。バージョン1.2以降、設定の「iCloud同期」をオンにした端末だけ、家計データを利用者自身のiCloudのプライベートデータベースと同期します。同期は端末ごとにオン・オフでき、初期値はオフです（以前のバージョンから更新した端末も同じです）。オフにしても、すでにiCloudにあるデータは削除されません。同期はAppleのサービスに依存し、通信状況やiCloudの状態により反映が遅れたり、一時的に端末ごとに内容が異なったりする場合があります。</p>
 <p>バージョン1.1以降、利用者は設定から家計データをJSONファイルに書き出し、共有シートで保存先を選べます。読み込みを確認すると、現在の家計データはファイルの内容に置き換わり、置き換え前の写しが端末内に残ります。暗号化されていない書き出しファイルの保管と共有は利用者が管理してください。アプリの削除、端末の故障・紛失・交換やiCloudの状態により、データを利用できなくなる場合があります。詳しい取り扱いは<a href="/apps/pay-cycle/privacy/">PayCycleプライバシーポリシー</a>をご確認ください。</p>
 
 <h3>5の2. フィードバック</h3>
@@ -75,7 +75,7 @@ export const html = String.raw`
 <p>Ad removal is offered as a non-consumable in-app purchase through Apple StoreKit. The price and currency shown by the App Store at the time of purchase apply. Purchase processing, restoration and eligible Apple Offer Codes are handled through Apple’s systems. Subject to any rights that cannot be limited by law, refund eligibility and procedures follow Apple’s terms and processes. The App does not collect independent payment or credit card information.</p>
 
 <h3>5. Data, iCloud sync and export</h3>
-<p>The App does not create a separate account and stores the financial planning data you enter on your device. From version 1.1, that data syncs with your private iCloud database. Sync depends on Apple’s services. Network or iCloud conditions may delay changes or cause temporary differences between devices.</p>
+<p>The App does not create a separate account and stores the financial planning data you enter on your device. From version 1.2, that data syncs with your private iCloud database only on devices where you turn on iCloud sync in Settings. You can turn sync on or off on each device, and it starts off, including on devices updated from an earlier version. Turning sync off does not delete data already in iCloud. Sync depends on Apple’s services. Network or iCloud conditions may delay changes or cause temporary differences between devices.</p>
 <p>From version 1.1, you can export financial planning data to a JSON file in Settings and choose its destination in the share sheet. Once you confirm an import, the file’s contents replace your current financial planning data, and a copy of the replaced data remains on the device. You are responsible for storing and sharing the unencrypted export file. Your data may become unavailable if you delete the App, lose, replace or damage your device, or encounter iCloud issues. See the <a href="/apps/pay-cycle/privacy/">PayCycle Privacy Policy</a> for details.</p>
 
 <h3>5A. Feedback</h3>
