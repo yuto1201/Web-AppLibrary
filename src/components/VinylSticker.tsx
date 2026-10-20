@@ -4,16 +4,18 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import type { ActivateSource } from "@/lib/activate";
 import {
-  baseBox,
   clampOffset,
   isTap,
   moveOffset,
+  coverBox,
   normalizeGrab,
   spinFromGrab,
+  stickerPoses,
   type Box,
   type Point,
+  type Size,
 } from "@/lib/drag";
-import { boxFromElement } from "@/lib/sticker-bounds";
+import { boxFromElement, layoutCenter } from "@/lib/sticker-bounds";
 import type { StickerShape } from "@/lib/sticker-desk";
 
 export type VinylStickerProps = {
@@ -47,7 +49,11 @@ type Drag = {
   baseOffset: Point;
   /** 中心から見た掴み位置（-1〜1）。端を掴むほど、引いたときの回転が大きくなる。 */
   grab: Point;
-  base: Box;
+  /** transform を含まない、オフセット 0 のときの中心と寸法。姿勢ごとの外接矩形の材料。 */
+  center: Point;
+  size: Size;
+  /** スロットの呼吸が足す傾きの振れ幅（度）。 */
+  sway: number;
   bounds: Box;
 };
 
@@ -118,7 +124,10 @@ export function VinylSticker({
       start: { x: event.clientX, y: event.clientY },
       baseOffset: offset,
       grab: normalizeGrab({ x: event.clientX, y: event.clientY }, boxFromElement(el)),
-      base: baseBox(boxFromElement(el), offset),
+      // クランプは掴んだ瞬間の矩形ではなく、姿勢の外接矩形で測る。掴んだ瞬間はホバーの transition 次第で揺れる（#60）。
+      center: withLift(layoutCenter(el), lift),
+      size: { width: el.offsetWidth, height: el.offsetHeight },
+      sway: breatheSway(el),
       bounds,
     };
     dragged.current = false;
@@ -132,8 +141,11 @@ export function VinylSticker({
     if (!active || active.pointerId !== event.pointerId) return;
     const current = { x: event.clientX, y: event.clientY };
     if (!isTap(active.start, current)) dragged.current = true;
-    onMove(clampOffset(moveOffset(active.baseOffset, active.start, current), active.base, active.bounds));
-    setSpin(spinFromGrab(active.grab, { x: current.x - active.start.x, y: current.y - active.start.y }));
+    const nextSpin = spinFromGrab(active.grab, { x: current.x - active.start.x, y: current.y - active.start.y });
+    // 掴んでいる姿勢も離したあとの姿勢も紙の内側へ収める。離した瞬間のレイアウトが横幅を記録しても、はみ出しが無い。
+    const box = coverBox(active.center, active.size, stickerPoses(tilt, active.sway, nextSpin));
+    onMove(clampOffset(moveOffset(active.baseOffset, active.start, current), box, active.bounds));
+    setSpin(nextSpin);
   }
 
   function handlePointerUp(event: React.PointerEvent<HTMLElement>) {
@@ -193,4 +205,17 @@ export function VinylSticker({
       )}
     </span>
   );
+}
+
+/** スロットの呼吸が足す傾きの振れ幅（度）。呼吸しないスロットは 0。 */
+function breatheSway(el: HTMLElement): number {
+  const slot = el.closest(".sticker-slot");
+  if (!(slot instanceof HTMLElement)) return 0;
+  const value = Number.parseFloat(getComputedStyle(slot).getPropertyValue("--breathe-amp-r"));
+  return Number.isFinite(value) ? value : 0;
+}
+
+/** 静止姿勢の --lift は本体の translateY に足される。 */
+function withLift(center: Point, lift: number): Point {
+  return { x: center.x, y: center.y + lift };
 }
