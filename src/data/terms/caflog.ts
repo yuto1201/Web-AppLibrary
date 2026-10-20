@@ -23,7 +23,7 @@ export const html = String.raw`
 <p>CafLog Proでは、広告なし、代謝シミュレーション（体内に残るカフェインの曲線）、過去の記録（過去の週の3Dの棚と過去の月の振り返り）、すべての見た目の選択とPro限定の見た目のドリンクの記録、ヘルスケアとiCloud同期の連携、お気に入り4件を利用できます。提供内容は、アプリ内のProの案内に表示される内容をご確認ください。</p>
 
 <h3>5. 自動更新サブスクリプション</h3>
-<p>CafLog Proは、AppleのStoreKitを使う月額と年額の自動更新サブスクリプションとして提供します。価格、通貨、無料トライアルや割引の有無と条件は、購入時にApp Storeとアプリ内に表示される内容が適用されます。代金は購入の確定時にApple Accountへ請求されます。サブスクリプションは、現在の期間が終わる24時間前までに解約しない限り自動的に更新され、更新の代金は期間の終了前24時間以内に請求されます。サブスクリプションの確認・変更・解約は、iPhoneの「設定」のApple Accountの「サブスクリプション」から行えます。アプリを削除しても解約にはなりません。</p>
+<p>CafLog Proは、AppleのStoreKitを使う月額と年額の自動更新サブスクリプションとして提供します。価格、通貨、無料トライアルや割引の有無と条件は、購入時にApp Storeとアプリ内に表示される内容が適用されます。代金は購入の確定時にApple Accountへ請求されます。無料トライアルなど無料期間のあるオファーを利用した場合は、無料期間の終了までに解約しない限り、無料期間の終了後に通常の価格で請求され、自動更新が始まります。サブスクリプションは、現在の期間が終わる24時間前までに解約しない限り自動的に更新され、更新の代金は期間の終了前24時間以内に請求されます。サブスクリプションの確認・変更・解約は、iPhoneの「設定」のApple Accountの「サブスクリプション」から行えます。アプリを削除しても解約にはなりません。</p>
 <p>購入の復元は、アカウントまたはProの案内の「購入を復元する」から行います。Appleが発行するオファーコードは、「オファーコードを使う」から開くApple標準の画面で引き換えられます。オファーコードの条件は、コードごとにAppleの画面に表示される内容が適用されます。決済、購入の復元、オファーコードの引き換えはAppleが処理し、運営者は決済情報やクレジットカード情報を受け取りません。返金の可否と手続きは、法令上の権利を妨げない範囲でAppleの規約と手続きに従います。</p>
 <p>サブスクリプションが終了すると、本アプリは無料プランの範囲に戻ります。このとき、記録、ドリンク、設定、実績などのデータは削除されません。ヘルスケアとiCloud同期の新しい処理は止まり、お気に入りは1件になり、見た目の選択は無料の6種類に戻ります。</p>
 
@@ -59,7 +59,7 @@ export const html = String.raw`
 <p>運営者は、本アプリの表示や推定値の正確性、完全性、特定目的への適合性、継続提供、データ消失がないことを保証しません。運営者の故意または重大な過失による場合、および消費者契約法その他の強行法規により制限が認められない場合を除き、本アプリの利用または利用不能から生じた損害について、法令で認められる範囲で責任を制限します。本条は利用者が法令上有する権利を排除するものではありません。</p>
 
 <h3>14. 本規約の変更</h3>
-<p>運営者は、本アプリの機能変更、法令改正その他合理的な必要がある場合に本規約を変更できます。重要な変更は、本ページまたは本アプリ内の適切な方法で案内します。変更後の規約は、別途記載がない限り公開時から適用します。</p>
+<p>運営者は、本アプリの機能変更、法令改正その他合理的な必要がある場合に、民法第548条の4その他の法令の定めに従って本規約を変更できます。変更するときは、変更後の内容と効力が生じる日を、その日より前に本ページまたは本アプリ内の適切な方法でお知らせします。</p>
 
 <h3>15. 準拠法、管轄と言語</h3>
 <p>本規約は日本法に準拠します。本アプリまたは本規約に関する紛争について、法令上別の管轄が強制される場合を除き、東京地方裁判所を第一審の専属的合意管轄裁判所とします。日本語版と英語版に解釈の相違がある場合は、日本語版を優先します。</p>
@@ -86,7 +86,7 @@ export const html = String.raw`
 <p>CafLog Pro adds no ads, the metabolism simulation (the curve of caffeine remaining in your body), Past Records (3D shelves of past weeks and Review for past months), every look and logging drinks with Pro-only looks, Health and iCloud sync, and up to four favorites. See the Pro screen in the App for the current offering.</p>
 
 <h3>5. Auto-renewable subscriptions</h3>
-<p>CafLog Pro is offered as monthly and yearly auto-renewable subscriptions through Apple StoreKit. The price, currency and any free trial or discount, with its conditions, are as shown by the App Store and in the App at the time of purchase. Payment is charged to your Apple Account when you confirm the purchase. A subscription renews automatically unless it is canceled at least 24 hours before the end of the current period, and the renewal is charged within the 24 hours before the period ends. You can review, change or cancel your subscription in Settings on your iPhone under your Apple Account &gt; Subscriptions. Deleting the App does not cancel a subscription.</p>
+<p>CafLog Pro is offered as monthly and yearly auto-renewable subscriptions through Apple StoreKit. The price, currency and any free trial or discount, with its conditions, are as shown by the App Store and in the App at the time of purchase. Payment is charged to your Apple Account when you confirm the purchase. If you use an offer with a free period, such as a free trial, you are charged the regular price when the free period ends and the subscription begins to renew automatically, unless you cancel before the free period ends. A subscription renews automatically unless it is canceled at least 24 hours before the end of the current period, and the renewal is charged within the 24 hours before the period ends. You can review, change or cancel your subscription in Settings on your iPhone under your Apple Account &gt; Subscriptions. Deleting the App does not cancel a subscription.</p>
 <p>To restore purchases, use “Restore Purchases” in Account or on the Pro screen. Offer codes issued through Apple can be redeemed on Apple’s standard screen opened from “Redeem Offer Code”. The conditions of each offer code are as shown on Apple’s screen. Apple processes payments, restoration and offer code redemption; the Provider does not receive payment or credit card information. Subject to any rights that cannot be limited by law, refund eligibility and procedures follow Apple’s terms and processes.</p>
 <p>When a subscription ends, the App returns to the free plan. Your records, drinks, settings, achievements and other data are not deleted. New Health and iCloud sync activity stops, favorites are reduced to one, and the choice of looks returns to the six free looks.</p>
 
@@ -122,7 +122,7 @@ export const html = String.raw`
 <p>The Provider does not warrant that the App’s displays or estimates will be accurate, complete, fit for a particular purpose, continuously available or free from data loss. To the extent permitted by law, liability arising from use or inability to use the App is limited, except where caused by the Provider’s willful misconduct or gross negligence or where mandatory consumer law does not permit such a limitation. Nothing in this section excludes rights you have under applicable law.</p>
 
 <h3>14. Changes to these Terms</h3>
-<p>The Provider may update these Terms when reasonably necessary because of changes to the App or applicable law. Material changes will be announced on this page or through an appropriate notice in the App. Unless otherwise stated, updated Terms apply when published.</p>
+<p>The Provider may update these Terms when reasonably necessary because of changes to the App or applicable law, in accordance with Article 548-4 of the Civil Code of Japan and other applicable law. Before an update takes effect, the Provider will announce the updated Terms and their effective date on this page or through an appropriate notice in the App.</p>
 
 <h3>15. Governing law, jurisdiction and language</h3>
 <p>These Terms are governed by the laws of Japan. Unless applicable law requires another forum, the Tokyo District Court has exclusive jurisdiction as the court of first instance over disputes relating to the App or these Terms. If the Japanese and English versions differ, the Japanese version controls.</p>
