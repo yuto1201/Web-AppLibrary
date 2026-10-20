@@ -1261,6 +1261,13 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
       await expect(englishPolicy.getByRole("link", { name: "developer's contact links", exact: true }))
         .toHaveAttribute("href", "https://app.yutodev.com/#contact");
       await expectLegalHeadingHierarchy(page);
+      await expect(page.locator("footer.page-footer").getByRole("link", { name: "利用規約", exact: true }))
+        .toHaveAttribute("href", "/apps/caflog/terms/");
+      await page.locator("section#caflog-privacy-ja").getByRole("link", { name: "CafLog利用規約", exact: true }).click();
+      await expect(page).toHaveURL(/\/apps\/caflog\/terms\/$/u);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText("CafLog 利用規約 / Terms of Use");
+      await page.goBack();
+      await expect(page).toHaveURL(/\/apps\/caflog\/privacy\/$/u);
     } else {
       await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese only.");
     }

@@ -81,7 +81,7 @@ describe("apps registry", () => {
     const english = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
     for (const term of [
       "Google Mobile Ads SDK", "App Tracking Transparency", "publisher first-party ID", "User Messaging Platform", "CloudKit",
-      "HealthKit", "StoreKit", "オファーコード", "Cloudflare", "GitHub", "記録と宣言を削除", "18歳以上",
+      "HealthKit", "StoreKit", "オファーコード", "広告のプライバシー設定", "タブバーのすぐ上", "Cloudflare", "GitHub", "記録と宣言を削除", "18歳以上",
     ]) {
       expect(japanese).toContain(term);
     }
