@@ -57,9 +57,10 @@ SubLog の詳細は、[ユーザー指定の Ventriloc の参照デザイン](ht
 
 ## ステッカーの実装
 
-計算は `src/lib/drag.ts` の純粋関数（`moveOffset` / `clampOffset` / `isTap` / `baseBox`）に分け、`tests/drag.test.ts` が検証する。ポインタ処理は `src/components/VinylSticker.tsx`。ホームの机は `src/components/Stickers.tsx` が `DESK_ITEMS` とオフセットを持つ。クランプ矩形は `paperBounds`。
+計算は `src/lib/drag.ts` の純粋関数（`moveOffset` / `clampOffset` / `isTap` / `poseBox` / `coverBox` / `stickerPoses`）に分け、`tests/drag.test.ts` が検証する。ポインタ処理は `src/components/VinylSticker.tsx`。ホームの机は `src/components/Stickers.tsx` が `DESK_ITEMS` とオフセットを持つ。クランプ矩形は `paperBounds`。
 
 - `pointerdown` で掴んだ時点のオフセットと矩形を控え、`setPointerCapture` する。移動量は**掴んだ時点のオフセット**へ足す（現在値へ足すと二重加算になる）。
+- クランプする矩形は、掴んだ瞬間の `getBoundingClientRect` ではなく、transform を含まない中心（スロットの中心）と寸法から、静止・一覧行連動・ホバー・掴んでいる間（`--spin` 込み）の各姿勢の外接矩形を足し合わせて求める。掴んだ瞬間の矩形はホバーの transition 次第で揺れ、離して傾きへ戻ると紙の端から数 px はみ出していた。離した瞬間のレイアウトが記録した横幅は transform の transition だけでは測り直されないため、横スクロールが残っていた（Issue #60）。
 - オフセットは `.poster`（紙）へクランプする。上下左右の既存クランプを維持する。viewport 固定にはしない。E2E が初期表示とドラッグ後の両方で `scrollWidth <= clientWidth` を確認する。
 - 移動量がしきい値未満なら「タップ」として個別ページへ遷移する。各アプリステッカーは `<Link>` なのでキーボードでは通常のリンクとして動く。DOM 順は Nav の次なので、作品カードより先にシールへフォーカスが付く。
 - アプリ名はシールに書かない。飾りステッカー（Swift / Tokyo / 一人制作）は装飾なので `aria-hidden`。一人制作は言語を切り替えない。
