@@ -73,6 +73,29 @@ describe("apps registry", () => {
     expect(document).not.toMatch(/example\.(?:com|org)|TODO|FIXME|雛形|記入してください/u);
   });
 
+  it("CafLog の日英プライバシーポリシーが 2.0 の広告・連携・フィードバックを書き、v1.0 の用語を残さない", () => {
+    const document = privacyDocuments.caflog!;
+    expect(document).toMatch(/<section id="caflog-privacy-ja" lang="ja">/u);
+    expect(document).toMatch(/<section id="caflog-privacy-en" lang="en">/u);
+    const japanese = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    const english = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    for (const term of [
+      "Google Mobile Ads SDK", "App Tracking Transparency", "publisher first-party ID", "User Messaging Platform", "CloudKit",
+      "HealthKit", "StoreKit", "オファーコード", "Cloudflare", "GitHub", "記録と宣言を削除", "18歳以上",
+    ]) {
+      expect(japanese).toContain(term);
+    }
+    for (const term of [
+      "Google Mobile Ads SDK", "App Tracking Transparency", "publisher first-party ID", "User Messaging Platform", "CloudKit",
+      "HealthKit", "StoreKit", "offer code", "Cloudflare", "GitHub", "Delete Records and Declarations", "aged 18 and over",
+    ]) {
+      expect(english).toContain(term);
+    }
+    expect(document).not.toMatch(/広告 ?SDK[^。]*運用していません|カフェインゼロ日|称号|すべての情報を削除|docs\.google\.com\/forms|13 ?歳未満/u);
+    expect(document).toContain('href="/apps/caflog/terms/"');
+    expect(document).toContain("https://app.yutodev.com/#contact");
+  });
+
   it("登録された画像が各アプリの公開ディレクトリ内に実在する", () => {
     for (const app of apps) {
       const directory = realpathSync(path.resolve("public/apps", app.slug));
