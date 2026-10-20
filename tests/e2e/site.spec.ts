@@ -1024,14 +1024,16 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
     );
     expect(privacyHtml).toContain(`<meta property="og:title" content="プライバシーポリシー — ${app.name}"/>`);
     expect(privacyHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
-    if (app.slug === "pay-cycle") {
-      const termsResponse = await request.get("/apps/pay-cycle/terms/");
-      expect(termsResponse.ok()).toBe(true);
+    const hasTerms = ["pay-cycle", "caflog"].includes(app.slug);
+    if (hasTerms) {
+      const termsResponse = await request.get(`/apps/${app.slug}/terms/`);
+      expect(termsResponse.status()).toBe(200);
+      expect(termsResponse.url()).toMatch(new RegExp(`/apps/${app.slug}/terms/$`, "u"));
       const termsHtml = await termsResponse.text();
       expect(termsHtml).toContain(
-        '<meta property="og:url" content="https://app.yutodev.com/apps/pay-cycle/terms/"/>',
+        `<meta property="og:url" content="https://app.yutodev.com/apps/${app.slug}/terms/"/>`,
       );
-      expect(termsHtml).toContain('<meta property="og:title" content="利用規約 — PayCycle"/>');
+      expect(termsHtml).toContain(`<meta property="og:title" content="利用規約 — ${app.name}"/>`);
       expect(termsHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
     }
     // request.get は HTML / OGP だけ。紙面 CSS は各法務 URL を直接開いて確認する。
@@ -1040,13 +1042,27 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
     await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
     await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
     await expect(page.locator(".app-shell .sticker")).toHaveCount(0);
-    if (app.slug === "pay-cycle") {
-      await expectLegalHeadingHierarchy(page);
-      await page.goto("/apps/pay-cycle/terms/");
-      await expect(page).toHaveURL(/\/apps\/pay-cycle\/terms\/$/u);
+    if (app.slug === "pay-cycle") await expectLegalHeadingHierarchy(page);
+    if (hasTerms) {
+      await page.goto(`/apps/${app.slug}/terms/`);
+      await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/terms/$`, "u"));
       await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
       await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.light);
       await expectLegalHeadingHierarchy(page);
+    }
+    if (app.slug === "caflog") {
+      // Issue #108: CafLog 2.0 の利用規約。日英を 1 ページに置き、紹介とプライバシーへ戻れる。
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText("CafLog 利用規約 / Terms of Use");
+      await expect(page.locator("section#caflog-terms-ja[lang='ja']")).toContainText("18歳以上");
+      await expect(page.locator("section#caflog-terms-en[lang='en']")).toContainText("auto-renewable subscriptions");
+      await page.getByRole("link", { name: "English", exact: true }).click();
+      await expect(page).toHaveURL(/\/apps\/caflog\/terms\/#caflog-terms-en$/u);
+      await expect(page.locator("footer.page-footer").getByRole("link", { name: "プライバシーポリシー", exact: true }))
+        .toHaveAttribute("href", "/apps/caflog/privacy/");
+      await expect
+        .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
+        .toBe(true);
+      await expectColorContrast(page);
     }
     await page.goto(`/apps/${app.slug}/`);
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/$`, "u"));
@@ -1081,6 +1097,8 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
         await expect(page.locator(`.caflog-moment[href="#${target}"]`)).toHaveCount(1);
         await expect(page.locator(`#${target}`).getByRole("heading")).toHaveText(title!);
       }
+      const related = page.getByRole("navigation", { name: "CafLog 関連リンク", exact: true });
+      await expect(related.getByRole("link", { name: "利用規約", exact: true })).toHaveAttribute("href", "/apps/caflog/terms/");
       const download = page.locator(".caflog-button").first();
       await expect(download).toHaveCSS("background-color", CAFLOG.ink);
       await expect(download).toHaveCSS("color", CAFLOG.white);

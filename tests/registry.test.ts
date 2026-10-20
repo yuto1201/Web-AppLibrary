@@ -30,7 +30,7 @@ describe("apps registry", () => {
   });
 
   it("PayCycle の日英利用規約が承認済み条件とApple標準EULAを保持する", () => {
-    expect(Object.keys(termsDocuments).sort()).toEqual(["flower", "pay-cycle", "simple-pomo"]);
+    expect(Object.keys(termsDocuments).sort()).toEqual(["caflog", "flower", "pay-cycle", "simple-pomo"]);
     const document = termsDocuments["pay-cycle"]!;
     const japanese = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
     const english = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
@@ -42,6 +42,33 @@ describe("apps registry", () => {
     }
     expect(document).toContain("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/");
     expect(document).toContain('href="/apps/pay-cycle/privacy/"');
+    expect(document).toContain("https://app.yutodev.com/#contact");
+    expect(document).not.toMatch(/example\.(?:com|org)|TODO|FIXME|雛形|記入してください/u);
+  });
+
+  it("CafLog の日英利用規約が 2.0 の課金・広告・データ・対象年齢と Apple標準EULA を保持する", () => {
+    const document = termsDocuments.caflog!;
+    expect(document).toMatch(/<section id="caflog-terms-ja" lang="ja">/u);
+    expect(document).toMatch(/<section id="caflog-terms-en" lang="en">/u);
+    const japanese = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    const english = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    for (const term of [
+      "uesugiyuuto", "com.yuto.CafLog", "医療機器", "18歳以上", "自動更新サブスクリプション", "24時間前", "購入を復元する",
+      "オファーコードを使う", "Google AdMob", "iCloud", "ヘルスケア", "記録と宣言を削除", "日本法", "東京地方裁判所", "日本語版", "Apple標準EULA",
+    ]) {
+      expect(japanese).toContain(term);
+    }
+    for (const term of [
+      "uesugiyuuto", "com.yuto.CafLog", "not a medical device", "aged 18 and over", "auto-renewable subscriptions", "24 hours",
+      "Restore Purchases", "Redeem Offer Code", "Google AdMob", "iCloud", "Health", "Delete Records and Declarations", "laws of Japan",
+      "Tokyo District Court", "Japanese version", "Apple Standard EULA",
+    ]) {
+      expect(english).toContain(term);
+    }
+    // v1.0 の称号・「すべての情報を削除」や、2.0 で無くなった無料の件数制限を書かない。
+    expect(document).not.toMatch(/称号|すべての情報を削除|カフェインゼロ日|1日3件|買い切り/u);
+    expect(document).toContain("https://www.apple.com/legal/internet-services/itunes/dev/stdeula/");
+    expect(document).toContain('href="/apps/caflog/privacy/"');
     expect(document).toContain("https://app.yutodev.com/#contact");
     expect(document).not.toMatch(/example\.(?:com|org)|TODO|FIXME|雛形|記入してください/u);
   });
