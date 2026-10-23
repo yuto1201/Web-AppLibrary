@@ -82,12 +82,14 @@ describe("apps registry", () => {
     for (const term of [
       "Google Mobile Ads SDK", "App Tracking Transparency", "publisher first-party ID", "User Messaging Platform", "CloudKit",
       "HealthKit", "StoreKit", "オファーコード", "広告のプライバシー設定", "タブバーのすぐ上", "Cloudflare", "GitHub", "記録と宣言を削除", "18歳以上",
+      "月額と年額", "ローカル通知", "7項目", "CSVファイル", "バックアップ（JSON）",
     ]) {
       expect(japanese).toContain(term);
     }
     for (const term of [
       "Google Mobile Ads SDK", "App Tracking Transparency", "publisher first-party ID", "User Messaging Platform", "CloudKit",
       "HealthKit", "StoreKit", "offer code", "Cloudflare", "GitHub", "Delete Records and Declarations", "aged 18 and over",
+      "monthly and yearly", "local notifications", "seven items", "CSV file", "backup (JSON)",
     ]) {
       expect(english).toContain(term);
     }
