@@ -127,6 +127,23 @@ async function raiseSticker(sticker: import("@playwright/test").Locator) {
   });
 }
 
+/**
+ * 本体の transform の transition が終わるまで待つ。ホバーの起き上がり、離した直後の着地、
+ * ホバーや一覧行連動の解除はどれも 0.3s で補間され、その途中の外接矩形は姿勢次第で数 px 揺れる（#60）。
+ * 呼吸はスロット側で、raiseSticker が止めている。
+ */
+async function waitForStickerPose(sticker: import("@playwright/test").Locator) {
+  await expect.poll(() => sticker.evaluate((el) => el.getAnimations().length)).toBe(0);
+}
+
+/** 紙面上の位置と、比較の前提になる見た目の状態。 */
+async function stickerOnPaper(sticker: import("@playwright/test").Locator) {
+  return sticker.evaluate((el) => {
+    const box = el.getBoundingClientRect();
+    return { top: box.top, docTop: box.top + window.scrollY, pose: `${el.className}${el.matches(":hover") ? " :hover" : ""}` };
+  });
+}
+
 function rotationDegrees(matrix: string): number {
   const values = matrix.match(/matrix\(([^)]+)\)/u)?.[1]?.split(",").map(Number);
   if (!values || values.length < 4) return 0;
@@ -403,7 +420,10 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
   expect(before).not.toBeNull();
 
   // 掴んで大きく動かす。紙の外へ出ようとしてもクランプされる。
+  // 人がするようにホバーで起き上がってから掴む。掴んだ瞬間の姿勢で測ると、離して傾きへ戻るときに
+  // 紙の端から数 px はみ出していた（#60。ホバーの transition の途中で掴むかどうかで結果が変わった）。
   await page.mouse.move(before!.x + before!.width / 2, before!.y + before!.height / 2);
+  await waitForStickerPose(sticker);
   await page.mouse.down();
   await page.mouse.move(before!.x + 400, before!.y - 300, { steps: 12 });
   await page.mouse.up();
@@ -412,10 +432,11 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
   expect(after).not.toBeNull();
   expect(Math.abs(after!.x - before!.x) + Math.abs(after!.y - before!.y)).toBeGreaterThan(20);
 
-  // 動かした後も紙面は横に伸びない。
-  await expect
-    .poll(() => page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth))
-    .toBe(true);
+  // 着地し終えた後も紙面は横に伸びない。離した瞬間のレイアウトが記録した横幅は、
+  // transform の transition だけでは測り直されないので、待っても縮まない。
+  await waitForStickerPose(sticker);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+  expect(await sticker.evaluate((el) => el.getBoundingClientRect().right <= document.documentElement.clientWidth)).toBe(true);
 
   // ドラッグの終わりのクリックでは遷移しない。
   await expect.poll(() => new URL(page.url()).pathname).toBe("/");
@@ -514,10 +535,12 @@ test("置いたシールはスクロールしても viewport に張り付かな�
   await page.mouse.move(before.x + 40, 80, { steps: 16 });
   await page.mouse.up();
 
-  const placed = await sticker.evaluate((el) => {
-    const box = el.getBoundingClientRect();
-    return { top: box.top, docTop: box.top + window.scrollY };
-  });
+  // 離した直後はまだ着地の transition 中で、ポインタの下にあるのでホバーと一覧行連動も付いている。
+  // そのまま測ると、スクロールでポインタが外れた後の解除の補間と混ざり、docTop が数 px ずれる（#60）。
+  // ポインタをスクロールしても下の要素が変わらない sticky の Nav の端へ逃がし、着地し終えた姿勢どうしで比べる。
+  await page.mouse.move(1, 1);
+  await waitForStickerPose(sticker);
+  const placed = await stickerOnPaper(sticker);
 
   const scrolled = await page.evaluate(() => {
     const root = document.documentElement;
@@ -527,10 +550,9 @@ test("置いたシールはスクロールしても viewport に張り付かな�
   });
   expect(scrolled).toBeGreaterThan(200);
 
-  const after = await sticker.evaluate((el) => {
-    const box = el.getBoundingClientRect();
-    return { top: box.top, docTop: box.top + window.scrollY };
-  });
+  await waitForStickerPose(sticker);
+  const after = await stickerOnPaper(sticker);
+  expect(after.pose).toBe(placed.pose);
   // 紙に貼ったままスクロールする。fixed なら viewport 上端に張り付き docTop が動く。
   expect(Math.abs(after.docTop - placed.docTop)).toBeLessThan(2);
   expect(placed.top - after.top).toBeGreaterThan(200);
