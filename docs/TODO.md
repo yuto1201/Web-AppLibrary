@@ -1,8 +1,10 @@
 # TODO — AppLibrary
 
-最終更新日: 2026-10-12
+最終更新日: 2026-10-24
 
-- [ ] PayCycle の最初の画面に主要ボタンとPマーク全体を収める（Issue #85）
+- [ ] CafLog のプライバシーポリシーを 2.0 の内容（日英）に書き直す（Issue #109 / PR #111。CafLog 2.0 の公開と同時にマージする）
+- [x] CafLog の日英の利用規約を `/apps/caflog/terms/` に公開する（Issue #108 / PR #110、main へ統合）
+- [x] PayCycle の最初の画面に主要ボタンとPマーク全体を収める（Issue #85 / PR #86、main へ統合）
 - [x] 花の島 — Flower の紹介ページと日英の support・privacy・terms を公開する（Issue #92 / PR #93、main へ統合・本番確認済み）
 - [x] PayCycle の掲載情報を公開済み1.1へ更新する（Issue #82 / PR #84、main へ統合・本番確認済み）
 - [x] PayCycle の Hero を白枠なしの大きな実アイコンへ変更する（Issue #77 / PR #78、main へ統合・本番確認済み）
@@ -15,7 +17,7 @@
 - [x] ホームをパステルの色面と動かせるアイコンが一体になった遊び場へ刷新する（Issue #65 / PR #66、main へ統合・本番確認済み）
 
 - [x] AppLibrary の配信を Cloudflare Pages に移行し、旧配信先を停止した（Issue #55 / PR #56、完了記録: Issue #58）
-- [ ] 個別ページをアイコンの色味に合わせる（Issue #52）
+- [x] 個別ページをアイコンの色味に合わせる（Issue #52 / PR #53、main へ統合）
 - [x] 個別ページにスクショギャラリーを足す（Issue #50 / PR #51）
 
 - [x] 机のシールに、主張しすぎない呼吸を足す（Issue #45 / PR #46）
