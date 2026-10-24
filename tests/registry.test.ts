@@ -98,6 +98,36 @@ describe("apps registry", () => {
     expect(document).toContain("https://app.yutodev.com/#contact");
   });
 
+  it("CafLog の日英プライバシーポリシーが広告とヘルスケアの条件を、向きを取り違えずに書く", () => {
+    const document = privacyDocuments.caflog!;
+    const japanese = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    const english = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    // 語の有無だけでは「無効」を「有効」と書き違えても通るため、条件を述べる句ごと確かめる。
+    for (const clause of [
+      "App Tracking Transparencyによるトラッキングの許可を求めず",
+      "広告識別子（IDFA）を使用できません",
+      "パーソナライズ広告を無効にし",
+      "publisher first-party IDも無効にします",
+      "CafLog Proの利用中と、購入の状態を確認している間は、広告を読み込みません",
+      "広告のリクエストが認められる場合にだけ広告を読み込みます",
+      "開発者のサーバーや広告SDKへ送りません",
+    ]) {
+      expect(japanese).toContain(clause);
+    }
+    for (const clause of [
+      "does not request tracking permission through App Tracking Transparency",
+      "neither the App nor the advertising SDK can use the advertising identifier (IDFA)",
+      "Ad requests turn off personalized ads",
+      "publisher first-party ID is also disabled",
+      "No ads are loaded while CafLog Pro is active or while purchase status is being checked",
+      "loads ads only when ad requests are permitted",
+      "is not sent to the developer’s servers or the advertising SDK",
+    ]) {
+      expect(english).toContain(clause);
+    }
+    expect(document).not.toMatch(/(?:パーソナライズ広告|first-party ID)[^。]*有効にします|(?:personalized ads|first-party ID) (?:is|are) enabled/u);
+  });
+
   it("登録された画像が各アプリの公開ディレクトリ内に実在する", () => {
     for (const app of apps) {
       const directory = realpathSync(path.resolve("public/apps", app.slug));
