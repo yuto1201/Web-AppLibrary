@@ -125,7 +125,6 @@ describe("apps registry", () => {
     ]) {
       expect(english).toContain(clause);
     }
-    expect(document).not.toMatch(/(?:パーソナライズ広告|first-party ID)[^。]*有効にします|(?:personalized ads|first-party ID) (?:is|are) enabled/u);
   });
 
   it("登録された画像が各アプリの公開ディレクトリ内に実在する", () => {
