@@ -21,10 +21,7 @@ const privacyContacts: Record<string, { label: string; url: string }> = {
     label: "SubLog お問い合わせフォーム",
     url: "https://docs.google.com/forms/d/e/1FAIpQLSfm2fsJLBAy4CVIBscx2ueab2znR5pYTzxZo7ntUULdtaoODg/viewform",
   },
-  caflog: {
-    label: "CafLog お問い合わせフォーム",
-    url: "https://docs.google.com/forms/d/e/1FAIpQLSfwkDqyQ_NutiUPmFnTw01q9hIgVFbHFzGJp95h6qgYd5awQQ/viewform",
-  },
+  caflog: { label: "開発者の連絡先", url: "https://app.yutodev.com/#contact" },
   "dev-tools": { label: "Dev-Tools お問い合わせ", url: "https://github.com/yuto1201/Dev-Tools/issues" },
 };
 
@@ -1276,6 +1273,23 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
       await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
       await expect(page).toHaveURL(/\/apps\/pay-cycle\/privacy\/$/u);
       await expectLegalHeadingHierarchy(page);
+    } else if (app.slug === "caflog") {
+      // Issue #109: CafLog 2.0 のポリシーは日英を 1 ページに置く。
+      await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese and English.");
+      await expect(page.locator("section#caflog-privacy-ja[lang='ja']")).toContainText("Google AdMob");
+      const englishPolicy = page.locator("section#caflog-privacy-en[lang='en']");
+      await expect(englishPolicy).toBeVisible();
+      await expect(englishPolicy).toContainText("App Tracking Transparency");
+      await expect(englishPolicy.getByRole("link", { name: "developer's contact links", exact: true }))
+        .toHaveAttribute("href", "https://app.yutodev.com/#contact");
+      await expectLegalHeadingHierarchy(page);
+      await expect(page.locator("footer.page-footer").getByRole("link", { name: "利用規約", exact: true }))
+        .toHaveAttribute("href", "/apps/caflog/terms/");
+      await page.locator("section#caflog-privacy-ja").getByRole("link", { name: "CafLog利用規約", exact: true }).click();
+      await expect(page).toHaveURL(/\/apps\/caflog\/terms\/$/u);
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText("CafLog 利用規約 / Terms of Use");
+      await page.goBack();
+      await expect(page).toHaveURL(/\/apps\/caflog\/privacy\/$/u);
     } else {
       await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese only.");
     }

@@ -73,6 +73,60 @@ describe("apps registry", () => {
     expect(document).not.toMatch(/example\.(?:com|org)|TODO|FIXME|雛形|記入してください/u);
   });
 
+  it("CafLog の日英プライバシーポリシーが 2.0 の広告・連携・フィードバックを書き、v1.0 の用語を残さない", () => {
+    const document = privacyDocuments.caflog!;
+    expect(document).toMatch(/<section id="caflog-privacy-ja" lang="ja">/u);
+    expect(document).toMatch(/<section id="caflog-privacy-en" lang="en">/u);
+    const japanese = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    const english = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    for (const term of [
+      "Google Mobile Ads SDK", "App Tracking Transparency", "publisher first-party ID", "User Messaging Platform", "CloudKit",
+      "HealthKit", "StoreKit", "オファーコード", "広告のプライバシー設定", "タブバーのすぐ上", "Cloudflare", "GitHub", "記録と宣言を削除", "18歳以上",
+      "月額と年額", "ローカル通知", "7項目", "CSVファイル", "バックアップ（JSON）",
+    ]) {
+      expect(japanese).toContain(term);
+    }
+    for (const term of [
+      "Google Mobile Ads SDK", "App Tracking Transparency", "publisher first-party ID", "User Messaging Platform", "CloudKit",
+      "HealthKit", "StoreKit", "offer code", "Cloudflare", "GitHub", "Delete Records and Declarations", "aged 18 and over",
+      "monthly and yearly", "local notifications", "seven items", "CSV file", "backup (JSON)",
+    ]) {
+      expect(english).toContain(term);
+    }
+    expect(document).not.toMatch(/広告 ?SDK[^。]*運用していません|カフェインゼロ日|称号|すべての情報を削除|docs\.google\.com\/forms|13 ?歳未満/u);
+    expect(document).toContain('href="/apps/caflog/terms/"');
+    expect(document).toContain("https://app.yutodev.com/#contact");
+  });
+
+  it("CafLog の日英プライバシーポリシーが広告とヘルスケアの条件を、向きを取り違えずに書く", () => {
+    const document = privacyDocuments.caflog!;
+    const japanese = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    const english = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
+    // 語の有無だけでは「無効」を「有効」と書き違えても通るため、条件を述べる句ごと確かめる。
+    for (const clause of [
+      "App Tracking Transparencyによるトラッキングの許可を求めず",
+      "広告識別子（IDFA）を使用できません",
+      "パーソナライズ広告を無効にし",
+      "publisher first-party IDも無効にします",
+      "CafLog Proの利用中と、購入の状態を確認している間は、広告を読み込みません",
+      "広告のリクエストが認められる場合にだけ広告を読み込みます",
+      "開発者のサーバーや広告SDKへ送りません",
+    ]) {
+      expect(japanese).toContain(clause);
+    }
+    for (const clause of [
+      "does not request tracking permission through App Tracking Transparency",
+      "neither the App nor the advertising SDK can use the advertising identifier (IDFA)",
+      "Ad requests turn off personalized ads",
+      "publisher first-party ID is also disabled",
+      "No ads are loaded while CafLog Pro is active or while purchase status is being checked",
+      "loads ads only when ad requests are permitted",
+      "is not sent to the developer’s servers or the advertising SDK",
+    ]) {
+      expect(english).toContain(clause);
+    }
+  });
+
   it("登録された画像が各アプリの公開ディレクトリ内に実在する", () => {
     for (const app of apps) {
       const directory = realpathSync(path.resolve("public/apps", app.slug));
