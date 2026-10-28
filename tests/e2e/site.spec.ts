@@ -1117,6 +1117,9 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
         await expect(page.locator(`#${target}`).getByRole("heading")).toHaveText(title!);
       }
       const related = page.getByRole("navigation", { name: "CafLog 関連リンク", exact: true });
+      // Issue #116: App Store のサポート URL（この紹介ページ）から開発者の連絡先へ辿れる。
+      await expect(related.getByRole("link", { name: "サポート", exact: true }))
+        .toHaveAttribute("href", "https://app.yutodev.com/#contact");
       await expect(related.getByRole("link", { name: "利用規約", exact: true })).toHaveAttribute("href", "/apps/caflog/terms/");
       const download = page.locator(".caflog-button").first();
       await expect(download).toHaveCSS("background-color", CAFLOG.ink);
