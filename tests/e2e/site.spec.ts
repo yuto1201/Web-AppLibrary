@@ -1106,11 +1106,19 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
         await expect(link).toHaveAttribute("target", "_blank");
         await expect(link).toHaveAttribute("rel", /noopener/u);
       }
+      // Issue #119: CafLog 2.0 の画面と機能。ヒーローは 2.0 のホームの画面で、1.0 の用語を残さない。
+      await expect(heroImage).toHaveAttribute("src", /\/apps\/caflog\/screenshots\/1\.webp$/u);
+      await expect(page.locator(".caflog-site")).toContainText("26 種類");
+      await expect(page.locator(".caflog-site")).toContainText("3D の景色");
+      for (const retired of ["18 種類", "13 種類の分析", "21 種類の称号", "10 秒で記録"]) {
+        await expect(page.locator(".caflog-site")).not.toContainText(retired);
+      }
+      await expect(page.locator("#screenshots .shot-count")).toHaveText("1 / 6");
       const proFeature = page.locator("#features .feature-row").filter({ has: page.locator(".caflog-pro") });
-      await expect(proFeature.getByRole("heading")).toHaveText("Pro 連携機能");
+      await expect(proFeature.getByRole("heading")).toHaveText("CafLog Pro");
       for (const [target, title] of [
-        ["caflog-feature-log", "10 秒で記録"],
-        ["caflog-feature-flow", "体内残量をリアルタイム計算"],
+        ["caflog-feature-log", "さっと記録"],
+        ["caflog-feature-flow", "からだに残る量を計算"],
         ["caflog-feature-sleep", "睡眠への影響を確認"],
       ]) {
         await expect(page.locator(`.caflog-moment[href="#${target}"]`)).toHaveCount(1);
@@ -1365,7 +1373,7 @@ test("CafLog は320〜1280pxで実画面とアイコンを表示し、配布先�
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/apps/caflog/");
     const heroImage = page.locator(".caflog-hero-image");
-    await expect(heroImage).toHaveAttribute("src", "/apps/caflog/screenshots/4.png");
+    await expect(heroImage).toHaveAttribute("src", "/apps/caflog/screenshots/1.webp");
     await expect(heroImage).toBeVisible();
     const icon = page.locator(".caflog-icon-card img");
     await expect(icon).toHaveAttribute("src", "/apps/caflog/icon.png");

@@ -201,12 +201,18 @@ describe("apps registry", () => {
     }
   });
 
-  it("CafLog 1.0 の公開機能数を App Store の配布情報と一致させる", () => {
+  it("CafLog 2.0 の機能と画面を App Store の説明と実際のアプリに合わせ、1.0 の用語を残さない（Issue #119）", () => {
     const caflog = getApp("caflog")!;
-    expect(caflog.version).toBe("1.0");
-    expect(caflog.features.find(({ title }) => title === "10 秒で記録")?.description).toContain("18 種類");
-    expect(caflog.features.find(({ title }) => title === "13 種類の分析")).toBeDefined();
-    expect(caflog.features.find(({ title }) => title === "21 種類の称号")).toBeDefined();
+    expect(caflog.version).toBe("2.0");
+    expect(caflog.features.find(({ title }) => title === "さっと記録")?.description).toContain("26 種類");
+    expect(caflog.features.find(({ title }) => title === "記録が 3D の景色に")).toBeDefined();
+    expect(caflog.features.find(({ title }) => title === "続けるほど増えるごほうび")?.description).toContain("6 段の実績");
+    expect(caflog.features.find(({ title }) => title === "CafLog Pro")?.description).toContain("広告なし");
+    expect(caflog.screenshots).toEqual(["1.webp", "2.webp", "3.webp", "4.webp", "5.webp", "6.webp"]);
+    const text = JSON.stringify(caflog);
+    for (const retired of ["18 種類", "13 種類の分析", "21 種類の称号", "10 秒で記録", "Pro 連携機能"]) {
+      expect(text).not.toContain(retired);
+    }
   });
 
   it("SubLog の公開ポリシーが StoreKit 検出とリセット範囲を明示する", () => {
