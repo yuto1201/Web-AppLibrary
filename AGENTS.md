@@ -16,7 +16,7 @@ Next.js の静的出力 (`output: "export"`) を Cloudflare Pages で配信し�
 ## 読む順番
 
 1. この `AGENTS.md`（root 契約）
-2. `docs/TODO.md`（進行中タスク）
+2. GitHub の open Issue（`gh issue list --state open`。進行中タスクと完了状況は Issue / PR だけで管理し、TODO ファイルは置かない）
 3. `docs/deploy/README.md`（公開手順）
 4. `CLAUDE.md`（Claude 向けの補足。この文書と矛盾する場合はこの文書が優先）
 5. `specs/README.md` と対象 Issue（仕様と受け入れ条件）

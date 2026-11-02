@@ -5,7 +5,7 @@
 ## 最初に読むもの
 
 1. [AGENTS.md](AGENTS.md) — 開発規約、ディレクトリ構成、アプリ追加手順
-2. [docs/TODO.md](docs/TODO.md) — 進行中タスク
+2. GitHub の open Issue（`gh issue list --state open`）— 進行中タスク
 3. [docs/deploy/README.md](docs/deploy/README.md) — 公開とデプロイ
 4. [docs/workflow.md](docs/workflow.md) / [docs/verification.md](docs/verification.md) — Issue、レビュー、共通検証
 
