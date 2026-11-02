@@ -78,7 +78,7 @@ export const appSchema = z.object({
   price: z.string().min(1),
   version: z.string().min(1),
 
-  /** 順序が表示順になる。file は public/apps/<slug>/screenshots/ 配下のファイル名、alt は写っている内容の短い日本語の説明。 */
+  /** 順序が表示順になる。file は public/apps/<slug>/screenshots/ 配下のファイル名、alt は写っている画面と主な内容を 1 文で書いた日本語の説明（80 字程度まで）。 */
   screenshots: z.array(screenshotSchema).default([]),
 
   appStoreUrl: z.url().nullable(),
