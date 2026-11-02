@@ -63,7 +63,7 @@ const entries = [
 
     screenshots: [
       { file: "1.png", alt: "ホーム画面。今月の合計 ¥21,150 と日割り・年額、明日の支払い（Kindle Unlimited、Netflix）、有効なサブスクの一覧" },
-      { file: "2.png", alt: "サブスクを追加する画面。名前の入力で Apple TV+ などの候補を出し、金額、請求サイクル、カテゴリ、契約開始日、無料トライアル、通知の日を設定" },
+      { file: "2.png", alt: "サブスクを追加する画面。名前から Apple TV+ などの候補を出し、金額、請求サイクル、カテゴリ、契約開始日、無料トライアル、通知を設定" },
       { file: "3.png", alt: "分析の画面。今月の合計をカテゴリ別に分けたドーナツグラフと、1 年分の月別推移の折れ線グラフ" },
       { file: "4.png", alt: "カレンダーの画面。2026 年 4 月の月表示で支払いのある日に印を付け、合計金額・請求予定・契約中の数と今後の支払いの一覧を表示" },
     ],
@@ -204,7 +204,7 @@ const entries = [
     version: "0.8",
 
     screenshots: [
-      { file: "1.png", alt: "ツールの一覧の画面。ER Diagram Generator、App Store Preview、Design Pocket などのツールを、説明と版の札つきのカードで並べる" },
+      { file: "1.png", alt: "ツールの一覧の画面。ER Diagram Generator、App Store Preview、Design Pocket などを、説明と版の札つきのカードで並べる" },
       { file: "2.png", alt: "ER Diagram のプロジェクトの一覧の画面。新規プロジェクトのボタンと、テーブルの数と日付つきのプロジェクトのカード" },
       { file: "3.png", alt: "Icon Gallery の画面。アイコンの検索欄と種類の絞り込み、名前つきのアイコンの一覧" },
     ],
