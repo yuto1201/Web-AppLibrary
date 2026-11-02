@@ -5,9 +5,9 @@ import { ScreenshotGallery } from "@/components/ScreenshotGallery";
 import "@/styles/caflog.css";
 
 const moments = [
-  { number: "01", label: "A LITTLE RECORD", title: "飲んだら、さっと記録。", copy: "いつものコーヒーも、新しいドリンクも。飲んだ時間と量を、手軽に残す。", featureTitle: "10 秒で記録", target: "caflog-feature-log", symbol: "cup" },
-  { number: "02", label: "YOUR DAILY FLOW", title: "からだの中の、今を知る。", copy: "今、体内にどれくらい残っている？ 時間とともに変わる推定量を確認。", featureTitle: "体内残量をリアルタイム計算", target: "caflog-feature-flow", symbol: "flow" },
-  { number: "03", label: "A QUIETER EVENING", title: "夜のことも、少し意識。", copy: "次の一杯を決める前に。就寝予定時刻の推定残量をチェック。", featureTitle: "睡眠への影響を確認", target: "caflog-feature-sleep", symbol: "moon" },
+  { number: "01", label: "A LITTLE RECORD", title: "飲んだら、さっと記録。", copy: "26 種類のドリンクから選ぶだけ。飲んだ一杯は、3D の景色になってたまっていく。", featureTitle: "さっと記録", target: "caflog-feature-log", symbol: "cup" },
+  { number: "02", label: "YOUR DAILY FLOW", title: "からだの中の、今を知る。", copy: "今、体にどれくらい残っている？ 時間とともに変わる目安を確認。", featureTitle: "からだに残る量を計算", target: "caflog-feature-flow", symbol: "flow" },
+  { number: "03", label: "A QUIETER EVENING", title: "夜のことも、少し意識。", copy: "次の一杯を決める前に。寝るころの残りの目安を、コーヒーくんがひとことで。", featureTitle: "睡眠への影響を確認", target: "caflog-feature-sleep", symbol: "moon" },
 ] as const;
 
 function ArrowIcon({ direction = "out" }: { direction?: "out" | "down" | "both" }) {
@@ -71,7 +71,7 @@ export function CafLogPage({ app }: { app: App }) {
                 <Image src={`/apps/${app.slug}/${app.icon}`} width={124} height={124} alt="CafLog のアプリアイコン" />
               </div> : null}
               <div className="caflog-hero-phone">
-                <Image className="caflog-hero-image" src={`/apps/${app.slug}/screenshots/4.png`} width={1179} height={2556} alt="CafLog の実際のホーム画面。今日の摂取量と体内カフェインの推定量、飲んだ記録を表示" priority />
+                <Image className="caflog-hero-image" src={`/apps/${app.slug}/screenshots/1.webp`} width={1206} height={2622} alt="CafLog の実際のホーム画面。今日のカフェインの量とコーヒーくん、週の記録、飲んだ記録がたまった 3D の景色を表示" priority />
               </div>
               <figcaption className="caflog-stage-caption">CafLogの実際のホーム画面</figcaption>
             </figure>
@@ -117,7 +117,7 @@ export function CafLogPage({ app }: { app: App }) {
             <ul className="caflog-feature-list">
               {app.features.map((feature, index) => <li className="feature-row" id={moments.find((moment) => moment.featureTitle === feature.title)?.target ?? `caflog-feature-${index + 1}`} key={feature.title}>
                 <span className="caflog-feature-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
-                <div>{feature.title === "Pro 連携機能" ? <span className="caflog-pro" lang="en">PRO</span> : null}<h3>{feature.title}</h3><p>{feature.description}</p></div>
+                <div>{feature.title === "CafLog Pro" ? <span className="caflog-pro" lang="en">PRO</span> : null}<h3>{feature.title}</h3><p>{feature.description}</p></div>
               </li>)}
             </ul>
             <p className="caflog-estimate-note">体内残量はモデルに基づく推定値です。個人差があり、医療上の診断や判断を行うものではありません。</p>
