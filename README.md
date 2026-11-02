@@ -77,7 +77,7 @@ sessionStorage.removeItem('applibrary_hero_seen'); location.reload();
 - SubLog / CafLog / Dev-Tools の 3 本を掲載
 - iOS と Web のプラットフォーム絞り込みを実データで検証
 
-未完了項目は [docs/TODO.md](docs/TODO.md) を参照。2026-09-01 時点では 0 件。
+未完了項目は GitHub の [Issues](https://github.com/yuto1201/Web-AppLibrary/issues) で管理する。
 
 ---
 
