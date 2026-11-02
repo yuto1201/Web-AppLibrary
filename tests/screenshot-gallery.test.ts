@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { screenshotAlt, screenshotSrc, stepIndex, wrapIndex } from "../src/lib/screenshot-gallery";
+import { screenshotSrc, screenshotThumbLabel, stepIndex, wrapIndex } from "../src/lib/screenshot-gallery";
 
 describe("wrapIndex", () => {
   it("範囲内はそのまま", () => {
@@ -38,7 +38,7 @@ describe("screenshot copy", () => {
     expect(screenshotSrc("caflog", "2.png")).toBe("/apps/caflog/screenshots/2.png");
   });
 
-  it("alt は 1 始まりの日本語", () => {
-    expect(screenshotAlt("CafLog", 0)).toBe("CafLog スクリーンショット 1");
+  it("サムネイルの名前は 1 始まりの番号と画面の説明", () => {
+    expect(screenshotThumbLabel(1, "飲んだものを記録する画面")).toBe("2 枚目：飲んだものを記録する画面");
   });
 });

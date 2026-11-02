@@ -85,7 +85,7 @@ export function SubLogPage({ app }: { app: App }) {
                   </ol>
                   <p className="sublog-screen-note">掲載している画面は実際のアプリのスクリーンショットです。</p>
                 </div>
-                <ScreenshotGallery slug={app.slug} name={app.name} files={app.screenshots} />
+                <ScreenshotGallery slug={app.slug} shots={app.screenshots} />
               </div>
             </div>
           </section>

@@ -370,7 +370,7 @@ test("作品カードは実画面と掲載情報を持ち、検索・フィル�
     const preview = row.locator(".app-row-visual .app-preview-phone img");
     await preview.scrollIntoViewIfNeeded();
     await expect(preview).toHaveAttribute("alt", "");
-    await expect(preview).toHaveAttribute("src", app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0]}` : `/apps/${app.slug}/${app.icon}`);
+    await expect(preview).toHaveAttribute("src", app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0].file}` : `/apps/${app.slug}/${app.icon}`);
     await expect(row.locator(".app-preview-phone")).toHaveAttribute("data-kind", app.screenshots.length ? "screen" : "icon");
     await expect.poll(() => preview.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
   }
@@ -1214,8 +1214,8 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
     await expect(featured).toHaveCount(1);
     await featured.scrollIntoViewIfNeeded();
     await expect(featured).toBeVisible();
-    await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[0]}`);
-    await expect(featured).toHaveAttribute("alt", `${app.name} スクリーンショット 1`);
+    await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[0]!.file}`);
+    await expect(featured).toHaveAttribute("alt", app.screenshots[0]!.alt);
     await expect.poll(() => featured.evaluate((element) => (element as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
     await expect(page.getByRole("dialog")).toHaveCount(0);
     if (app.screenshots.length === 1) {
@@ -1223,13 +1223,19 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
     } else {
       const thumbs = page.locator("#screenshots .shot-thumbs button");
       await expect(thumbs).toHaveCount(app.screenshots.length);
+      for (const [shotIndex, shot] of app.screenshots.entries()) {
+        await expect(thumbs.nth(shotIndex)).toHaveAccessibleName(`${shotIndex + 1} 枚目：${shot.alt}`);
+      }
       await thumbs.nth(1).click();
-      await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[1]}`);
+      await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${app.screenshots[1]!.file}`);
+      await expect(featured).toHaveAttribute("alt", app.screenshots[1]!.alt);
+      await expect(thumbs.nth(1)).toHaveAttribute("aria-pressed", "true");
       await expect(page.locator("#screenshots .shot-count")).toHaveText(`2 / ${app.screenshots.length}`);
       await page.locator(".shot-gallery").focus();
       await page.keyboard.press("ArrowRight");
-      const afterArrow = app.screenshots[2] ?? app.screenshots[0];
-      await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${afterArrow}`);
+      const afterArrow = app.screenshots[2] ?? app.screenshots[0]!;
+      await expect(featured).toHaveAttribute("src", `/apps/${app.slug}/screenshots/${afterArrow.file}`);
+      await expect(featured).toHaveAttribute("alt", afterArrow.alt);
     }
     if (app.slug === "pay-cycle") {
       const storeLinks = page.locator('a[href*="apps.apple.com"]');
@@ -1357,12 +1363,15 @@ test("CafLog の案内リンクと実画面ギャラリーをキーボードで�
   const gallery = page.getByRole("group", { name: "Screenshots", exact: true });
   const featured = gallery.locator(".shot-featured img");
   await gallery.getByRole("button", { name: "Next", exact: true }).click();
-  await expect(featured).toHaveAttribute("src", `/apps/caflog/screenshots/${app.screenshots[1]}`);
+  await expect(featured).toHaveAttribute("src", `/apps/caflog/screenshots/${app.screenshots[1]!.file}`);
+  await expect(featured).toHaveAttribute("alt", app.screenshots[1]!.alt);
   await gallery.getByRole("button", { name: "Previous", exact: true }).click();
-  await expect(featured).toHaveAttribute("src", `/apps/caflog/screenshots/${app.screenshots[0]}`);
+  await expect(featured).toHaveAttribute("src", `/apps/caflog/screenshots/${app.screenshots[0]!.file}`);
+  await expect(featured).toHaveAttribute("alt", app.screenshots[0]!.alt);
   await gallery.focus();
   await page.keyboard.press("ArrowLeft");
-  await expect(featured).toHaveAttribute("src", `/apps/caflog/screenshots/${app.screenshots.at(-1)}`);
+  await expect(featured).toHaveAttribute("src", `/apps/caflog/screenshots/${app.screenshots.at(-1)!.file}`);
+  await expect(featured).toHaveAttribute("alt", app.screenshots.at(-1)!.alt);
   await expect(gallery.locator(".shot-count")).toHaveText(`${app.screenshots.length} / ${app.screenshots.length}`);
   await expect(gallery.locator(".shot-thumb").last()).toHaveAttribute("aria-pressed", "true");
   await expect.poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth)).toBe(true);
@@ -1509,7 +1518,8 @@ test("PayCycle の案内・実画面・質問をキーボードで操作でき�
   await expect(gallery.locator(".shot-thumb")).toHaveCount(5);
   await gallery.focus();
   await page.keyboard.press("ArrowLeft");
-  await expect(featured).toHaveAttribute("src", `/apps/pay-cycle/screenshots/${app.screenshots.at(-1)}`);
+  await expect(featured).toHaveAttribute("src", `/apps/pay-cycle/screenshots/${app.screenshots.at(-1)!.file}`);
+  await expect(featured).toHaveAttribute("alt", app.screenshots.at(-1)!.alt);
   await expect(gallery.locator(".shot-count")).toHaveText("5 / 5");
   await expect(gallery.locator(".shot-thumb").last()).toHaveAttribute("aria-pressed", "true");
   await gallery.getByRole("button", { name: "Next", exact: true }).focus();
@@ -1603,7 +1613,7 @@ test("展示はキーボードで選べ、画面・状態・詳細リンクが�
     await expect(choice).toHaveAttribute("aria-pressed", "true");
     await expect(spotlight.locator('[aria-pressed="true"]')).toHaveCount(1);
     const screenshot = spotlight.getByRole("img", { name: `${app.name} — ${app.screenshots.length ? i18n.ja.spotlight_screen : i18n.ja.spotlight_icon}` });
-    await expect(screenshot).toHaveAttribute("src", app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0]}` : `/apps/${app.slug}/${app.icon}`);
+    await expect(screenshot).toHaveAttribute("src", app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0].file}` : `/apps/${app.slug}/${app.icon}`);
     await expect.poll(() => screenshot.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
     await expect(spotlight.locator(".spotlight-meta")).toContainText(statusLabel(app.status, i18n.ja));
     await expect(spotlight.getByRole("link")).toHaveAttribute("href", `/apps/${app.slug}/`);

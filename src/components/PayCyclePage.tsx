@@ -87,7 +87,7 @@ export function PayCyclePage({ app }: { app: App }) {
               </ol>
               <p className="paycycle-screen-note">画面下のサムネイルや前後ボタンで切り替えられます。<br />掲載画面の金額・名称はサンプルです。</p>
             </div>
-            <ScreenshotGallery slug={app.slug} name={app.name} files={app.screenshots} />
+            <ScreenshotGallery slug={app.slug} shots={app.screenshots} />
           </div>
         </section>
 

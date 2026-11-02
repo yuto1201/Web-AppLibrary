@@ -42,6 +42,11 @@ const featuresSchema = z
     { message: "同じアプリ内で feature の title が重複している" },
   );
 
+const screenshotSchema = z.object({
+  file: z.string().min(1),
+  alt: z.string().trim().min(1),
+});
+
 export const appSchema = z.object({
   /** URL に使う識別子。public/apps/<slug>/ と対応する。 */
   slug: z
@@ -73,8 +78,8 @@ export const appSchema = z.object({
   price: z.string().min(1),
   version: z.string().min(1),
 
-  /** public/apps/<slug>/screenshots/ 配下のファイル名。順序が表示順になる。 */
-  screenshots: z.array(z.string().min(1)).default([]),
+  /** 順序が表示順になる。file は public/apps/<slug>/screenshots/ 配下のファイル名、alt は写っている画面の名前と主な内容を書いた日本語の説明（80 字程度まで）。 */
+  screenshots: z.array(screenshotSchema).default([]),
 
   appStoreUrl: z.url().nullable(),
   /** 外部サイトで公開しているアプリ用。App Store 以外の導線。 */
