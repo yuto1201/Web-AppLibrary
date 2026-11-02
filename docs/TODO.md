@@ -1,8 +1,11 @@
 # TODO — AppLibrary
 
-最終更新日: 2026-10-24
+最終更新日: 2026-11-02
 
-- [ ] CafLog のプライバシーポリシーを 2.0 の内容（日英）に書き直す（Issue #109 / PR #111。CafLog 2.0 の公開と同時にマージする）
+- [x] 画面の一覧の代わりの文と読み上げを、画面ごとの説明にする（Issue #121 / PR #124、main へ統合）
+- [x] CafLog の紹介ページを 2.0 に合わせる（Issue #119 / PR #120、CafLog 2.0 の公開後に main へ統合・本番確認済み）
+- [x] CafLog の紹介ページのフッターにサポートのリンクを出す（Issue #116 / PR #117、main へ統合）
+- [x] CafLog のプライバシーポリシーを 2.0 の内容（日英）に書き直す（Issue #109 / PR #111、main へ統合。CafLog 2.0 は 2026-10-30 に公開）
 - [x] CafLog の日英の利用規約を `/apps/caflog/terms/` に公開する（Issue #108 / PR #110、main へ統合）
 - [x] PayCycle の最初の画面に主要ボタンとPマーク全体を収める（Issue #85 / PR #86、main へ統合）
 - [x] 花の島 — Flower の紹介ページと日英の support・privacy・terms を公開する（Issue #92 / PR #93、main へ統合・本番確認済み）
