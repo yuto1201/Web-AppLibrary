@@ -61,7 +61,12 @@ const entries = [
     price: "無料",
     version: "1.0",
 
-    screenshots: ["1.png", "2.png", "3.png", "4.png"],
+    screenshots: [
+      { file: "1.png", alt: "ホーム画面。今月の合計 ¥21,150 と日割り・年額、明日の支払い（Kindle Unlimited、Netflix）、有効なサブスクの一覧" },
+      { file: "2.png", alt: "サブスクを追加する画面。名前の入力で Apple TV+ などの候補を出し、金額、請求サイクル、カテゴリ、契約開始日、無料トライアル、通知の日を設定" },
+      { file: "3.png", alt: "分析の画面。今月の合計をカテゴリ別に分けたドーナツグラフと、1 年分の月別推移の折れ線グラフ" },
+      { file: "4.png", alt: "カレンダーの画面。2026 年 4 月の月表示で支払いのある日に印を付け、合計金額・請求予定・契約中の数と今後の支払いの一覧を表示" },
+    ],
 
     appStoreUrl: "https://apps.apple.com/us/app/sublog/id6761677813",
     siteUrl: null,
@@ -131,7 +136,14 @@ const entries = [
     price: "無料",
     version: "2.0",
 
-    screenshots: ["1.webp", "2.webp", "3.webp", "4.webp", "5.webp", "6.webp"],
+    screenshots: [
+      { file: "1.webp", alt: "ホーム画面。今日のカフェイン 100mg と上限までの残り、週ごとの記録の数、飲んだ容器が積み重なった 3D の景色と「飲んだものを記録」のボタン" },
+      { file: "2.webp", alt: "飲んだものを記録する画面。コーヒー・お茶・エナジードリンクの絞り込みと、お気に入り、カフェインの量つきの飲み物の一覧" },
+      { file: "3.webp", alt: "睡眠への影響の画面。寝るころに残るカフェイン 15.1mg を閾値 50mg と比べるメーターと、最後の一杯の目安から就寝までの今日の見通し" },
+      { file: "4.webp", alt: "振り返りの画面。2026 年 10 月のカレンダーを日ごとの量の濃さで塗り分け、上限超過と飲まなかった日の印、選んだ日の記録を表示" },
+      { file: "5.webp", alt: "実績の画面。いまの実績「セルフケア上手」と次の実績までの点数、実績ごとに増えるアイコンの着せ替えやコーヒーくんの新しい絵" },
+      { file: "6.webp", alt: "ピンクの色に着せ替えたホーム画面。今日のカフェインと週の記録、飲んだ容器の 3D の景色を表示" },
+    ],
 
     appStoreUrl: "https://apps.apple.com/us/app/caflog/id6760961086",
     siteUrl: null,
@@ -191,7 +203,11 @@ const entries = [
     price: "無料",
     version: "0.8",
 
-    screenshots: ["1.png", "2.png", "3.png"],
+    screenshots: [
+      { file: "1.png", alt: "ツールの一覧の画面。ER Diagram Generator、App Store Preview、Design Pocket などのツールを、説明と版の札つきのカードで並べる" },
+      { file: "2.png", alt: "ER Diagram のプロジェクトの一覧の画面。新規プロジェクトのボタンと、テーブルの数と日付つきのプロジェクトのカード" },
+      { file: "3.png", alt: "Icon Gallery の画面。アイコンの検索欄と種類の絞り込み、名前つきのアイコンの一覧" },
+    ],
 
     appStoreUrl: null,
     siteUrl: "https://yuto1201.github.io/Dev-Tools/",
@@ -250,11 +266,11 @@ const entries = [
     "price": "無料・広告非表示の買い切りあり",
     "version": "1.1",
     "screenshots": [
-      "1.png",
-      "2.png",
-      "3.png",
-      "4.png",
-      "5.png"
+      { "file": "1.png", "alt": "ホーム画面。2026 年 9 月分のサイクルで、給料と登録済みの支払いの差額 ¥137,670 と、カード引き落とし・家賃・電気代の予定と状態" },
+      { "file": "2.png", "alt": "統計の画面。サイクルのカレンダーに給料と支払いの日を示し、選んだ日の支払いと、月ごとの残額の推移のグラフを表示" },
+      { "file": "3.png", "alt": "支払いの一覧の画面。2026 年 9 月分の予定の支払いを、日付、支払い方法、口座、繰り返し、確認待ちなどの状態とあわせて表示" },
+      { "file": "4.png", "alt": "支払いを追加する画面。繰り返しの単位と間隔、毎月の支払日、回数、金額、口座引き落としか銀行振込か、引落元の口座を設定" },
+      { "file": "5.png", "alt": "設定の画面。給料・サイクル、支払い、銀行口座・カード、通知、iCloud 同期、データの書き出し・読み込みと、サポートの項目" }
     ],
     "appStoreUrl": "https://apps.apple.com/jp/app/id6809831827",
     "siteUrl": null

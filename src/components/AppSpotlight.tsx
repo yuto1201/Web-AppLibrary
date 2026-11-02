@@ -13,7 +13,7 @@ export function AppSpotlight() {
   const app = apps.find((entry) => entry.slug === selected) ?? apps[0];
   if (!app) return null;
   const index = apps.indexOf(app) + 1;
-  const screenshot = app.screenshots[0];
+  const screenshot = app.screenshots[0]?.file;
 
   return (
     <section className="spotlight" aria-labelledby="spotlight-heading">

@@ -11,6 +11,6 @@ export function screenshotSrc(slug: string, file: string): string {
   return `/apps/${slug}/screenshots/${file}`;
 }
 
-export function screenshotAlt(name: string, index: number): string {
-  return `${name} スクリーンショット ${index + 1}`;
+export function screenshotThumbLabel(index: number, alt: string): string {
+  return `${index + 1} 枚目：${alt}`;
 }

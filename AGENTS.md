@@ -102,7 +102,7 @@ tests/                    Vitest / Playwright
 
 1. `public/apps/<slug>/icon.png` を置く（正方形、128x128 以上）
 2. `public/apps/<slug>/screenshots/1.png` 以降を置く（縦長、3〜5 枚推奨）
-3. `src/data/registry.ts` の配列へ 1 件追加する。`features` にアイコン・見出し・説明を 1 件以上設定し、`screenshots` に実ファイル名を並べる。`stickerNote`（日本語 1〜24 字）も必須
+3. `src/data/registry.ts` の配列へ 1 件追加する。`features` にアイコン・見出し・説明を 1 件以上設定し、`screenshots` に各画面の実ファイル名（`file`）と、実際の画像を見て書いた写っている内容の短い日本語の説明（`alt`）を並べる。`stickerNote`（日本語 1〜24 字）も必須
 4. `src/lib/app-tone.ts` に詳細ページの wash / ink / darkInk を足し、`src/styles/app-page.css` の同じ `data-tone` へ同じ hex を書く。法務ページには付けない。未登録だとテストが落ちる
 5. `src/lib/sticker-desk.ts` の `APP_DESK` へ形（`shape`）と役割（`anchor`）を足し、`src/styles/standard.css` に `.sticker-slot[data-key="<slug>"]` の初期位置を書く。規則が無いと右下の山へ落ちる
 6. `src/data/privacy/<slug>.ts` を作り、`src/data/privacy/registry.ts` へ同じ slug で登録する

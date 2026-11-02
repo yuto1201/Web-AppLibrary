@@ -1,23 +1,23 @@
 "use client";
 
 import { useState, type KeyboardEvent } from "react";
-import { screenshotAlt, screenshotSrc, stepIndex } from "@/lib/screenshot-gallery";
+import type { App } from "@/data/schema";
+import { screenshotSrc, screenshotThumbLabel, stepIndex } from "@/lib/screenshot-gallery";
 
 type ScreenshotGalleryProps = {
   slug: string;
-  name: string;
-  files: string[];
+  shots: App["screenshots"];
 };
 
-export function ScreenshotGallery({ slug, name, files }: ScreenshotGalleryProps) {
+export function ScreenshotGallery({ slug, shots }: ScreenshotGalleryProps) {
   const [index, setIndex] = useState(0);
-  if (files.length === 0) return null;
+  if (shots.length === 0) return null;
 
-  const current = files[index]!;
-  const multiple = files.length > 1;
+  const current = shots[index]!;
+  const multiple = shots.length > 1;
 
   const go = (delta: number) => {
-    setIndex((currentIndex) => stepIndex(currentIndex, delta, files.length));
+    setIndex((currentIndex) => stepIndex(currentIndex, delta, shots.length));
   };
 
   const onKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
@@ -42,7 +42,7 @@ export function ScreenshotGallery({ slug, name, files }: ScreenshotGalleryProps)
     >
       <figure className="shot-featured">
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={screenshotSrc(slug, current)} alt={screenshotAlt(name, index)} />
+        <img src={screenshotSrc(slug, current.file)} alt={current.alt} />
       </figure>
       {multiple ? (
         <>
@@ -51,24 +51,24 @@ export function ScreenshotGallery({ slug, name, files }: ScreenshotGalleryProps)
               Previous
             </button>
             <span className="shot-count" aria-live="polite">
-              {index + 1} / {files.length}
+              {index + 1} / {shots.length}
             </span>
             <button type="button" className="shot-step" onClick={() => go(1)}>
               Next
             </button>
           </div>
           <div className="shot-thumbs">
-            {files.map((file, fileIndex) => (
+            {shots.map((shot, fileIndex) => (
               <button
-                key={file}
+                key={shot.file}
                 type="button"
                 className="shot-thumb"
                 aria-pressed={fileIndex === index}
-                aria-label={screenshotAlt(name, fileIndex)}
+                aria-label={screenshotThumbLabel(fileIndex, shot.alt)}
                 onClick={() => setIndex(fileIndex)}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={screenshotSrc(slug, file)} alt="" />
+                <img src={screenshotSrc(slug, shot.file)} alt="" />
               </button>
             ))}
           </div>

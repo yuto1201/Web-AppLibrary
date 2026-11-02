@@ -110,7 +110,7 @@ export default async function AppPage({ params }: { params: Promise<{ slug: stri
         {app.screenshots.length > 0 && (
           <section id="screenshots" className="screenshots">
             <h2 className="section-title" lang="en">Screenshots</h2>
-            <ScreenshotGallery slug={app.slug} name={app.name} files={app.screenshots} />
+            <ScreenshotGallery slug={app.slug} shots={app.screenshots} />
           </section>
         )}
       </main>

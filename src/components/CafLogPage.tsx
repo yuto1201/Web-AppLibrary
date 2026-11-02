@@ -107,7 +107,7 @@ export function CafLogPage({ app }: { app: App }) {
               <p>飲んだ時間。いつもの量。日々の傾向。<br />記録を重ねて、自分の飲み方を見つけよう。</p>
               <div className="caflog-gallery-hint"><ArrowIcon direction="both" /> {app.screenshots.length}枚の実際のアプリ画面を見てみよう。</div>
             </div>
-            <ScreenshotGallery slug={app.slug} name={app.name} files={app.screenshots} />
+            <ScreenshotGallery slug={app.slug} shots={app.screenshots} />
           </div>
         </section>
 

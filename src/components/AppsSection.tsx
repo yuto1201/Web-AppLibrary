@@ -46,7 +46,7 @@ export function AppsSection() {
                 <span className="app-row-visual-label">{String(index + 1).padStart(2, "0")} / {app.name.toUpperCase()}</span>
                 <span className="app-preview-phone" data-kind={app.screenshots[0] ? "screen" : "icon"}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0]}` : `/apps/${app.slug}/${app.icon}`} alt="" width={260} height={app.screenshots[0] ? 564 : 260} loading="lazy" />
+                  <img src={app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0].file}` : `/apps/${app.slug}/${app.icon}`} alt="" width={260} height={app.screenshots[0] ? 564 : 260} loading="lazy" />
                 </span>
               </span>
               <span className="app-row-body">

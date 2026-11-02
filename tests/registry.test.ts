@@ -127,10 +127,24 @@ describe("apps registry", () => {
     }
   });
 
+  it("画面を持つアプリの各画面に、重ならない日本語の説明がある", () => {
+    const withShots = apps.filter(({ screenshots }) => screenshots.length > 0);
+    expect(withShots.map(({ slug }) => slug).sort()).toEqual(["caflog", "dev-tools", "pay-cycle", "sublog"]);
+    for (const app of withShots) {
+      const alts = app.screenshots.map(({ alt }) => alt);
+      expect(new Set(alts).size).toBe(alts.length);
+      for (const alt of alts) {
+        expect(alt.trim().length).toBeGreaterThan(0);
+        expect(alt).toMatch(/[\u3040-\u30ff\u4e00-\u9fff]/u);
+        expect(alt).not.toMatch(/スクリーンショット\s*\d/u);
+      }
+    }
+  });
+
   it("登録された画像が各アプリの公開ディレクトリ内に実在する", () => {
     for (const app of apps) {
       const directory = realpathSync(path.resolve("public/apps", app.slug));
-      const images = [app.icon, ...app.screenshots.map((file) => `screenshots/${file}`)];
+      const images = [app.icon, ...app.screenshots.map(({ file }) => `screenshots/${file}`)];
       for (const file of images) {
         if (file === null) continue;
         const resolved = realpathSync(path.resolve(directory, file));
@@ -208,7 +222,7 @@ describe("apps registry", () => {
     expect(caflog.features.find(({ title }) => title === "記録が 3D の景色に")).toBeDefined();
     expect(caflog.features.find(({ title }) => title === "続けるほど増えるごほうび")?.description).toContain("6 段の実績");
     expect(caflog.features.find(({ title }) => title === "CafLog Pro")?.description).toContain("広告なし");
-    expect(caflog.screenshots).toEqual(["1.webp", "2.webp", "3.webp", "4.webp", "5.webp", "6.webp"]);
+    expect(caflog.screenshots.map(({ file }) => file)).toEqual(["1.webp", "2.webp", "3.webp", "4.webp", "5.webp", "6.webp"]);
     const text = JSON.stringify(caflog);
     for (const retired of ["18 種類", "13 種類の分析", "21 種類の称号", "10 秒で記録", "Pro 連携機能"]) {
       expect(text).not.toContain(retired);
