@@ -37,6 +37,16 @@
 6. `Contact`: 連絡先の紙の面。
 7. `Footer`: 折りたたみ式の奥付、著作権表示、プライバシーと利用規約への導線。
 
+### フッターに積もるアイコンの板
+
+`Footer` は `FallingFooter`（`.fall-zone`）で包む。奥の `canvas.fall-canvas`（`aria-hidden="true"`）に、アプリの `accent` 色の板へ表と裏にアイコン（`/apps/<slug>/<icon>`）を貼ったものが降って積もる。three.js 0.170.0 と cannon-es 0.20.0 は npm から束ね、外のオリジンからは何も読まない（CSP は変えない）。
+
+- フッターが近づく（IntersectionObserver、400px 手前）まで読み込まない。トップの最初の HTML からは three のチャンクを参照しない。
+- 状態は React の state から `data-pile="ready" | "off"`、`data-pile-motion="still" | "move"` として出す。DOM へ直接書かない。
+- WebGL が使えない（`WebGLRenderer` が例外を投げる）ときは `data-pile="off"` にし、奥付と法務リンクはそのまま使える。
+- `prefers-reduced-motion: reduce` では降らせず、積もった後の 1 枚だけを描く。
+- 文字は canvas の上。フッターの余白はクリックを通し、リンク・`summary`・奥付の本文だけ操作を受ける。板は 34 枚（640px 以下は 18 枚で 0.9 倍）。
+
 ### シールの配置と計測
 
 `Stickers` は Nav の次（`main` より前）に置き、初期表示で見えるシールへキーボード順を寄せる。初期位置は Hero の遊び場へ集め、ドラッグの範囲は `.poster` 全体を維持する。viewport 固定にはしない。

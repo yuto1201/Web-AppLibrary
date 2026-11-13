@@ -1,20 +1,18 @@
-// 試作（spike）: フッターに物が降って積もる演出。
-// Tool-UI-Design の outputs/yuto/2026-11-13-falling-footer を AppLibrary へ移したもの。
+// フッターに積もるアイコンの板。アプリの色の板に、表と裏へアイコンを貼って降らせる。
 // three.js 0.170.0 と cannon-es 0.20.0（どちらも MIT）。CSP が外の CDN を許さないので npm から束ねる。
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
-// トップページの色（studio.css の --home-* と ink・白）
-const PALETTE = [0x55db9c, 0xe9ccff, 0xffd731, 0x4da2ff, 0x111111, 0xffffff];
-const SIZES: [number, number, number][] = [[2, 1, 1], [3, 1, 1], [2, 1, 2], [1, 1, 1], [3, 0.6, 2], [1.4, 1.4, 1.4], [4, 1, 1]];
-
 type Thing = { mesh: THREE.Mesh; body: CANNON.Body };
+
+/** `icon` は `/apps/<slug>/<icon>` の絶対パス（同じオリジン）。 */
+export type PileItem = { color: string; icon: string };
 
 export type Pile = { replay: () => void; destroy: () => void };
 
-export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement): Pile {
+export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: PileItem[]): Pile {
   const reduceMotion = matchMedia("(prefers-reduced-motion: reduce)");
   const isSmall = () => matchMedia("(max-width: 640px)").matches;
   const rand = (a: number, b: number) => a + Math.random() * (b - a);
@@ -48,7 +46,18 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement): Pile {
   floorMesh.receiveShadow = true;
   scene.add(floorMesh);
 
-  const materials = PALETTE.map((c) => new THREE.MeshStandardMaterial({ color: c, roughness: 0.45, metalness: 0 }));
+  const loader = new THREE.TextureLoader();
+  const textures: THREE.Texture[] = [];
+  const kinds = items.map((item) => {
+    const tex = loader.load(item.icon, () => { if (!running) renderer.render(scene, camera); });
+    tex.colorSpace = THREE.SRGBColorSpace;
+    textures.push(tex);
+    return {
+      body: new THREE.MeshStandardMaterial({ color: item.color, roughness: 0.45, metalness: 0 }),
+      face: new THREE.MeshStandardMaterial({ map: tex, roughness: 0.5 }),
+    };
+  });
+  const materials = kinds.flatMap((k) => [k.body, k.face]);
 
   const world = new CANNON.World({ gravity: new CANNON.Vec3(0, -30, 0) });
   world.broadphase = new CANNON.SAPBroadphase(world);
@@ -100,22 +109,22 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement): Pile {
     if (!g) { g = new RoundedBoxGeometry(w, h, d, 4, Math.min(w, h, d) * 0.22); boxGeoCache.set(key, g); }
     return g;
   };
-  const sphereGeo = new THREE.SphereGeometry(1, 32, 20);
+  const faceGeo = new THREE.PlaneGeometry(1, 1);
 
   function spawnOne(yMin = 6, yMax = 12) {
     const scale = isSmall() ? 0.9 : 1;
-    let mesh: THREE.Mesh, body: CANNON.Body;
-    if (Math.random() < 0.22) {
-      const r = rand(0.55, 0.95) * scale;
-      mesh = new THREE.Mesh(sphereGeo, pick(materials));
-      mesh.scale.setScalar(r);
-      body = new CANNON.Body({ mass: r * r * r * 2, material: mat, shape: new CANNON.Sphere(r) });
-    } else {
-      const [sw, sh, sd] = pick(SIZES);
-      const w = sw * 0.8 * scale, h = sh * 0.8 * scale, d = sd * 0.8 * scale;
-      mesh = new THREE.Mesh(boxGeo(w, h, d), pick(materials));
-      body = new CANNON.Body({ mass: w * h * d, material: mat, shape: new CANNON.Box(new CANNON.Vec3(w / 2, h / 2, d / 2)) });
+    const kind = pick(kinds);
+    // アイコンの板: アプリの色の台に、表と裏の両方へアイコンを貼る（裏返っても分かる）
+    const s = rand(1.7, 2.3) * scale, t = 0.42 * scale;
+    const mesh = new THREE.Mesh(boxGeo(s, t, s), kind.body);
+    for (const side of [1, -1]) {
+      const face = new THREE.Mesh(faceGeo, kind.face);
+      face.scale.set(s * 0.84, s * 0.84, 1);
+      face.rotation.x = -side * Math.PI / 2;
+      face.position.y = side * (t / 2 + 0.003);
+      mesh.add(face);
     }
+    const body = new CANNON.Body({ mass: s * s * t, material: mat, shape: new CANNON.Box(new CANNON.Vec3(s / 2, t / 2, s / 2)) });
     mesh.castShadow = true; mesh.receiveShadow = true;
     // 文字のある上のほうを空けて、手前（画面の下）と左右に寄せて落とす
     const xSpan = bounds.xMax - bounds.xMin;
@@ -144,7 +153,7 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement): Pile {
     }
   }
 
-  const total = () => (isSmall() ? 30 : 60);
+  const total = () => (isSmall() ? 18 : 34);
   let toSpawn = 0, spawnTimer = 0, running = false, visible = false, raf = 0, last = 0, started = false;
   const allAsleep = () => things.every((t) => t.body.sleepState === CANNON.Body.SLEEPING);
 
@@ -201,11 +210,6 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement): Pile {
     if (!running) renderer.render(scene, camera);
     wake();
   }
-  // 確かめる用（spike）
-  (window as unknown as { __pile?: object }).__pile = {
-    get count() { return things.length; }, get toSpawn() { return toSpawn; },
-    get running() { return running; }, get started() { return started; }, bounds,
-  };
   // カメラと壁を先に決めておく。降り始めが ResizeObserver より先に来ると、床の範囲が求まらない
   resize();
   const ro = new ResizeObserver(resize);
@@ -256,7 +260,8 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement): Pile {
       reduceMotion.removeEventListener("change", onMotionChange);
       clearAll();
       for (const g of boxGeoCache.values()) g.dispose();
-      sphereGeo.dispose();
+      faceGeo.dispose();
+      for (const tx of textures) tx.dispose();
       for (const m of materials) m.dispose();
       pmrem.dispose();
       renderer.dispose();

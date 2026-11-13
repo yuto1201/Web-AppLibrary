@@ -1711,6 +1711,43 @@ test("法務とサポートのページにも上の帯が付き、保存テー�
   }
 });
 
+test("積もる板はフッターが近づくまで読まず、外へは通信しない", async ({ page }) => {
+  const external: string[] = [];
+  page.on("request", (r) => {
+    if (!r.url().startsWith("http://127.0.0.1")) external.push(r.url());
+  });
+  await page.goto("/");
+  await expect(page.locator(".fall-zone")).not.toHaveAttribute("data-pile", "ready");
+  await page.locator(".fall-zone").scrollIntoViewIfNeeded();
+  await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "ready", { timeout: 20_000 });
+  await expect(page.locator(".fall-canvas")).toHaveAttribute("aria-hidden", "true");
+  expect(external).toEqual([]);
+});
+
+test("WebGL が無くても、フッターの奥付と法務リンクを使える", async ({ page }) => {
+  await page.addInitScript(() => {
+    HTMLCanvasElement.prototype.getContext = () => null;
+  });
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/");
+  await page.locator(".fall-zone").scrollIntoViewIfNeeded();
+  await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "off", { timeout: 20_000 });
+  await page.locator(".colophon summary").click();
+  await expect(page.locator(".colophon-body")).toBeVisible();
+  await page.getByRole("link", { name: i18n.ja.privacy }).click();
+  await expect(page).toHaveURL(/\/privacy\/$/u);
+  expect(errors).toEqual([]);
+});
+
+test("reduced-motion では積もった後の 1 枚だけを描く", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await page.locator(".fall-zone").scrollIntoViewIfNeeded();
+  await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "ready", { timeout: 20_000 });
+  await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile-motion", "still");
+});
+
 test("未生成ルートは 404", async ({ request }) => {
   expect((await request.get("/apps/does-not-exist/")).status()).toBe(404);
 });
