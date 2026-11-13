@@ -1778,6 +1778,16 @@ test("reduced-motion では積もった後の 1 枚だけを描く", async ({ pa
   await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile-motion", "still");
 });
 
+test("明るい枠のページは、保存した dark でも枠のリンクのフォーカスの輪が見える色になる", async ({ page }) => {
+  await page.goto("/apps/caflog/privacy/");
+  await setStoredState(page, { theme: "dark" });
+  await page.goto("/apps/caflog/");
+  await page.keyboard.press("Tab");
+  const link = page.locator('.app-frame-strip a[href="/"]');
+  await link.focus();
+  await expect(link).toHaveCSS("outline-color", "rgb(22, 75, 202)");
+});
+
 test("未生成ルートは 404", async ({ request }) => {
   expect((await request.get("/apps/does-not-exist/")).status()).toBe(404);
 });

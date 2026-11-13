@@ -14,10 +14,7 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   --rule: #aabfce;
   --rule-strong: #718a9d;
   --accent: #111111;
-  --home-mint: #55db9c;
-  --home-lavender: #e9ccff;
   --home-yellow: #ffd731;
-  --home-blue: #4da2ff;
   --home-nav: #ffffff;
   --home-focus: #164bca;
   min-height: 100vh;
@@ -36,10 +33,7 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   --rule: #536d80;
   --rule-strong: #839dad;
   --accent: #f2f6fa;
-  --home-mint: #aadac3;
-  --home-lavender: #d1badf;
   --home-yellow: #e4cd6d;
-  --home-blue: #8bbbec;
   --home-nav: #dfe9ee;
   --home-focus: #91c7ff;
   color-scheme: dark;
@@ -292,7 +286,8 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 
 /* フッターに積もるアイコンの板。文字は上、板は canvas の中で下に積もる。 */
 .poster .fall-zone { position: relative; min-height: min(78vh, 680px); overflow: hidden; }
-.poster .fall-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
+.poster .fall-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: manipulation; }
+.poster .fall-zone[data-pile="off"] { min-height: 0; }
 .poster .fall-zone > .footer { position: relative; z-index: 1; pointer-events: none; }
 .poster .fall-zone > .footer :is(a, summary, .colophon-body) { pointer-events: auto; }
 /* canvas の上の文字は紙の色の地を持たせる（コントラストを計れるようにし、板の下に文字が埋もれない）。 */

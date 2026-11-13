@@ -290,7 +290,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
    App list — カードではなく索引の行
    ============================================================ */
 .app-row {
-  --row-accent: var(--accent);
   display: grid;
   grid-template-columns: 38px 1fr auto;
   align-items: center;
@@ -326,7 +325,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   transition: color 0.15s;
 }
 .app-row:hover .app-row-name,
-.app-row.is-linked .app-row-name { color: var(--row-accent); }
+.app-row.is-linked .app-row-name { color: var(--accent); }
 /* アプリの accent は明色紙面向けの値。濃いインク紙では読めなくなるのでインクへ戻す。 */
 [data-theme="dark"] .app-row:hover .app-row-name,
 [data-theme="dark"] .app-row.is-linked .app-row-name { color: var(--ink); }
@@ -337,20 +336,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-.app-row-meta {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  font-family: var(--font-mono);
-  font-size: 12px;
-  color: var(--ink-3);
-  white-space: nowrap;
-}
-.app-row-status {
-  font-family: var(--font-sans);
-  font-weight: 400;
-  color: var(--accent);
 }
 .app-row-year { color: var(--ink-3); }
 
@@ -724,7 +709,6 @@ html[data-hero-opening="play"] .poster .sticker-slot:has(.is-held) {
   font-weight: 400;
   margin-bottom: 2px;
 }
-.post-app { font-size: 13px; color: var(--ink-2); }
 
 /* ============================================================
    Contact
@@ -841,7 +825,6 @@ html[data-hero-opening="play"] .poster .sticker-slot:has(.is-held) {
   }
   .app-row-icon { width: 32px; height: 32px; }
   .app-row-tagline { white-space: normal; }
-  .app-row-meta { grid-column: 2; }
 
   .post { grid-template-columns: 1fr; gap: var(--space-1); }
 
