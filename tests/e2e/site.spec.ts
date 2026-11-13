@@ -373,12 +373,22 @@ test("作品カードは実画面と掲載情報を持ち、検索・フィル�
     await expect(preview).toHaveAttribute("src", app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0].file}` : `/apps/${app.slug}/${app.icon}`);
     await expect(row.locator(".app-preview-phone")).toHaveAttribute("data-kind", app.screenshots.length ? "screen" : "icon");
     await expect.poll(() => preview.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+    await expect(row.locator(".app-row-visual")).toHaveCSS("background-color", cssRgb(app.accent));
+    await expect(row.locator('.app-row-tag[data-kind="category"]')).toHaveText(app.category);
+    await expect(row.locator('.app-row-tag[data-kind="platforms"]')).toHaveText(app.platforms.join("・"));
+    await expect(row.locator('.app-row-tag[data-kind="price"]')).toHaveCount(app.appStoreUrl ? 1 : 0);
+    if (app.appStoreUrl) await expect(row.locator('.app-row-tag[data-kind="price"]')).toHaveText(app.price);
+    await expect(row.locator('.app-row-tag[data-kind="status"]')).toHaveCount(app.status === "release" ? 0 : 1);
+    // 窓には文字を置かない（色の上の文字のコントラストを避ける）
+    await expect(row.locator(".app-row-visual-label")).toHaveCount(0);
   }
 
   const first = (await rows.nth(0).boundingBox())!;
   const second = (await rows.nth(1).boundingBox())!;
   for (const row of await rows.all()) {
     expect(await row.evaluate((el) => Number.parseFloat(getComputedStyle(el).borderTopLeftRadius))).toBeGreaterThanOrEqual(24);
+    // どのカードも同じ枠（最後のカードだけ下の線が消えない）
+    expect(await row.evaluate((el) => getComputedStyle(el).borderBottomWidth)).toBe(await row.evaluate((el) => getComputedStyle(el).borderTopWidth));
   }
   expect(Math.abs(first.y - second.y)).toBeLessThanOrEqual(1);
   expect(second.x).toBeGreaterThan(first.x + first.width);
@@ -393,6 +403,17 @@ test("作品カードは実画面と掲載情報を持ち、検索・フィル�
   await rows.first().click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect.poll(() => new URL(page.url()).pathname).toMatch(/^\/apps\/[a-z-]+\/$/u);
+  // Review Focus 4: 320px で札がカードからはみ出さず、横スクロールも出ない
+  await page.goto("/");
+  await page.setViewportSize({ width: 320, height: 800 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+  for (const row of await rows.all()) {
+    const box = (await row.boundingBox())!;
+    for (const tag of await row.locator(".app-row-tag").all()) {
+      const t = (await tag.boundingBox())!;
+      expect(t.x + t.width).toBeLessThanOrEqual(box.x + box.width + 0.5);
+    }
+  }
 });
 
 test("ステッカーは掴んで動かせて、離すと横スクロールを作らない", async ({ page }) => {
@@ -485,6 +506,15 @@ test("アプリシールの形が違い、beta / alpha に印がある", async (
   expect(betaPaint.replaceAll('"', "")).toBe("β");
   expect(alphaPaint.replaceAll('"', "")).toBe("α");
   await expect(page.locator(".sticker-name")).toHaveCount(0);
+
+  for (const app of apps) {
+    const sticker = page.locator(`.sticker-slot[data-key="${app.slug}"] .sticker`);
+    expect(await sticker.evaluate((el) => getComputedStyle(el).boxShadow)).toContain(cssRgb(app.accent));
+  }
+  for (const key of ["note-Swift", "note-Tokyo", "note-solo"]) {
+    const word = page.locator(`.sticker-slot[data-key="${key}"] .sticker`);
+    expect(await word.evaluate((el) => getComputedStyle(el).boxShadow)).not.toMatch(/rgb\((31, 134, 245|255, 125, 160)\)/);
+  }
 });
 
 test("初期表示の全シールと操作案内は Hero の遊び場に収まる", async ({ page }) => {

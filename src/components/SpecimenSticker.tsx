@@ -42,6 +42,7 @@ export function SpecimenSticker({ app }: { app: App }) {
         href={undefined}
         slug={undefined}
         label={undefined}
+        color={app.accent}
         onGrab={() => setHeld(true)}
         onMove={setOffset}
         onRelease={() => setHeld(false)}

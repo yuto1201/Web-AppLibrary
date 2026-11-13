@@ -293,6 +293,19 @@ describe("apps registry", () => {
     expect(getApp("does-not-exist")).toBeUndefined();
   });
 
+  it("アプリの色は設計の 6 色で、互いに違う", () => {
+    const expected: Record<string, string> = {
+      sublog: "#1f86f5", caflog: "#ff7da0", "dev-tools": "#2a9d8f",
+      "pay-cycle": "#ee3b2f", "simple-pomo": "#fd8b21", flower: "#b0123a",
+    };
+    expect(Object.fromEntries(apps.map((a) => [a.slug, a.accent.toLowerCase()]))).toEqual(expected);
+    expect(new Set(apps.map((a) => a.accent.toLowerCase())).size).toBe(apps.length);
+  });
+
+  it("CafLog の値段は専用ページと同じく Pro があることを書く", () => {
+    expect(getApp("caflog")?.price).toBe("無料・Pro あり（月額・年額）");
+  });
+
   it("各アプリが短い鉛筆メモを持つ", () => {
     expect(getApp("sublog")?.stickerNote).toBe("月の固定費、見えてる？");
     expect(getApp("caflog")?.stickerNote).toBe("今日、何杯目？");
@@ -313,7 +326,7 @@ describe("apps registry", () => {
 
 describe("SimplePomo publication", () => {
   it("keeps the unreleased app and real asset without invented screenshots", () => {
-    expect(getApp("simple-pomo")).toMatchObject({ name: "SimplePomo", status: "alpha", releaseDate: null, appStoreUrl: null, siteUrl: null, screenshots: [], accent: "#FD841B" });
+    expect(getApp("simple-pomo")).toMatchObject({ name: "SimplePomo", status: "alpha", releaseDate: null, appStoreUrl: null, siteUrl: null, screenshots: [], accent: "#fd8b21" });
   });
   it("discloses local storage and the released feedback terms in both languages", () => {
     const document = privacyDocuments["simple-pomo"]!;

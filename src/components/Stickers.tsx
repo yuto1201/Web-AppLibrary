@@ -29,6 +29,7 @@ export function Stickers() {
         href: `/apps/${app.slug}/`,
         slug: app.slug,
         label: app.name,
+        color: app.accent,
         caption: app.stickerNote,
         stamp: statusStamp(app.status),
         body: app.icon ? (
@@ -45,6 +46,7 @@ export function Stickers() {
       href: undefined,
       slug: undefined,
       label: undefined,
+      color: undefined,
       caption: undefined,
       stamp: null,
       body: <span className="sticker-note">{item.word}</span>,
@@ -117,6 +119,7 @@ export function Stickers() {
               href={item.href}
               slug={item.slug}
               label={item.label}
+              color={item.color}
               caption={item.caption}
               stamp={item.stamp}
               tilt={TILT[index % TILT.length]!}

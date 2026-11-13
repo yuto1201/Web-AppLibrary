@@ -75,6 +75,7 @@ type Dict = {
   studio_apps: string;
   studio_made: string;
   apps_intro: string;
+  app_price_label: string;
   workshop_title: string;
   workshop_intro: string;
   workshop_items: { title: string; text: string }[];
@@ -124,6 +125,7 @@ export const i18n: Record<Lang, Dict> = {
     studio_intro: "東京の、小さな個人開発室",
     studio_apps: "{count}つの小さな道具",
     studio_made: "つくる。使う。また直す。",
+    app_price_label: "値段",
     apps_intro: "暮らしのことも、つくることも。気になるひとつをどうぞ。",
     workshop_title: "小さく作って、\n少しずつ育てる。",
     workshop_intro: "この机から、生まれるもの。",
@@ -176,6 +178,7 @@ export const i18n: Record<Lang, Dict> = {
     studio_intro: "A small independent studio in Tokyo",
     studio_apps: "{count} little tools",
     studio_made: "Make. Use. Make it better.",
+    app_price_label: "Price",
     apps_intro: "For everyday life, and for making things. Find a little tool for you.",
     workshop_title: "Start small.\nKeep making it better.",
     workshop_intro: "Things that begin at this desk.",
