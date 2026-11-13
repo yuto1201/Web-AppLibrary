@@ -64,13 +64,6 @@ type Dict = {
   hero_h1_b: string;
   hero_note: string;
   hero_cta: string;
-  showcase_intro: string;
-  spotlight_title: string;
-  spotlight_choose: string;
-  spotlight_screen: string;
-  spotlight_icon: string;
-  spotlight_open: string;
-  spotlight_static: string;
   studio_intro: string;
   studio_apps: string;
   studio_made: string;
@@ -104,7 +97,7 @@ type Dict = {
 
 export const i18n: Record<Lang, Dict> = {
   ja: {
-    nav: { apps: "アプリ", posts: "お知らせ", contact: "お問い合わせ" },
+    nav: { apps: "アプリ", posts: "アプリの更新", contact: "お問い合わせ" },
     a11y_primary_nav: "メインナビゲーション",
     a11y_language: "言語",
     a11y_switch_language: "英語に切り替える",
@@ -115,13 +108,6 @@ export const i18n: Record<Lang, Dict> = {
     hero_h1_b: "毎日を面白く。",
     hero_note: "東京で、Swift と SwiftUI でつくっています。",
     hero_cta: "アプリを見る",
-    showcase_intro: "気になるアイコンを選んで、使う前にひとのぞき。あなたの毎日に合う、ひとつを。",
-    spotlight_title: "画面から、見つけよう。",
-    spotlight_choose: "選んでみて",
-    spotlight_screen: "アプリの画面",
-    spotlight_icon: "アプリアイコン",
-    spotlight_open: "詳しく見る",
-    spotlight_static: "実際のアプリのスクリーンショットです。アプリ自体はこのページでは操作できません。",
     studio_intro: "東京の、小さな個人開発室",
     studio_apps: "{count}つの小さな道具",
     studio_made: "つくる。使う。また直す。",
@@ -134,14 +120,14 @@ export const i18n: Record<Lang, Dict> = {
       { title: "使い心地まで、こつこつと。", text: "必要な機能を、迷わず使える形へ。小さな画面の手触りも大切にしています。" },
       { title: "途中も、ここに。", text: "リリースしたものも、まだ開発中のものも。できあがっていく過程ごと並べています。" },
     ],
-    posts_intro: "机の端に残しておく、ちょっとした変化の記録。",
+    posts_intro: "リリースや新しい機能のお知らせ。",
     contact_note: "感想ひとつから、次のアイデアが生まれることも。",
     desk_hint: "ちょっとべんり。ちょっとたのしい。",
     stickers_title: "Stickers",
     stickers_hint: "動かして遊ぶ。タップでのぞく。",
     stickers_reset: "ならべ直す",
-    section_apps: "App Library",
-    section_posts: "Notes",
+    section_apps: "アプリ",
+    section_posts: "アプリの更新",
     contact_h: "お仕事・感想・雑談まで。",
     contact_p: "使ってみた感想も、こんなの欲しい、も。X や GitHub からお気軽に。",
     footer_copyright: "© 2026 · 東京から、愛を込めて",
@@ -157,7 +143,7 @@ export const i18n: Record<Lang, Dict> = {
     status_archived: "公開終了",
   },
   en: {
-    nav: { apps: "Apps", posts: "Notes", contact: "Contact" },
+    nav: { apps: "Apps", posts: "App updates", contact: "Contact" },
     a11y_primary_nav: "Primary navigation",
     a11y_language: "Language",
     a11y_switch_language: "Switch to Japanese",
@@ -168,13 +154,6 @@ export const i18n: Record<Lang, Dict> = {
     hero_h1_b: "brighter days.",
     hero_note: "Made in Tokyo with Swift and SwiftUI.",
     hero_cta: "Browse apps",
-    showcase_intro: "Pick an icon. Take a closer look. Find a little tool that feels right for your everyday.",
-    spotlight_title: "A closer look.",
-    spotlight_choose: "Pick an app",
-    spotlight_screen: "app screenshot",
-    spotlight_icon: "app icon",
-    spotlight_open: "Explore",
-    spotlight_static: "An actual app screenshot. The app itself is not interactive on this page.",
     studio_intro: "A small independent studio in Tokyo",
     studio_apps: "{count} little tools",
     studio_made: "Make. Use. Make it better.",
@@ -187,14 +166,14 @@ export const i18n: Record<Lang, Dict> = {
       { title: "Care in the small details.", text: "Useful features, easy to find. A little extra thought for how every screen feels to use." },
       { title: "Room for work in progress.", text: "Released apps sit alongside works in progress. This is a place to see them take shape." },
     ],
-    posts_intro: "Small changes, noted down at the edge of the desk.",
+    posts_intro: "Releases and new features.",
     contact_note: "A little feedback can be the start of the next idea.",
     desk_hint: "A little useful. A little playful.",
     stickers_title: "Stickers",
     stickers_hint: "Drag to play. Tap to explore.",
     stickers_reset: "Tidy up",
-    section_apps: "App Library",
-    section_posts: "Notes",
+    section_apps: "Apps",
+    section_posts: "App updates",
     contact_h: "Work, feedback, or just hi.",
     contact_p: "Tried an app, or have an idea? Drop me a line on X or GitHub.",
     footer_copyright: "© 2026 · Made in Tokyo, with care",

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSiteState } from "@/lib/state";
 import { posts, profile, social } from "@/lib/site-data";
+import { apps } from "@/data/registry";
 import project from "../../config/project.json";
 
 export function Workshop() {
@@ -10,10 +11,13 @@ export function Workshop() {
   return (
     <section className="section workshop" aria-labelledby="workshop-heading">
       <div className="workshop-lead">
-        <p className="eyebrow" lang="en">BEHIND THE APPS</p>
         <h2 id="workshop-heading">{t.workshop_title}</h2>
         <p>{t.workshop_intro}</p>
-        <span className="workshop-flower" aria-hidden="true">✳</span>
+        <ul className="workshop-facts">
+          <li>{t.studio_intro}</li>
+          <li>{t.studio_apps.replace("{count}", String(apps.length))}</li>
+          <li>{t.studio_made}</li>
+        </ul>
       </div>
       <ol className="workshop-notes">
         {t.workshop_items.map((item, index) => (
@@ -61,8 +65,6 @@ export function Contact() {
   return (
     <section className="section" id="contact">
       <div className="contact-postcard">
-        <div className="contact-stamp" aria-hidden="true"><span>FROM TOKYO</span><span>hello.</span><span>WITH CARE</span></div>
-        <p className="eyebrow" lang="en">SAY HELLO</p>
         <h2 className="contact-h">{t.contact_h}</h2>
         <p className="contact-p">{t.contact_p}</p>
         {visible.length > 0 && (

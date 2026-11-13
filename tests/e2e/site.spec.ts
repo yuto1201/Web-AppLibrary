@@ -38,9 +38,6 @@ const HOME = {
   black: "rgb(17, 17, 17)",
   white: "rgb(255, 255, 255)",
   focus: "rgb(22, 75, 202)",
-  lavender: "rgb(233, 204, 255)",
-  mint: "rgb(85, 219, 156)",
-  yellow: "rgb(255, 215, 49)",
 } as const;
 
 function cssRgb(hex: string) {
@@ -300,7 +297,7 @@ test("ホームは空色の遊び場と大きなワードマーク、黒いピ�
   await expect(cta).toHaveCSS("background-color", HOME.black);
 });
 
-test("黄色い連絡先パネルの黒いリンクをキーボードで識別できる", async ({ page }) => {
+test("連絡先の黒いリンクをキーボードで識別できる", async ({ page }) => {
   await page.goto("/#contact");
   const socials = page.locator(".contact-postcard .social-link");
   await socials.first().focus();
@@ -310,7 +307,20 @@ test("黄色い連絡先パネルの黒いリンクをキーボードで識別�
   await expect(socials.nth(1)).toHaveCSS("outline-color", HOME.focus);
   await expect(socials.nth(1)).toHaveCSS("outline-style", "solid");
   await expect(socials.nth(1)).toHaveCSS("outline-width", "3px");
-  await expect(page.locator(".contact-postcard")).toHaveCSS("background-color", HOME.yellow);
+  await expect(page.locator(".contact-postcard")).toHaveCSS("background-color", HOME.white);
+  await expect(page.locator(".contact-stamp")).toHaveCount(0);
+});
+
+test("作り手は事実を並べ、展示と飾りを持たず、更新の見出しが英語に切り替わる", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator(".home-showcase")).toHaveCount(0);
+  await expect(page.locator(".workshop-flower, .workshop .eyebrow")).toHaveCount(0);
+  const facts = page.locator(".workshop-facts");
+  await expect(facts).toContainText(i18n.ja.studio_intro);
+  await expect(facts).toContainText(i18n.ja.studio_apps.replace("{count}", String(apps.length)));
+  await expect(facts).toContainText(i18n.ja.studio_made);
+  await page.getByRole("button", { name: i18n.ja.a11y_switch_language }).click();
+  await expect(page.locator("#posts h2")).toHaveText("App updates");
 });
 
 test("手書きの紹介は日英で読める", async ({ page }) => {
@@ -1623,53 +1633,4 @@ test("PayCycle は保存した dark と en を維持し、privacy と terms と�
 
 test("未生成ルートは 404", async ({ request }) => {
   expect((await request.get("/apps/does-not-exist/")).status()).toBe(404);
-});
-
-test("展示はキーボードで選べ、画面・状態・詳細リンクが同じアプリを指す", async ({ page }) => {
-  await page.goto("/");
-  const spotlight = page.getByRole("region", { name: i18n.ja.spotlight_title });
-  await expect(page.locator(".hero .spotlight")).toHaveCount(0);
-  await expect(page.locator(".home-showcase.section .spotlight")).toHaveCount(1);
-  await expect(spotlight.getByRole("button", { name: apps[0]!.name, exact: true })).toHaveAttribute("aria-pressed", "true");
-  const appsBox = (await page.locator("#apps").boundingBox())!;
-  const showcaseBox = (await page.locator(".home-showcase").boundingBox())!;
-  expect(showcaseBox.y).toBeGreaterThanOrEqual(appsBox.y + appsBox.height);
-  for (const app of apps) {
-    const choice = spotlight.getByRole("button", { name: app.name, exact: true });
-    await choice.focus();
-    await page.keyboard.press("Enter");
-    await expect(choice).toBeFocused();
-    await expect(choice).toHaveAttribute("aria-pressed", "true");
-    await expect(spotlight.locator('[aria-pressed="true"]')).toHaveCount(1);
-    const screenshot = spotlight.getByRole("img", { name: `${app.name} — ${app.screenshots.length ? i18n.ja.spotlight_screen : i18n.ja.spotlight_icon}` });
-    await expect(screenshot).toHaveAttribute("src", app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0].file}` : `/apps/${app.slug}/${app.icon}`);
-    await expect.poll(() => screenshot.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
-    await expect(spotlight.locator(".spotlight-meta")).toContainText(statusLabel(app.status, i18n.ja));
-    await expect(spotlight.getByRole("link")).toHaveAttribute("href", `/apps/${app.slug}/`);
-  }
-  await spotlight.getByRole("link").click();
-  await expect(page).toHaveURL(`/apps/${apps.at(-1)!.slug}/`);
-});
-
-test("展示はテーマ・言語・reduced motionでも選択を保ち、シールに操作を覆われない", async ({ page }) => {
-  await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
-  const spotlight = page.locator(".spotlight");
-  await spotlight.getByRole("button", { name: "CafLog", exact: true }).click();
-  await page.getByRole("button", { name: i18n.ja.a11y_switch_language }).click();
-  await page.getByRole("button", { name: i18n.en.a11y_switch_dark }).click();
-  await expect(spotlight.getByRole("heading")).toHaveText(i18n.en.spotlight_title);
-  await expect(spotlight.getByRole("button", { name: "CafLog", exact: true })).toHaveAttribute("aria-pressed", "true");
-  await expect(spotlight.getByRole("link")).toHaveAccessibleName("CafLog Explore");
-
-  for (const width of [320, 390, 768, 1024, 1180, 1240, 1279, 1280]) {
-    await page.setViewportSize({ width, height: 900 });
-    // trial click は表示・安定・他要素に覆われていないことを実操作と同じ条件で確認する。
-    for (const app of apps) {
-      await spotlight.getByRole("button", { name: app.name, exact: true }).click({ trial: true });
-    }
-    await spotlight.getByRole("link").click({ trial: true });
-    await page.locator(".app-row").first().click({ trial: true });
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
-  }
 });
