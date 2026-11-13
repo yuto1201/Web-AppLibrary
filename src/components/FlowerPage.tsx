@@ -143,7 +143,6 @@ export function FlowerPage({ app }: { app: App }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={`/apps/${app.slug}/${app.icon}`} width={28} height={28} alt="" />{FLOWER_NAME.ja}<span lang="en">{FLOWER_NAME.en}</span>
         </a>
-        <nav aria-label={`${FLOWER_NAME.ja} 関連リンク`}><Link href={`/apps/${app.slug}/support/`}>サポート</Link><Link href={`/apps/${app.slug}/terms/`}>利用規約</Link><Link href={`/apps/${app.slug}/privacy/`}>プライバシーポリシー</Link><Link href="/">← AppLibrary</Link></nav>
         <span className="fl-credit">Made by uesugiyuuto · 2026</span>
       </div>
     </footer>

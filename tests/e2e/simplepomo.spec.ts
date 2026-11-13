@@ -43,7 +43,7 @@ test("SimplePomo: published routes, bilingual legal copy and navigation", async 
   const icon = page.locator(".sp-wordmark img");
   await expect.poll(() => icon.evaluate(el => (el as HTMLImageElement).naturalWidth)).toBe(1024);
   await expect(page.locator("#features .feature-row")).toHaveCount(3);
-  await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
+  await page.locator('.app-frame-about a[href="/apps/simple-pomo/privacy/"]').click();
   for (const route of ["privacy", "terms"]) {
     await expect(page).toHaveURL(new RegExp(`/apps/simple-pomo/${route}/$`, "u"));
     await expect(page.locator("body")).toHaveCSS("background-color", "rgb(255, 248, 241)");

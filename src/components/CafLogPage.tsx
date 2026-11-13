@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import type { App } from "@/data/schema";
 import { ScreenshotGallery } from "@/components/ScreenshotGallery";
@@ -137,7 +136,7 @@ export function CafLogPage({ app }: { app: App }) {
       </main>
 
       <footer className="caflog-footer">
-        <div className="caflog-container caflog-footer-inner"><span className="caflog-footer-brand">CafLog<span>.</span></span><p>カフェインと、自分らしく。</p><nav aria-label="CafLog 関連リンク"><a href="https://app.yutodev.com/#contact">サポート</a><Link href={`/apps/${app.slug}/privacy/`}>プライバシーポリシー</Link><Link href={`/apps/${app.slug}/terms/`}>利用規約</Link><Link href="/">← AppLibrary</Link></nav></div>
+        <div className="caflog-container caflog-footer-inner"><span className="caflog-footer-brand">CafLog<span>.</span></span><p>カフェインと、自分らしく。</p></div>
       </footer>
     </div>
   );

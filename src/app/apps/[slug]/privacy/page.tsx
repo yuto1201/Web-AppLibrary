@@ -5,7 +5,9 @@ import { apps, getApp } from "@/data/registry";
 import { privacyDocuments } from "@/data/privacy/registry";
 import { supportDocuments } from "@/data/support/registry";
 import { termsDocuments } from "@/data/terms/registry";
+import { AppFrameStrip } from "@/components/AppFrame";
 import "@/styles/app-page.css";
+import "@/styles/app-frame.css";
 
 export function generateStaticParams() {
   return apps.filter((app) => privacyDocuments[app.slug]).map((app) => ({ slug: app.slug }));
@@ -41,6 +43,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ slug: 
 
   return (
     <div className="app-shell" lang="ja">
+      <AppFrameStrip app={app} />
       <nav className="privacy-nav" aria-label={`${app.name} のページへ戻る`}>
         <Link href={`/apps/${app.slug}/`}>← {app.name}</Link>
       </nav>

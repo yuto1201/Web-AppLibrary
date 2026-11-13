@@ -134,8 +134,8 @@ export function PayCyclePage({ app }: { app: App }) {
 
       <footer className="paycycle-footer">
         <div className="paycycle-wrap">
-          <div className="paycycle-footer-top"><a className="paycycle-brand" href="#paycycle-top">PayCycle<span className="paycycle-dot" aria-hidden="true" /></a><Link href="/">すべてのアプリを見る <Arrow /></Link></div>
-          <div className="paycycle-footer-bottom"><small>Made by uesugiyuuto</small><nav aria-label="PayCycle 関連リンク"><a href="https://app.yutodev.com/#contact">サポート</a><Link href={privacyUrl}>プライバシーポリシー</Link><Link href={termsUrl}>利用規約</Link><Link href="/">AppLibrary</Link></nav></div>
+          <div className="paycycle-footer-top"><a className="paycycle-brand" href="#paycycle-top">PayCycle<span className="paycycle-dot" aria-hidden="true" /></a></div>
+          <div className="paycycle-footer-bottom"><small>Made by uesugiyuuto</small></div>
         </div>
       </footer>
     </div>

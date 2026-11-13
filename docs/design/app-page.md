@@ -15,13 +15,24 @@
 - アプリ法務: 言語見出しは `h2`（20px）、条項は `h3`（18px・上余白も一段小さく）。字重はどちらも 400。条項見出しを本文より小さくしない。
 - CTA: 共通詳細の配布先は、そのアプリのアクセント色の outlined pill。「機能を見る」はインクの outlined pill。塗りグラデと浮き上がりは持たない。ホームの CTA は [トップページの仕様](top.md) に従う。
 
+## 共通の枠（全アプリのページと法務・サポートのページ）
+
+全アプリの詳細ページは `src/components/AppFrame.tsx`（サーバー側。registry を読んでリンクの行き先と「ほかのアプリ」を決める）で包む。表示は `src/components/AppFrameClient.tsx`、リンクの行き先は `src/lib/app-links.ts`、見た目は `src/styles/app-frame.css`。法務・サポートのページ（`/privacy/` `/terms/` `/support/`）は先頭に帯（`AppFrameStrip`）だけを置く。
+
+- 構成: 上の帯 → 各ページの中身 → 「このアプリについて」→「ほかのアプリ」。帯は空色の机の地で、「← AppLibrary」（トップへ戻る唯一の道）、小さいシール、アプリ名、分類。「このアプリについて」は対応機種・状態・分類、App Store のリンク（`appStoreUrl` があるときだけ）、サポート・プライバシー・利用規約（あるアプリだけ）。値段と版は App Store で公開中のアプリだけ見せる（`showsStoreFacts`）。「ほかのアプリ」は自分以外の全アプリへのカード。
+- 重なるリンクを置かない: 各アプリのページ（Hero の戻るリンク、フッターのサポート・プライバシー・利用規約・AppLibrary）にあったリンクは枠に集約した。フッターにはブランド名の行だけ残る。文中のリンク（PayCycle の質問、SubLog の質問、花島のプライバシーの要点）は文の一部なので残す。
+- サポートの行き先: 専用ページがあるアプリ（花島）は `/apps/<slug>/support/`、それ以外はトップの `/#contact`。
+- 配色: `data-frame-light` が付くアプリ（CafLog・SubLog・PayCycle・花島）は、保存した dark でも帯が `#dceeff`、面が `#ffffff`、文字が `#111111` のまま。SimplePomo・Dev-Tools と法務・サポートの帯は保存テーマに従う。矢印は `::after` で出し、axe の色の対比が incomplete にならないようにする。
+- 幅: 560px 以下では分類を隠す。700px 以下かつ高さ 740px 以下では帯を低くし、PayCycle の P マークを小さくして最初の画面に収める。
+- 言語: 文言は `i18n` の `frame_back` `about_*` `others_title`。英語にすると「About this app」になる。
+
 ## CafLog の専用ページ
 
 Issue #69 のユーザー依頼により、サイトの色と形を実際の CafLog アイコン・アプリ画面へ合わせて作り直す。Issue #63 で採用した Red Bull 参考の写真・濃紺・赤の構成は履歴として残し、現在のページは実画面が主役の明るい構成を使う。
 
 - 構成: `src/components/CafLogPage.tsx` と `src/styles/caflog.css`。ルートは `/apps/caflog/` のまま、`.caflog-site` を境界にする。CafLog の `h1`、大きな `.caflog-headline`「一杯ずつ、自分のペースへ。」、実際のホーム画面を使う `.caflog-hero`、機能、実画面ギャラリー、配布先と戻る導線を持つ。
 - 配色: 明るい地色 `#faf9f7`、文字と主要 CTA は `#202024`、CTA の文字は白。実アイコンを反映するオレンジ `#ff911c` とピンク `#ff79b0` を装飾に使い、淡いグレー・ラベンダー・ピーチの丸い面を組み合わせる。本文と操作は読みやすい文字色を使う。保存された light / dark にかかわらず、この明るい専用配色を保つ。テーマや言語の保存値は変更せず、日本語本文のコンテナには `lang="ja"` を付ける。
-- 素材: 既存の `public/apps/caflog/icon.png` と `screenshots/4.png` を Hero で紹介する。画面の内容や配色は加工しない。ギャラリーは `1.png` から `5.png` まで registry の順序を維持する。旧生成写真は現行ページから参照せず、[素材の履歴](caflog-assets.md) として保持する。
+- 素材: 既存の `public/apps/caflog/icon.png` と `screenshots/1.webp` を Hero で紹介する。画面の内容や配色は加工しない。ギャラリーは `1.png` から `5.png` まで registry の順序を維持する。旧生成写真は現行ページから参照せず、[素材の履歴](caflog-assets.md) として保持する。
 - 内容: 名前、紹介、6件の機能と配布先は registry に従う。3つの導入カードから対応する機能へ移動できる。Pro 表記と、体内残量がモデルに基づく推定値である旨を維持する。新しいアプリ機能や医療上の効果、利用者数などの根拠のない主張を追加しない。
 - 操作: `#features` と `#screenshots` へページ内リンクを設ける。機能は registry の全件を表示し、`ScreenshotGallery` のサムネイル、Previous / Next、左右キー、選択状態、代替テキストを維持する。モーダルは出さない。
 - 戻る導線: 実際の App Store URL、`/apps/caflog/privacy/`、`← AppLibrary` を維持する。CafLog の法務ページは引き続き共通の紙面で、保存されたテーマに従う。

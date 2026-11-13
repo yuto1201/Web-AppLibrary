@@ -107,6 +107,12 @@
   }
 }
 
+@media (max-width: 700px) and (max-height: 740px) {
+  .app-frame-strip-in {
+    min-height: 48px;
+  }
+}
+
 /* ---- 見出し ---- */
 .app-frame-about,
 .app-frame-others {
@@ -183,6 +189,15 @@
   font-size: 14px;
   font-weight: 600;
   text-decoration: none;
+}
+
+/* 矢印は文字ではなく飾り。スパンにすると axe が色の対比を判定できず incomplete になる。 */
+.app-frame-side a::after {
+  content: "→";
+}
+
+.app-frame-side a.app-frame-store::after {
+  content: "↗";
 }
 
 .app-frame-side a:hover {

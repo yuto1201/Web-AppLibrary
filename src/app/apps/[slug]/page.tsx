@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { apps, getApp } from "@/data/registry";
-import { termsDocuments } from "@/data/terms/registry";
+import { AppFrame } from "@/components/AppFrame";
 import { ScreenshotGallery } from "@/components/ScreenshotGallery";
 import { CafLogPage } from "@/components/CafLogPage";
 import { SubLogPage } from "@/components/SubLogPage";
@@ -45,18 +45,19 @@ export default async function AppPage({ params }: { params: Promise<{ slug: stri
   const app = getApp(slug);
   if (!app) notFound();
 
-  if (app.slug === "simple-pomo") return <SimplePomoPage app={app} />;
-  if (app.slug === "caflog") return <CafLogPage app={app} />;
-  if (app.slug === "sublog") return <SubLogPage app={app} />;
-  if (app.slug === "pay-cycle") return <PayCyclePage app={app} />;
-  if (app.slug === "flower") return <FlowerPage app={app} />;
+  // 明るい専用配色のページは、保存した dark でも枠を light の値のままにする。
+  const light = ["caflog", "sublog", "pay-cycle", "flower"].includes(app.slug);
+  const framed = (body: ReactNode) => <AppFrame app={app} light={light}>{body}</AppFrame>;
 
-  return (
+  if (app.slug === "simple-pomo") return framed(<SimplePomoPage app={app} />);
+  if (app.slug === "caflog") return framed(<CafLogPage app={app} />);
+  if (app.slug === "sublog") return framed(<SubLogPage app={app} />);
+  if (app.slug === "pay-cycle") return framed(<PayCyclePage app={app} />);
+  if (app.slug === "flower") return framed(<FlowerPage app={app} />);
+
+  return framed(
     <div className="app-shell" lang="ja" data-tone={appTone(app.slug)}>
       <header className="hero">
-        <nav className="hero-nav">
-          <Link href="/" className="nav-back">← AppLibrary</Link>
-        </nav>
         <div className="hero-inner">
           <div className="hero-lead">
             <div className="hero-copy">
@@ -115,18 +116,6 @@ export default async function AppPage({ params }: { params: Promise<{ slug: stri
           </section>
         )}
       </main>
-
-      <footer className="page-footer">
-        {app.slug === "pay-cycle" && (
-          <><a href="https://app.yutodev.com/#contact">サポート</a><span> · </span></>
-        )}
-        <Link href={`/apps/${app.slug}/privacy/`}>プライバシーポリシー</Link>
-        {termsDocuments[app.slug] && (
-          <><span> · </span><Link href={`/apps/${app.slug}/terms/`}>利用規約</Link></>
-        )}
-        <span> · </span>
-        <Link href="/">AppLibrary</Link>
-      </footer>
-    </div>
+    </div>,
   );
 }
