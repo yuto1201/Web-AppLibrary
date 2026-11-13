@@ -72,6 +72,18 @@ type Dict = {
   status_beta: string;
   status_release: string;
   status_archived: string;
+  frame_back: string;
+  about_title: string;
+  about_price: string;
+  about_version: string;
+  about_platforms: string;
+  about_status: string;
+  about_category: string;
+  about_store: string;
+  about_support: string;
+  about_privacy: string;
+  about_terms: string;
+  others_title: string;
 };
 
 export const i18n: Record<Lang, Dict> = {
@@ -120,6 +132,18 @@ export const i18n: Record<Lang, Dict> = {
     status_beta: "β テスト中",
     status_release: "リリース済み",
     status_archived: "公開終了",
+    frame_back: "← AppLibrary",
+    about_title: "このアプリについて",
+    about_price: "値段",
+    about_version: "版",
+    about_platforms: "対応機種",
+    about_status: "状態",
+    about_category: "分類",
+    about_store: "App Store で入手",
+    about_support: "サポート・お問い合わせ",
+    about_privacy: "プライバシーポリシー",
+    about_terms: "利用規約",
+    others_title: "ほかのアプリ",
   },
   en: {
     nav: { apps: "Apps", posts: "App updates", contact: "Contact" },
@@ -166,5 +190,17 @@ export const i18n: Record<Lang, Dict> = {
     status_beta: "In Beta",
     status_release: "Released",
     status_archived: "Archived",
+    frame_back: "← AppLibrary",
+    about_title: "About this app",
+    about_price: "Price",
+    about_version: "Version",
+    about_platforms: "Platforms",
+    about_status: "Status",
+    about_category: "Category",
+    about_store: "Download on the App Store",
+    about_support: "Support & contact",
+    about_privacy: "Privacy policy",
+    about_terms: "Terms of use",
+    others_title: "Other apps",
   },
 };

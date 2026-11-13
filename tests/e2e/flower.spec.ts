@@ -140,11 +140,13 @@ test("Flower: the product page follows the visitor's time and offers a sky previ
   await expect(page.locator("#features .feature-row")).toHaveCount(app.features.length);
   await expectContrast(page);
 
-  const related = page.getByRole("navigation", { name: "花島 関連リンク", exact: true });
+  const about = page.locator(".app-frame-about");
   for (const legal of LEGAL) {
-    await expect(related.getByRole("link", { name: legal.title, exact: true })).toHaveAttribute("href", `/apps/flower/${legal.route}/`);
+    const link = about.locator(`a[href="/apps/flower/${legal.route}/"]`);
+    await expect(link).toHaveCount(1);
+    await expect(link).toContainText(legal.title); // サポートは「サポート・お問い合わせ」
   }
-  await related.getByRole("link", { name: "サポート", exact: true }).click();
+  await about.locator('a[href="/apps/flower/support/"]').click();
   await expect(page).toHaveURL(/\/apps\/flower\/support\/$/u);
   await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
   await page.getByRole("link", { name: "← 花島", exact: true }).click();
@@ -182,6 +184,11 @@ test("Flower: the product page keeps its palette at every width, in the saved da
     }
   }
   await expectContrast(page);
+  // 共通の枠は dark でも light の値（空色の帯と白い面）を保つ。
+  await expect(page.locator(".app-frame-strip")).toHaveCSS("background-color", "rgb(220, 238, 255)");
+  await expect(page.locator(".app-frame-strip")).toHaveCSS("color", "rgb(17, 17, 17)");
+  await expect(page.locator(".app-frame-about .app-frame-facts")).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await expect(page.locator(".app-frame-about .app-frame-facts")).toHaveCSS("color", "rgb(17, 17, 17)");
   await page.emulateMedia({ reducedMotion: "reduce" });
   await expect(page.locator('.fl-sky[data-layer="day"]')).toHaveCSS("transition-duration", "0s");
 });

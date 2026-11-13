@@ -1,4 +1,3 @@
-import Link from "next/link";
 import Image from "next/image";
 import type { App } from "@/data/schema";
 import { ScreenshotGallery } from "@/components/ScreenshotGallery";
@@ -63,7 +62,7 @@ export function CafLogPage({ app }: { app: App }) {
                 {app.appStoreUrl ? <a className="caflog-button" href={app.appStoreUrl} target="_blank" rel="noopener noreferrer">App Store で入手 <ArrowIcon /></a> : null}
                 <a className="caflog-button caflog-button-ghost" href="#screenshots">画面を見てみる <ArrowIcon direction="down" /></a>
               </div>
-              <p className="caflog-platform">{app.platforms.join(" / ")} · 基本機能{app.price} / Pro 機能あり</p>
+              <p className="caflog-platform">{app.platforms.join(" / ")} · {app.price}</p>
             </div>
             <figure className="caflog-hero-stage">
               <span className="caflog-hero-halo" aria-hidden="true" />
@@ -130,14 +129,14 @@ export function CafLogPage({ app }: { app: App }) {
             <div className="caflog-download-action">
               {app.icon ? <Image src={`/apps/${app.slug}/${app.icon}`} width={76} height={76} alt="CafLog のアプリアイコン" loading="lazy" /> : null}
               {app.appStoreUrl ? <a className="caflog-button" href={app.appStoreUrl} target="_blank" rel="noopener noreferrer">App Store で入手 <ArrowIcon /></a> : null}
-              <p>{app.name} · {app.platforms.join(" / ")}<br />基本機能{app.price} / Pro 機能あり</p>
+              <p>{app.name} · {app.platforms.join(" / ")}<br />{app.price}</p>
             </div>
           </div>
         </section>
       </main>
 
       <footer className="caflog-footer">
-        <div className="caflog-container caflog-footer-inner"><span className="caflog-footer-brand">CafLog<span>.</span></span><p>カフェインと、自分らしく。</p><nav aria-label="CafLog 関連リンク"><a href="https://app.yutodev.com/#contact">サポート</a><Link href={`/apps/${app.slug}/privacy/`}>プライバシーポリシー</Link><Link href={`/apps/${app.slug}/terms/`}>利用規約</Link><Link href="/">← AppLibrary</Link></nav></div>
+        <div className="caflog-container caflog-footer-inner"><span className="caflog-footer-brand">CafLog<span>.</span></span><p>カフェインと、自分らしく。</p></div>
       </footer>
     </div>
   );

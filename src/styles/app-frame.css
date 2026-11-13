@@ -1,0 +1,267 @@
+/* ============================================================
+   アプリのページの共通の枠（上の帯・このアプリについて・ほかのアプリ）
+   机の空色が全ページ共通の地。data-frame-light は dark テーマでも light の値を保つ。
+   ============================================================ */
+
+.app-frame {
+  --frame-desk: #162330;
+  --frame-ink: #f2f6fa;
+  --frame-ink-2: #c3d0dc;
+  --frame-surface: #1e2f3e;
+  --frame-line: #5b7186;
+  --frame-rule: #34495b;
+  --frame-store-bg: #f2f6fa;
+  --frame-store-ink: #111111;
+}
+
+.app-frame[data-frame-light],
+:root[data-theme="light"] .app-frame {
+  --frame-desk: #dceeff;
+  --frame-ink: #111111;
+  --frame-ink-2: #3a3a3a;
+  --frame-surface: #ffffff;
+  --frame-line: #111111;
+  --frame-rule: #d8d8d8;
+  --frame-store-bg: #111111;
+  --frame-store-ink: #ffffff;
+}
+
+:root[data-theme="dark"] .app-frame:not([data-frame-light]) {
+  --frame-desk: #162330;
+  --frame-ink: #f2f6fa;
+  --frame-ink-2: #c3d0dc;
+  --frame-surface: #1e2f3e;
+  --frame-line: #5b7186;
+  --frame-rule: #34495b;
+  --frame-store-bg: #f2f6fa;
+  --frame-store-ink: #111111;
+}
+
+.app-frame-wrap {
+  width: min(1120px, calc(100% - 40px));
+  margin-inline: auto;
+}
+
+/* ---- 上の帯 ---- */
+.app-frame-strip {
+  background: var(--frame-desk);
+  color: var(--frame-ink);
+  border-bottom: 1.5px solid var(--frame-line);
+}
+
+.app-frame-strip-in {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 64px;
+}
+
+/* 法務ページでは .app-shell a（アクセント色）の内側に入るので、帯の中の色は詳細度で勝たせる。 */
+.app-frame-strip .app-frame-back {
+  color: var(--frame-ink);
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -0.02em;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.app-frame-strip .app-frame-back:hover {
+  text-decoration: underline;
+}
+
+.app-frame-crumb {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  color: var(--frame-ink-2);
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.app-frame-crumb b {
+  color: var(--frame-ink);
+}
+
+.app-frame-seal {
+  display: block;
+  width: 34px;
+  height: 34px;
+  padding: 3px;
+  background: #ffffff;
+  border-radius: 26%;
+  transform: rotate(-6deg);
+  box-shadow: 0 0 0 2px var(--app-color), 0 4px 8px -4px rgba(0, 0, 0, 0.4);
+}
+
+.app-frame-seal img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 22%;
+}
+
+@media (max-width: 560px) {
+  .app-frame-crumb > span:last-child {
+    display: none;
+  }
+}
+
+@media (max-width: 700px) and (max-height: 740px) {
+  .app-frame-strip-in {
+    min-height: 48px;
+  }
+}
+
+/* ---- 見出し ---- */
+.app-frame-about,
+.app-frame-others {
+  color: var(--frame-ink);
+}
+
+.app-frame-about {
+  padding-block: 56px 24px;
+}
+
+.app-frame-others {
+  padding-block: 40px 72px;
+}
+
+.app-frame-about h2,
+.app-frame-others h2 {
+  margin: 0 0 18px;
+  font-size: 26px;
+  letter-spacing: -0.03em;
+}
+
+/* ---- このアプリについて ---- */
+.app-frame-facts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+  border: 1.5px solid var(--frame-line);
+  border-radius: 22px;
+  background: var(--frame-surface);
+  color: var(--frame-ink);
+}
+
+.app-frame-facts dl {
+  display: grid;
+  grid-template-columns: 7em 1fr;
+  margin: 0;
+}
+
+.app-frame-facts dt,
+.app-frame-facts dd {
+  margin: 0;
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--frame-rule);
+  font-size: 14px;
+}
+
+.app-frame-facts dt {
+  color: var(--frame-ink-2);
+}
+
+.app-frame-facts dd {
+  font-weight: 600;
+}
+
+.app-frame-side {
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  padding: 22px;
+  border-left: 1.5px solid var(--frame-line);
+  background: color-mix(in srgb, var(--app-color) 14%, var(--frame-surface));
+}
+
+.app-frame-side a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 48px;
+  padding: 0 18px;
+  border: 1.5px solid var(--frame-line);
+  border-radius: 12px;
+  background: var(--frame-surface);
+  color: var(--frame-ink);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+/* 矢印は文字ではなく飾り。スパンにすると axe が色の対比を判定できず incomplete になる。 */
+.app-frame-side a::after {
+  content: "→";
+  content: "→" / "";
+}
+
+.app-frame-side a.app-frame-store::after {
+  content: "↗";
+  content: "↗" / "";
+}
+
+.app-frame-side a:hover {
+  border-color: var(--app-color);
+}
+
+.app-frame-side a.app-frame-store {
+  background: var(--frame-store-bg);
+  border-color: var(--frame-store-bg);
+  color: var(--frame-store-ink);
+}
+
+@media (max-width: 760px) {
+  .app-frame-facts {
+    grid-template-columns: 1fr;
+  }
+
+  .app-frame-side {
+    border-left: 0;
+    border-top: 1.5px solid var(--frame-line);
+  }
+}
+
+/* ---- ほかのアプリ ---- */
+.app-frame-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 12px;
+}
+
+.app-frame-card {
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  gap: 2px 12px;
+  align-items: center;
+  padding: 14px;
+  border: 1.5px solid var(--frame-line);
+  border-top: 6px solid var(--app-color);
+  border-radius: 16px;
+  background: var(--frame-surface);
+  color: var(--frame-ink);
+  text-decoration: none;
+}
+
+.app-frame-card:hover {
+  border-color: var(--app-color);
+}
+
+.app-frame-card img {
+  grid-row: span 2;
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+}
+
+.app-frame-card b {
+  font-size: 15px;
+}
+
+.app-frame-card span {
+  color: var(--frame-ink-2);
+  font-size: 12px;
+  line-height: 1.5;
+}

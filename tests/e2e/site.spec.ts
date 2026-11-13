@@ -66,6 +66,22 @@ async function expectColorContrast(page: Page, include?: string) {
   expect(results.passes.some(({ id }) => id === "color-contrast")).toBe(true);
 }
 
+/** 共通の枠のリンク。専用ページを持たないサポートは連絡先 /#contact へ向かう。 */
+function frameAbout(page: Page) {
+  return page.locator(".app-frame .app-frame-about");
+}
+
+/** 保存した dark でも、アプリの明るい配色の枠は light の値を保つ。 */
+async function expectLightFrameInDark(page: Page) {
+  const strip = page.locator(".app-frame-strip");
+  await expect(strip).toHaveCSS("background-color", "rgb(220, 238, 255)");
+  await expect(strip).toHaveCSS("color", "rgb(17, 17, 17)");
+  const card = page.locator(".app-frame-about .app-frame-facts");
+  await expect(card).toHaveCSS("background-color", "rgb(255, 255, 255)");
+  await expect(card).toHaveCSS("color", "rgb(17, 17, 17)");
+  await expectColorContrast(page, ".app-frame");
+}
+
 /** 言語 h2 より条項 h3 を一段小さくし、本文より小さくしない。字重はどちらも 400。 */
 async function expectLegalHeadingHierarchy(page: Page) {
   const h2 = page.locator(".privacy-page h2").first();
@@ -1180,11 +1196,9 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
         await expect(page.locator(`.caflog-moment[href="#${target}"]`)).toHaveCount(1);
         await expect(page.locator(`#${target}`).getByRole("heading")).toHaveText(title!);
       }
-      const related = page.getByRole("navigation", { name: "CafLog 関連リンク", exact: true });
-      // Issue #116: App Store のサポート URL のページから、開発者の連絡先へ移れる。
-      await expect(related.getByRole("link", { name: "サポート", exact: true }))
-        .toHaveAttribute("href", "https://app.yutodev.com/#contact");
-      await expect(related.getByRole("link", { name: "利用規約", exact: true })).toHaveAttribute("href", "/apps/caflog/terms/");
+      // Issue #116: App Store のサポート URL のページから、開発者の連絡先へ移れる（共通の枠の「このアプリについて」）。
+      await expect(frameAbout(page).locator('a[href="/#contact"]')).toHaveCount(1);
+      await expect(frameAbout(page).locator('a[href="/apps/caflog/terms/"]')).toHaveCount(1);
       const download = page.locator(".caflog-button").first();
       await expect(download).toHaveCSS("background-color", CAFLOG.ink);
       await expect(download).toHaveCSS("color", CAFLOG.white);
@@ -1294,24 +1308,23 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
       await expect(featured).toHaveAttribute("alt", afterArrow.alt);
     }
     if (app.slug === "pay-cycle") {
-      const storeLinks = page.locator('a[href*="apps.apple.com"]');
+      // 専用ページの 3 つ。枠の「このアプリについて」の App Store リンクは別に数える。
+      const storeLinks = page.locator('.paycycle-site a[href*="apps.apple.com"]');
       await expect(storeLinks).toHaveCount(3);
+      await expect(frameAbout(page).locator('a[href*="apps.apple.com"]')).toHaveCount(1);
       for (const link of await storeLinks.all()) {
         await expect(link).toHaveAttribute("href", "https://apps.apple.com/jp/app/id6809831827");
         await expect(link).toHaveAttribute("target", "_blank");
         await expect(link).toHaveAttribute("rel", /noopener/u);
       }
       await expect(page.locator(".paycycle-site")).not.toContainText("準備中");
-      const related = page.getByRole("navigation", { name: "PayCycle 関連リンク", exact: true });
-      await expect(related.getByRole("link", { name: "サポート", exact: true }))
-        .toHaveAttribute("href", "https://app.yutodev.com/#contact");
-      await expect(related.getByRole("link", { name: "利用規約", exact: true }))
-        .toHaveAttribute("href", "/apps/pay-cycle/terms/");
+      await expect(frameAbout(page).locator('a[href="/#contact"]')).toHaveCount(1);
+      await expect(frameAbout(page).locator('a[href="/apps/pay-cycle/terms/"]')).toHaveCount(1);
     }
-    const detailPrivacy = app.slug === "pay-cycle"
-      ? page.getByRole("navigation", { name: "PayCycle 関連リンク", exact: true }).getByRole("link", { name: "プライバシーポリシー", exact: true })
-      : page.getByRole("link", { name: "プライバシーポリシー", exact: true });
-    await detailPrivacy.click();
+    // 共通の枠: 帯のトップへの道は 1 つだけ。ほかのリンクはこのアプリについてへ集約されている。
+    await expect(page.locator('.app-frame-strip a[href="/"]')).toBeVisible();
+    await expect(page.locator('a[href="/"]', { hasText: "AppLibrary" })).toHaveCount(1);
+    await frameAbout(page).locator(`a[href="/apps/${app.slug}/privacy/"]`).click();
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/privacy/$`, "u"));
     await expect(page.locator(".app-shell")).not.toHaveAttribute("data-tone");
     await expect(page.locator("body")).toHaveCSS("background-color", PAPER.light);
@@ -1389,10 +1402,7 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
     await expectColorContrast(page);
     await page.getByRole("link", { name: `← ${app.name}`, exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/$`, "u"));
-    const backToHome = app.slug === "pay-cycle"
-      ? page.getByRole("navigation", { name: "PayCycle 関連リンク", exact: true }).getByRole("link", { name: "AppLibrary", exact: true })
-      : page.getByRole("link", { name: "← AppLibrary", exact: true });
-    await backToHome.click();
+    await page.locator('.app-frame-strip a[href="/"]').click();
     await expect.poll(() => new URL(page.url()).pathname).toBe("/");
     await expect(page.locator(".app-shell")).toHaveCount(0);
     // トップへ戻るとホーム専用の配色へ戻り、アプリや法務の色が残らない。
@@ -1437,6 +1447,9 @@ test("CafLog は320〜1280pxで実画面とアイコンを表示し、配布先�
   for (const width of [320, 393, 768, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/apps/caflog/");
+    // registry の値段をそのまま出す（「基本機能」「Pro 機能あり」を足して重ねない）。
+    await expect(page.locator(".caflog-platform")).toHaveText("iOS · 無料・Pro あり（月額・年額）");
+    await expect(page.locator("body")).not.toContainText("基本機能無料・Pro");
     const heroImage = page.locator(".caflog-hero-image");
     await expect(heroImage).toHaveAttribute("src", "/apps/caflog/screenshots/1.webp");
     await expect(heroImage).toBeVisible();
@@ -1480,9 +1493,11 @@ test("CafLog は保存した dark でもアプリに合わせた明るい配色�
   await expect(page.locator(".caflog-button").first()).toHaveCSS("background-color", CAFLOG.ink);
   await expect(page.locator(".caflog-button").first()).toHaveCSS("color", CAFLOG.white);
   await expectColorContrast(page);
+  await expectLightFrameInDark(page);
+  await expect(frameAbout(page).locator("h2")).toHaveText("About this app");
   await expect.poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth)).toBe(true);
 
-  await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
+  await frameAbout(page).locator('a[href="/apps/caflog/privacy/"]').click();
   await expect(page).toHaveURL(/\/apps\/caflog\/privacy\/$/u);
   await expect(page.locator(".caflog-site")).toHaveCount(0);
   await expect(page.locator("body")).toHaveCSS("background-color", PAPER.dark);
@@ -1546,8 +1561,9 @@ test("SubLog は保存した dark でも専用配色を保ち、法務へ戻る�
   await expect(page.locator(".sublog-site")).toHaveAttribute("lang", "ja");
   await expect(page.locator("body")).toHaveCSS("background-color", SUBLOG.paper);
   await expectColorContrast(page);
+  await expectLightFrameInDark(page);
 
-  await page.getByRole("link", { name: "プライバシーポリシー", exact: true }).click();
+  await frameAbout(page).locator('a[href="/apps/sublog/privacy/"]').click();
   await expect(page).toHaveURL(/\/apps\/sublog\/privacy\/$/u);
   await expect(page.locator(".sublog-site")).toHaveCount(0);
   await expect(page.locator("body")).toHaveCSS("background-color", PAPER.dark);
@@ -1630,9 +1646,10 @@ test("PayCycle は保存した dark と en を維持し、privacy と terms と�
   await expect(page.locator(".paycycle-site")).toHaveAttribute("lang", "ja");
   await expect(page.locator("body")).toHaveCSS("background-color", PAYCYCLE.paper);
   await expectColorContrast(page);
+  await expectLightFrameInDark(page);
 
-  for (const [label, route] of [["プライバシーポリシー", "privacy"], ["利用規約", "terms"]] as const) {
-    await page.getByRole("navigation", { name: "PayCycle 関連リンク", exact: true }).getByRole("link", { name: label, exact: true }).click();
+  for (const route of ["privacy", "terms"] as const) {
+    await frameAbout(page).locator(`a[href="/apps/pay-cycle/${route}/"]`).click();
     await expect(page).toHaveURL(new RegExp(`/apps/pay-cycle/${route}/$`, "u"));
     await expect(page.locator(".paycycle-site")).toHaveCount(0);
     await expect(page.locator(".app-shell")).toHaveCSS("background-color", PAPER.dark);
@@ -1645,6 +1662,52 @@ test("PayCycle は保存した dark と en を維持し、privacy と terms と�
     await expect(page.locator(".paycycle-site")).toHaveAttribute("lang", "ja");
     await expect(page.locator("html")).toHaveAttribute("data-theme", "dark");
     await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  }
+});
+
+for (const app of apps) {
+  test(`${app.slug}: 共通の枠（帯・このアプリについて・ほかのアプリ）と重なるリンクの整理`, async ({ page }) => {
+    await page.goto(`/apps/${app.slug}/`);
+    const frame = page.locator(".app-frame");
+    await expect(frame.locator('.app-frame-strip a[href="/"]')).toBeVisible();
+    const about = frame.locator(".app-frame-about");
+    await expect(about.getByRole("link", { name: /App Store/ })).toHaveCount(app.appStoreUrl ? 1 : 0);
+    // 値段と版は公開中のアプリだけ。
+    await expect(about.getByText(app.price, { exact: true })).toHaveCount(app.appStoreUrl ? 1 : 0);
+    await expect(about.getByText(app.version, { exact: true })).toHaveCount(app.appStoreUrl ? 1 : 0);
+    await expect(about.locator(`a[href="${app.slug === "flower" ? "/apps/flower/support/" : "/#contact"}"]`)).toHaveCount(1);
+    await expect(about.locator(`a[href="/apps/${app.slug}/privacy/"]`)).toHaveCount(1);
+    await expect(frame.locator(".app-frame-others a")).toHaveCount(apps.length - 1);
+    // 重なるリンクが残っていない: 「AppLibrary」へのリンクはページ全体で帯の 1 つだけ。
+    await expect(page.locator('a[href="/"]', { hasText: "AppLibrary" })).toHaveCount(1);
+    await expect(page.locator("nav[aria-label$='関連リンク']")).toHaveCount(0);
+  });
+}
+
+test("共通の枠は英語に切り替えると見出しも英語になる", async ({ page }) => {
+  await page.goto("/apps/dev-tools/");
+  await setStoredState(page, { lang: "en" });
+  await page.reload();
+  await expect(page.locator(".app-frame-about h2")).toHaveText("About this app");
+});
+
+test("法務とサポートのページにも上の帯が付き、保存テーマの色になる", async ({ page }) => {
+  const themes = [
+    { theme: "light", bg: "rgb(220, 238, 255)", ink: "rgb(17, 17, 17)" },
+    { theme: "dark", bg: "rgb(22, 35, 48)", ink: "rgb(242, 246, 250)" },
+  ] as const;
+  for (const { theme, bg, ink } of themes) {
+    await page.goto("/apps/caflog/privacy/");
+    await setStoredState(page, { theme });
+    for (const path of ["/apps/caflog/privacy/", "/apps/pay-cycle/terms/", "/apps/flower/support/"]) {
+      await page.goto(path);
+      const strip = page.locator(".app-frame-strip");
+      await expect(strip.locator('a[href="/"]')).toBeVisible();
+      await expect(strip, `${path} ${theme}`).toHaveCSS("background-color", bg);
+      await expect(strip, `${path} ${theme}`).toHaveCSS("color", ink);
+      await expect(page.locator('a[href="/"]', { hasText: "AppLibrary" })).toHaveCount(1);
+      await expect(page.locator(".app-frame-about")).toHaveCount(0);
+    }
   }
 });
 

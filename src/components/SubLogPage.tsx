@@ -139,7 +139,6 @@ export function SubLogPage({ app }: { app: App }) {
         <div className="sublog-wrap">
           <a href="#sublog-top" className="sublog-brand">SubLog.</a>
           <p>毎月のサブスクを、ひと目で。</p>
-          <nav aria-label="SubLog 関連リンク"><Link href={privacyUrl}>プライバシーポリシー</Link><Link href="/">← AppLibrary</Link></nav>
           <small>Made by uesugiyuuto</small>
         </div>
       </footer>

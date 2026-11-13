@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState, useSyncExternalStore } from "react";
 import type { App } from "@/data/schema";
 import "@/styles/simplepomo.css";
@@ -111,7 +110,6 @@ export function SimplePomoPage({ app }: { app: App }) {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={`/apps/${app.slug}/${app.icon}`} width={28} height={28} alt="" />SimplePomo
         </a>
-        <nav aria-label="SimplePomo 関連リンク"><a href="https://app.yutodev.com/#contact">サポート</a><Link href={`/apps/${app.slug}/terms/`}>利用規約</Link><Link href={`/apps/${app.slug}/privacy/`}>プライバシーポリシー</Link><Link href="/">← AppLibrary</Link></nav>
         <span className="sp-credit">Made by uesugiyuuto · 2026</span>
       </div>
     </footer>
