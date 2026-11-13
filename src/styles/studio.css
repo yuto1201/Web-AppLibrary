@@ -102,9 +102,9 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 .poster:not([data-desk="ready"]) .stickers-foot { visibility: hidden; }
 .poster .sticker-slot { width: 95px; }
 .poster .sticker-slot .sticker-note { min-height: 54px; padding: 10px 5px; font: 700 14px/1.5 var(--font-sans); color: #111; }
-.poster .sticker-slot[data-key="note-Swift"] .sticker { background: var(--home-yellow); border: 1px solid #111; }
-.poster .sticker-slot[data-key="note-Tokyo"] .sticker { background: var(--home-mint); border: 1px solid #111; }
-.poster .sticker-slot[data-key="note-solo"] .sticker { background: var(--home-lavender); border: 1px solid #111; }
+.poster .sticker-slot[data-key="note-Swift"] .sticker { background: var(--paper-raised); border: 1px solid #111; }
+.poster .sticker-slot[data-key="note-Tokyo"] .sticker { background: var(--paper-raised); border: 1px solid #111; }
+.poster .sticker-slot[data-key="note-solo"] .sticker { background: var(--paper-raised); border: 1px solid #111; }
 .poster[data-desk="ready"] .sticker-slot[data-key="sublog"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .08); top: calc(var(--desk-play-top) + 32px); right: auto; bottom: auto; width: 95px; }
 .poster[data-desk="ready"] .sticker-slot[data-key="caflog"] { left: calc(var(--desk-play-left) + 24px); top: calc(var(--desk-play-top) + 223px); right: auto; bottom: auto; width: 95px; }
 .poster[data-desk="ready"] .sticker-slot[data-key="dev-tools"] { left: calc(var(--desk-play-left) + var(--desk-play-width) - 119px); top: calc(var(--desk-play-top) + 223px); right: auto; bottom: auto; width: 95px; }

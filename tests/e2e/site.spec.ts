@@ -504,6 +504,15 @@ test("アプリシールの形が違い、beta / alpha に印がある", async (
   expect(betaPaint.replaceAll('"', "")).toBe("β");
   expect(alphaPaint.replaceAll('"', "")).toBe("α");
   await expect(page.locator(".sticker-name")).toHaveCount(0);
+
+  for (const app of apps) {
+    const sticker = page.locator(`.sticker-slot[data-key="${app.slug}"] .sticker`);
+    expect(await sticker.evaluate((el) => getComputedStyle(el).boxShadow)).toContain(cssRgb(app.accent));
+  }
+  for (const key of ["note-Swift", "note-Tokyo", "note-solo"]) {
+    const word = page.locator(`.sticker-slot[data-key="${key}"] .sticker`);
+    expect(await word.evaluate((el) => getComputedStyle(el).boxShadow)).not.toMatch(/rgb\((31, 134, 245|255, 125, 160)\)/);
+  }
 });
 
 test("初期表示の全シールと操作案内は Hero の遊び場に収まる", async ({ page }) => {

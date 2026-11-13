@@ -34,6 +34,8 @@ export type VinylStickerProps = {
   href?: string;
   slug?: string;
   label?: string;
+  /** アプリの色（registry の accent）。縁の輪になる。文字色には使わない。 */
+  color?: string;
   boundsFrom: (el: HTMLElement) => Box | null;
   onGrab: () => void;
   onMove: (offset: Point) => void;
@@ -78,6 +80,7 @@ export function VinylSticker({
   href,
   slug,
   label,
+  color,
   boundsFrom,
   onGrab,
   onMove,
@@ -100,6 +103,7 @@ export function VinylSticker({
   const slotStyle = {
     "--layer": layer,
     "--settle-order": order,
+    ...(color ? { "--app-color": color } : {}),
   } as React.CSSProperties;
 
   const resetTokenRef = useRef(resetToken);

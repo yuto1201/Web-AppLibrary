@@ -685,6 +685,17 @@ html[data-hero-opening="play"] .poster .sticker-slot:has(.is-held) {
   transform: translate(var(--dx, 0), calc(var(--dy, 0px) + var(--lift, 0px) - 6px)) rotate(var(--tilt, 0deg));
 }
 
+/* アプリのシールはアプリの色の輪を縁にする。輪は飾りで、色は文字に使わない。
+   ホバー・掴み中は持ち上げの影へ置き換わるため、輪も同じ規則で重ねる。 */
+.sticker-slot[style*="--app-color"] .sticker {
+  box-shadow: 0 0 0 2.5px var(--app-color), var(--shadow-sticker);
+}
+.sticker-slot[style*="--app-color"] .sticker:hover,
+.sticker-slot[style*="--app-color"] .sticker:focus-visible,
+.sticker-slot[style*="--app-color"] .sticker.is-held {
+  box-shadow: 0 0 0 2.5px var(--app-color), var(--shadow-sticker-lift);
+}
+
 .stickers-foot {
   position: absolute;
   left: 50%;
