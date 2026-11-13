@@ -14,6 +14,7 @@ import { appTone } from "@/lib/app-tone";
 import { statusLabel } from "@/lib/labels";
 import { i18n } from "@/lib/site-data";
 import "@/styles/app-page.css";
+import "@/styles/app-frame.css";
 
 export function generateStaticParams() {
   return apps.map((app) => ({ slug: app.slug }));
