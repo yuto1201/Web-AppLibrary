@@ -142,7 +142,9 @@ test("Flower: the product page follows the visitor's time and offers a sky previ
 
   const about = page.locator(".app-frame-about");
   for (const legal of LEGAL) {
-    await expect(about.locator(`a[href="/apps/flower/${legal.route}/"]`)).toHaveCount(1);
+    const link = about.locator(`a[href="/apps/flower/${legal.route}/"]`);
+    await expect(link).toHaveCount(1);
+    await expect(link).toContainText(legal.title); // サポートは「サポート・お問い合わせ」
   }
   await about.locator('a[href="/apps/flower/support/"]').click();
   await expect(page).toHaveURL(/\/apps\/flower\/support\/$/u);

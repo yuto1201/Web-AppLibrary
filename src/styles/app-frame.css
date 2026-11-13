@@ -194,10 +194,12 @@
 /* 矢印は文字ではなく飾り。スパンにすると axe が色の対比を判定できず incomplete になる。 */
 .app-frame-side a::after {
   content: "→";
+  content: "→" / "";
 }
 
 .app-frame-side a.app-frame-store::after {
   content: "↗";
+  content: "↗" / "";
 }
 
 .app-frame-side a:hover {

@@ -4,6 +4,9 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import type { App } from "@/data/schema";
 import type { AppLinks } from "@/lib/app-links";
+
+/** 「ほかのアプリ」のカードが描くものだけ。App 全体をクライアントへ送らない。 */
+export type FrameOther = Pick<App, "slug" | "name" | "tagline" | "accent" | "icon">;
 import { statusLabel } from "@/lib/labels";
 import { useSiteState } from "@/lib/state";
 
@@ -50,7 +53,7 @@ export function AppFrameView({
   light: boolean;
   links: AppLinks;
   storeFacts: boolean;
-  others: App[];
+  others: FrameOther[];
   children: ReactNode;
 }) {
   const { t } = useSiteState();

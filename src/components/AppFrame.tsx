@@ -14,7 +14,9 @@ export function AppFrame({ app, light, children }: { app: App; light: boolean; c
       light={light}
       links={appLinks(app)}
       storeFacts={showsStoreFacts(app)}
-      others={apps.filter((other) => other.slug !== app.slug)}
+      others={apps
+        .filter((other) => other.slug !== app.slug)
+        .map(({ slug, name, tagline, accent, icon }) => ({ slug, name, tagline, accent, icon }))}
     >
       {children}
     </AppFrameView>
