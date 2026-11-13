@@ -387,6 +387,8 @@ test("作品カードは実画面と掲載情報を持ち、検索・フィル�
   const second = (await rows.nth(1).boundingBox())!;
   for (const row of await rows.all()) {
     expect(await row.evaluate((el) => Number.parseFloat(getComputedStyle(el).borderTopLeftRadius))).toBeGreaterThanOrEqual(24);
+    // どのカードも同じ枠（最後のカードだけ下の線が消えない）
+    expect(await row.evaluate((el) => getComputedStyle(el).borderBottomWidth)).toBe(await row.evaluate((el) => getComputedStyle(el).borderTopWidth));
   }
   expect(Math.abs(first.y - second.y)).toBeLessThanOrEqual(1);
   expect(second.x).toBeGreaterThan(first.x + first.width);
