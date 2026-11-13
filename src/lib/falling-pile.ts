@@ -171,7 +171,8 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
   const allAsleep = () => things.every((t) => t.body.sleepState === CANNON.Body.SLEEPING);
 
   function frame(now: number) {
-    const dt = Math.min(0.05, (now - last) / 1000);
+    const elapsed = (now - last) / 1000; // 実時間。重い環境でも止める目安は実時間で測る
+    const dt = Math.min(0.05, elapsed);
     last = now;
     if (toSpawn > 0) {
       spawnTimer -= dt;
@@ -181,7 +182,7 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
     syncMeshes();
     renderer.render(scene, camera);
     if (toSpawn === 0) {
-      idleTime += dt;
+      idleTime += elapsed;
       if (allAsleep() || idleTime >= SETTLE_SECONDS) {
         for (const t of things) t.body.sleep();
         running = false;

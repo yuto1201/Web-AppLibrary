@@ -1741,7 +1741,7 @@ test("WebGL が無くても、フッターの奥付と法務リンクを使え�
 });
 
 test("積もる板の描画ループは、降る前も積もった後も止まる", async ({ page }) => {
-  test.setTimeout(90_000);
+  test.setTimeout(120_000);
   await page.addInitScript(() => {
     const w = window as unknown as { __raf: number };
     w.__raf = 0;
@@ -1766,8 +1766,14 @@ test("積もる板の描画ループは、降る前も積もった後も止ま�
   await settled("降り始める前");
   await page.locator(".fall-zone").scrollIntoViewIfNeeded();
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
-  await page.waitForTimeout(11_000);
-  await settled("積もった後");
+  // 降り終えて約 6 秒で止まる。重い環境でも待てるよう、止まるまでの上限を長く取る
+  await expect
+    .poll(async () => {
+      const before = await rafCount();
+      await page.waitForTimeout(1500);
+      return (await rafCount()) - before;
+    }, { timeout: 45_000, intervals: [0] })
+    .toBe(0);
 });
 
 test("reduced-motion では積もった後の 1 枚だけを描く", async ({ page }) => {
