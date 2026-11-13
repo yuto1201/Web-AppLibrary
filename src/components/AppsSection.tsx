@@ -35,15 +35,14 @@ export function AppsSection() {
             <Link
               className={`app-row${app.slug === activeSlug ? " is-linked" : ""}`}
               href={`/apps/${app.slug}/`}
-              // hover 時の色はアプリ自身の accent を使う。サイトの 1 色で塗り潰さない。
-              style={{ "--row-accent": app.accent } as React.CSSProperties}
+              // 窓の色はアプリ自身の accent。器（カードの地・枠）は全アプリ共通にする。
+              style={{ "--app-color": app.accent } as React.CSSProperties}
               onMouseEnter={() => onActivate(app.slug, "hover")}
               onFocus={() => onActivate(app.slug, "focus")}
               onMouseLeave={() => onActivate(null, "hover")}
               onBlur={() => onActivate(null, "focus")}
             >
               <span className="app-row-visual" aria-hidden="true">
-                <span className="app-row-visual-label">{String(index + 1).padStart(2, "0")} / {app.name.toUpperCase()}</span>
                 <span className="app-preview-phone" data-kind={app.screenshots[0] ? "screen" : "icon"}>
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0].file}` : `/apps/${app.slug}/${app.icon}`} alt="" width={260} height={app.screenshots[0] ? 564 : 260} loading="lazy" />
@@ -56,13 +55,17 @@ export function AppsSection() {
                   <img src={`/apps/${app.slug}/${app.icon}`} alt="" loading="lazy" />
                 </span>
                 <span className="app-row-main">
-                  <span className="app-row-category"><span aria-hidden="true">{String(index + 1).padStart(2, "0")} / </span><span lang="ja">{app.category}</span></span>
+                  <span className="app-row-category" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
                   <span className="app-row-name">{app.name}</span>
                   <span className="app-row-tagline" lang="ja">{app.tagline}</span>
                 </span>
-                <span className="app-row-meta">
+                <span className="app-row-tags">
+                  <span className="app-row-tag" data-kind="category" lang="ja">{app.category}</span>
+                  <span className="app-row-tag" data-kind="platforms">{app.platforms.join("・")}</span>
+                  {app.appStoreUrl ? (
+                    <span className="app-row-tag" data-kind="price" lang="ja" aria-label={`${t.app_price_label}: ${app.price}`}>{app.price}</span>
+                  ) : null}
                   <StatusMark app={app} lang={prefs.lang} label={statusLabel(app.status, t)} />
-                  <span className="app-row-platforms">{app.platforms.join(" ")}</span>
                   <span className="app-row-year">{app.year}</span>
                 </span>
                 <span className="app-row-arrow" aria-hidden="true"><svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.7"><path d="M6 18 18 6M6 6h12v12" /></svg></span>
@@ -78,5 +81,5 @@ export function AppsSection() {
 /** リリース済みは既定なので印を出さない。開発中・テスト中・公開終了だけ知らせる。 */
 function StatusMark({ app, lang, label }: { app: App; lang: string; label: string }) {
   if (app.status === "release") return null;
-  return <span className="app-row-status" lang={lang}>{label}</span>;
+  return <span className="app-row-tag" data-kind="status" lang={lang}>{label}</span>;
 }

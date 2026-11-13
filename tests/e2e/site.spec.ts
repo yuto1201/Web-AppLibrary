@@ -373,6 +373,14 @@ test("作品カードは実画面と掲載情報を持ち、検索・フィル�
     await expect(preview).toHaveAttribute("src", app.screenshots[0] ? `/apps/${app.slug}/screenshots/${app.screenshots[0].file}` : `/apps/${app.slug}/${app.icon}`);
     await expect(row.locator(".app-preview-phone")).toHaveAttribute("data-kind", app.screenshots.length ? "screen" : "icon");
     await expect.poll(() => preview.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+    await expect(row.locator(".app-row-visual")).toHaveCSS("background-color", cssRgb(app.accent));
+    await expect(row.locator('.app-row-tag[data-kind="category"]')).toHaveText(app.category);
+    await expect(row.locator('.app-row-tag[data-kind="platforms"]')).toHaveText(app.platforms.join("・"));
+    await expect(row.locator('.app-row-tag[data-kind="price"]')).toHaveCount(app.appStoreUrl ? 1 : 0);
+    if (app.appStoreUrl) await expect(row.locator('.app-row-tag[data-kind="price"]')).toHaveText(app.price);
+    await expect(row.locator('.app-row-tag[data-kind="status"]')).toHaveCount(app.status === "release" ? 0 : 1);
+    // 窓には文字を置かない（色の上の文字のコントラストを避ける）
+    await expect(row.locator(".app-row-visual-label")).toHaveCount(0);
   }
 
   const first = (await rows.nth(0).boundingBox())!;
@@ -393,6 +401,17 @@ test("作品カードは実画面と掲載情報を持ち、検索・フィル�
   await rows.first().click();
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect.poll(() => new URL(page.url()).pathname).toMatch(/^\/apps\/[a-z-]+\/$/u);
+  // Review Focus 4: 320px で札がカードからはみ出さず、横スクロールも出ない
+  await page.goto("/");
+  await page.setViewportSize({ width: 320, height: 800 });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+  for (const row of await rows.all()) {
+    const box = (await row.boundingBox())!;
+    for (const tag of await row.locator(".app-row-tag").all()) {
+      const t = (await tag.boundingBox())!;
+      expect(t.x + t.width).toBeLessThanOrEqual(box.x + box.width + 0.5);
+    }
+  }
 });
 
 test("ステッカーは掴んで動かせて、離すと横スクロールを作らない", async ({ page }) => {
