@@ -1447,6 +1447,9 @@ test("CafLog は320〜1280pxで実画面とアイコンを表示し、配布先�
   for (const width of [320, 393, 768, 1280]) {
     await page.setViewportSize({ width, height: 900 });
     await page.goto("/apps/caflog/");
+    // registry の値段をそのまま出す（「基本機能」「Pro 機能あり」を足して重ねない）。
+    await expect(page.locator(".caflog-platform")).toHaveText("iOS · 無料・Pro あり（月額・年額）");
+    await expect(page.locator("body")).not.toContainText("基本機能無料・Pro");
     const heroImage = page.locator(".caflog-hero-image");
     await expect(heroImage).toHaveAttribute("src", "/apps/caflog/screenshots/1.webp");
     await expect(heroImage).toBeVisible();
