@@ -463,3 +463,8 @@ body:has(.app-shell[data-tone="sky"]),
 [data-theme="dark"] body:has(.app-shell[data-tone="sky"]),
 [data-theme="dark"] .app-shell[data-tone="sky"] { background: var(--paper); }
 [data-theme="dark"] .app-shell[data-tone="sky"] { --app-accent: #9CC4F2; --app-accent-2: #9CC4F2; }
+
+/* 末尾の区切りの「・」は出さない（法務ページのフッターはリンクの有無で末尾が変わる）。 */
+.page-footer > span:last-child:not(:only-child) {
+  display: none;
+}

@@ -56,7 +56,8 @@
   min-height: 64px;
 }
 
-.app-frame-back {
+/* 法務ページでは .app-shell a（アクセント色）の内側に入るので、帯の中の色は詳細度で勝たせる。 */
+.app-frame-strip .app-frame-back {
   color: var(--frame-ink);
   font-weight: 800;
   font-size: 17px;
@@ -65,7 +66,7 @@
   white-space: nowrap;
 }
 
-.app-frame-back:hover {
+.app-frame-strip .app-frame-back:hover {
   text-decoration: underline;
 }
 

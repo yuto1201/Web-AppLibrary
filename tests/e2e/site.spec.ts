@@ -1688,11 +1688,23 @@ test("共通の枠は英語に切り替えると見出しも英語になる", as
   await expect(page.locator(".app-frame-about h2")).toHaveText("About this app");
 });
 
-test("法務とサポートのページにも上の帯が付く", async ({ page }) => {
-  for (const path of ["/apps/caflog/privacy/", "/apps/caflog/terms/", "/apps/flower/support/"]) {
-    await page.goto(path);
-    await expect(page.locator('.app-frame-strip a[href="/"]')).toBeVisible();
-    await expect(page.locator(".app-frame-about")).toHaveCount(0);
+test("法務とサポートのページにも上の帯が付き、保存テーマの色になる", async ({ page }) => {
+  const themes = [
+    { theme: "light", bg: "rgb(220, 238, 255)", ink: "rgb(17, 17, 17)" },
+    { theme: "dark", bg: "rgb(22, 35, 48)", ink: "rgb(242, 246, 250)" },
+  ] as const;
+  for (const { theme, bg, ink } of themes) {
+    await page.goto("/apps/caflog/privacy/");
+    await setStoredState(page, { theme });
+    for (const path of ["/apps/caflog/privacy/", "/apps/pay-cycle/terms/", "/apps/flower/support/"]) {
+      await page.goto(path);
+      const strip = page.locator(".app-frame-strip");
+      await expect(strip.locator('a[href="/"]')).toBeVisible();
+      await expect(strip, `${path} ${theme}`).toHaveCSS("background-color", bg);
+      await expect(strip, `${path} ${theme}`).toHaveCSS("color", ink);
+      await expect(page.locator('a[href="/"]', { hasText: "AppLibrary" })).toHaveCount(1);
+      await expect(page.locator(".app-frame-about")).toHaveCount(0);
+    }
   }
 });
 

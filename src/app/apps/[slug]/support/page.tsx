@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { apps, getApp } from "@/data/registry";
 import { supportDocuments } from "@/data/support/registry";
 import { termsDocuments } from "@/data/terms/registry";
-import { AppFrameStrip } from "@/components/AppFrame";
+import { AppFrameHeader } from "@/components/AppFrame";
 import "@/styles/app-page.css";
 import "@/styles/app-frame.css";
 
@@ -42,7 +42,7 @@ export default async function SupportPage({ params }: { params: Promise<{ slug: 
 
   return (
     <div className="app-shell" lang="ja">
-      <AppFrameStrip app={app} />
+      <AppFrameHeader app={app} />
       <nav className="privacy-nav" aria-label={`${app.name} のページへ戻る`}>
         <Link href={`/apps/${app.slug}/`}>← {app.name}</Link>
       </nav>
@@ -53,7 +53,6 @@ export default async function SupportPage({ params }: { params: Promise<{ slug: 
         {termsDocuments[app.slug] && (
           <><Link href={`/apps/${app.slug}/terms/`}>利用規約</Link><span> · </span></>
         )}
-        <Link href="/">AppLibrary</Link>
       </footer>
     </div>
   );
