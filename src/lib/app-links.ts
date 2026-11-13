@@ -18,3 +18,8 @@ export function appLinks(app: App): AppLinks {
     store: app.appStoreUrl,
   };
 }
+
+/** 値段と版は公開中（App Store にある）アプリだけ見せる。 */
+export function showsStoreFacts(app: App): boolean {
+  return appLinks(app).store !== null;
+}

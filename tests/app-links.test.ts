@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { apps, getApp } from "../src/data/registry";
-import { appLinks } from "../src/lib/app-links";
+import { appLinks, showsStoreFacts } from "../src/lib/app-links";
 
 describe("appLinks", () => {
   it("サポートは花島だけ専用ページ、ほかは連絡先", () => {
@@ -17,5 +17,9 @@ describe("appLinks", () => {
   });
   it("プライバシーは全アプリ", () => {
     for (const app of apps) expect(appLinks(app).privacy).toBe(`/apps/${app.slug}/privacy/`);
+  });
+  it("値段と版は公開中のアプリだけ", () => {
+    expect(showsStoreFacts(getApp("pay-cycle")!)).toBe(true);
+    for (const slug of ["simple-pomo", "flower", "dev-tools"]) expect(showsStoreFacts(getApp(slug)!)).toBe(false);
   });
 });

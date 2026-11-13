@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import type { App } from "@/data/schema";
 import { apps } from "@/data/registry";
-import { appLinks } from "@/lib/app-links";
+import { appLinks, showsStoreFacts } from "@/lib/app-links";
 import { statusLabel } from "@/lib/labels";
 import { useSiteState } from "@/lib/state";
 
@@ -23,6 +23,8 @@ export function AppFrameStrip({ app }: { app: App }) {
         </Link>
         <span className="app-frame-crumb">
           <span className="app-frame-seal" aria-hidden="true">
+            {/* 静的出力のため素の img を使う。next/image の最適化は使わない。 */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img src={`/apps/${app.slug}/${app.icon}`} alt="" width={28} height={28} />
           </span>
           <b>{app.name}</b>
@@ -47,10 +49,14 @@ export function AppFrame({ app, light, children }: { app: App; light: boolean; c
         <h2 id="app-frame-about-h">{t.about_title}</h2>
         <div className="app-frame-facts">
           <dl>
-            <dt>{t.about_price}</dt>
-            <dd lang="ja">{app.price}</dd>
-            <dt>{t.about_version}</dt>
-            <dd>{app.version}</dd>
+            {showsStoreFacts(app) ? (
+              <>
+                <dt>{t.about_price}</dt>
+                <dd lang="ja">{app.price}</dd>
+                <dt>{t.about_version}</dt>
+                <dd>{app.version}</dd>
+              </>
+            ) : null}
             <dt>{t.about_platforms}</dt>
             <dd>{app.platforms.join(" / ")}</dd>
             <dt>{t.about_status}</dt>
@@ -83,6 +89,8 @@ export function AppFrame({ app, light, children }: { app: App; light: boolean; c
         <div className="app-frame-grid">
           {others.map((other) => (
             <Link key={other.slug} className="app-frame-card" href={`/apps/${other.slug}/`} style={colorStyle(other.accent)}>
+              {/* 静的出力のため素の img を使う。next/image の最適化は使わない。 */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={`/apps/${other.slug}/${other.icon}`} alt="" width={44} height={44} loading="lazy" />
               <b>{other.name}</b>
               <span lang="ja">{other.tagline}</span>
