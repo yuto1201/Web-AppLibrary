@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSiteState } from "@/lib/state";
 import { posts, profile, social } from "@/lib/site-data";
+import { apps, getApp } from "@/data/registry";
 import project from "../../config/project.json";
 
 export function Workshop() {
@@ -10,10 +11,13 @@ export function Workshop() {
   return (
     <section className="section workshop" aria-labelledby="workshop-heading">
       <div className="workshop-lead">
-        <p className="eyebrow" lang="en">BEHIND THE APPS</p>
         <h2 id="workshop-heading">{t.workshop_title}</h2>
         <p>{t.workshop_intro}</p>
-        <span className="workshop-flower" aria-hidden="true">✳</span>
+        <ul className="workshop-facts">
+          <li>{t.studio_intro}</li>
+          <li>{t.studio_apps.replace("{count}", String(apps.length))}</li>
+          <li>{t.studio_made}</li>
+        </ul>
       </div>
       <ol className="workshop-notes">
         {t.workshop_items.map((item, index) => (
@@ -39,15 +43,21 @@ export function Posts() {
       </div>
       <p className="section-intro">{t.posts_intro}</p>
       <ul className="post-list">
-        {posts.map((post) => (
-          <li className="post" lang="ja" key={post.date + post.title}>
-            <time className="post-date" dateTime={post.date}>{post.date}</time>
-            <div className="post-body">
-              <h3 className="post-title">{post.title}</h3>
-              <p className="post-excerpt">{post.excerpt}</p>
-            </div>
-          </li>
-        ))}
+        {posts.map((post) => {
+          const app = getApp(post.slug);
+          if (!app) return null;
+          return (
+            <li className="post" lang="ja" key={post.date + post.slug} style={{ "--app-color": app.accent } as React.CSSProperties}>
+              <time className="post-date" dateTime={post.date}>{post.date}</time>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="post-icon" src={`/apps/${post.slug}/${app.icon}`} alt="" width={40} height={40} />
+              <div className="post-body">
+                <h3 className="post-title">{post.title}</h3>
+                <p className="post-app">{app.name}</p>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
@@ -61,8 +71,6 @@ export function Contact() {
   return (
     <section className="section" id="contact">
       <div className="contact-postcard">
-        <div className="contact-stamp" aria-hidden="true"><span>FROM TOKYO</span><span>hello.</span><span>WITH CARE</span></div>
-        <p className="eyebrow" lang="en">SAY HELLO</p>
         <h2 className="contact-h">{t.contact_h}</h2>
         <p className="contact-p">{t.contact_p}</p>
         {visible.length > 0 && (

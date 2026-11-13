@@ -144,21 +144,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   position: relative;
   padding: clamp(64px, 12vw, 120px) 0 clamp(48px, 8vw, 88px);
 }
-.hero-tag {
-  display: block;
-  margin: 0 0 var(--space-6);
-  padding: 0;
-  font-family: var(--font-sans);
-  font-size: 14px;
-  font-weight: 300;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--accent);
-  background: none;
-  border: none;
-  border-radius: 0;
-  transform: none;
-}
 .hero-h1 {
   margin: 0 0 var(--space-6);
   font-family: var(--font-display);
@@ -241,16 +226,9 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: none; }
 }
-@keyframes hero-tag-drop {
-  from { opacity: 0; transform: translateY(-8px); }
-  to   { opacity: 1; transform: none; }
-}
 @keyframes hero-letter-rise {
   from { opacity: 0; transform: translateY(0.5em); }
   to   { opacity: 1; transform: none; }
-}
-[data-hero-opening="play"] .hero-tag {
-  animation: hero-tag-drop var(--hero-anim-duration) var(--hero-letter-easing) 60ms both;
 }
 [data-hero-opening="play"] .hero-h1 .hero-letter {
   animation: hero-letter-rise var(--hero-letter-duration) var(--hero-letter-easing)
@@ -746,11 +724,7 @@ html[data-hero-opening="play"] .poster .sticker-slot:has(.is-held) {
   font-weight: 400;
   margin-bottom: 2px;
 }
-.post-excerpt {
-  display: block;
-  font-size: 15px;
-  color: var(--ink-2);
-}
+.post-app { font-size: 13px; color: var(--ink-2); }
 
 /* ============================================================
    Contact

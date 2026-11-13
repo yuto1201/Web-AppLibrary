@@ -46,7 +46,7 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 }
 .poster :where(a, button, summary, [tabindex]):focus-visible { outline: 3px solid var(--home-focus); outline-offset: 5px; }
 /* Pastel panels keep dark text and a dark focus ring in either theme. */
-.poster :is(.nav-inner, .home-showcase, .workshop, .contact-postcard) { --home-focus: #164bca; color-scheme: light; }
+.poster :is(.nav-inner, .workshop, .contact-postcard) { --home-focus: #164bca; color-scheme: light; }
 .poster .hero, .poster .section { scroll-margin-top: 104px; }
 .poster .section { width: min(var(--measure), calc(100% - var(--home-gutter) * 2)); padding-block: 76px; border-top: 0; }
 .poster .section-head { align-items: center; gap: 18px; margin-bottom: 17px; padding-top: 0; }
@@ -54,7 +54,6 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 .poster .section-count { display: grid; place-items: center; min-width: 32px; height: 32px; padding-inline: 8px; border: 1px solid currentColor; border-radius: 50%; color: var(--ink); font: 700 12px/1 var(--font-sans); }
 .poster .section-intro { margin: 0 0 34px; color: var(--ink-2); font-size: 14px; line-height: 1.9; }
 .poster .desk-tape { display: none; }
-.poster .eyebrow { margin: 0 0 20px; color: #111; font: 700 10px/1.5 var(--font-sans); letter-spacing: .12em; }
 
 /* A compact pill-shaped navigation on the sky canvas. */
 .poster .nav { padding-top: 17px; border: 0; background: var(--paper); }
@@ -72,13 +71,8 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 /* The giant lettering is decorative artwork. The real heading and the CTA
    live below the entire playground, on a solid sky-colored reading surface. */
 .poster .hero { width: 100%; margin: 0; padding: 31px 0 0; color: var(--ink); background: var(--paper); }
-.poster .hero-tag { position: relative; z-index: 2; background: var(--paper); width: fit-content; max-width: calc(100% - 44px); margin: 0 auto 12px; color: var(--ink); font-size: 10px; font-weight: 700; letter-spacing: .13em; line-height: 1.6; text-align: center; }
-.poster .hero-playground { position: relative; isolation: isolate; width: min(1200px, calc(100% - 44px)); height: 460px; margin-inline: auto; }
-.poster .hero-orbit { position: absolute; z-index: 0; top: -10px; left: 50%; width: 700px; max-width: 92%; height: 400px; object-fit: contain; transform: translateX(-50%) rotate(-9deg); pointer-events: none; }
+.poster .hero-playground { position: relative; isolation: isolate; width: min(1200px, calc(100% - 44px)); height: 460px; margin-inline: auto; border: 1.5px solid var(--ink); border-radius: 32px; background-color: var(--paper-sunken); background-image: radial-gradient(circle, color-mix(in srgb, var(--ink) 22%, transparent) 1.2px, transparent 1.6px); background-size: 22px 22px; }
 .poster .hero-wordmark { position: absolute; z-index: 1; top: 73px; left: 50%; width: 4.17em; height: 1.786em; max-width: 100%; transform: translateX(-50%); color: var(--ink); fill: currentColor; font: 900 clamp(100px, 13vw, 168px)/.78 var(--font-sans); letter-spacing: -.095em; text-align: center; pointer-events: none; }
-.poster .playground-spark { position: absolute; z-index: 2; top: 113px; left: 22%; width: 45px; height: 45px; color: var(--ink); transform: rotate(11deg); pointer-events: none; }
-.poster .playground-spark svg { display: block; width: 100%; height: 100%; }
-.poster .playground-label { position: absolute; z-index: 2; top: 348px; left: 50%; width: max-content; margin: 0; transform: translateX(-50%) rotate(-3deg); color: #111; background: var(--home-yellow); border: 1px solid #111; border-radius: 50px; padding: 7px 14px; font: 700 9px/1.4 var(--font-sans); letter-spacing: .08em; pointer-events: none; }
 .poster .hero-copy { width: min(680px, calc(100% - 44px)); margin: 0 auto; padding: 22px 0 42px; background: var(--paper); text-align: center; }
 .poster .hero-h1 { width: fit-content; max-width: 100%; margin: 0 auto 20px; color: var(--ink); background: var(--paper); font: 800 clamp(28px, 3.1vw, 38px)/1.4 var(--font-sans); letter-spacing: -.05em; }
 .poster .hero-h1 .hero-line.accent { color: var(--ink); }
@@ -89,9 +83,6 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 .poster .cta-btn:hover { color: #111; border-color: #111; background: var(--home-yellow); }
 [data-theme="dark"] .poster .cta-btn { border-color: #b6c8d8; }
 .poster .desk-hint { width: fit-content; margin: 20px auto 0; padding: 3px 4px; color: var(--ink-2); background: var(--paper); font: 400 15px/1.5 var(--font-hand); transform: rotate(-4deg); }
-.poster .studio-strip { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 13px 45px; width: min(var(--measure), calc(100% - var(--home-gutter) * 2)); min-height: 73px; margin: 0 auto; padding: 20px 0; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); color: var(--ink-2); font-size: 10px; line-height: 1.8; }
-.poster .studio-strip > span { display: inline-flex; align-items: center; gap: 10px; }
-.poster .studio-dot { width: 7px; height: 7px; border: 1px solid #111; border-radius: 50%; background: var(--home-mint); }
 
 /* Only the measured playground determines initial sticker positions. The
    existing drag transforms, pointer handling, z-order and reset remain intact. */
@@ -145,69 +136,36 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 .poster .app-row-arrow { display: grid; place-items: center; grid-column: 3; grid-row: 1 / 3; width: 33px; height: 33px; border: 1px solid #111; border-radius: 50%; color: #111; }
 .poster .app-row-arrow svg { width: 19px; height: 19px; }
 
-/* A second playground invites choosing and comparing the actual app screens. */
-.poster .home-showcase.section { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); align-items: center; gap: 65px; margin-top: 7px; margin-bottom: 32px; padding: 58px; border: 1px solid #111; border-radius: 40px; background: var(--home-lavender); }
-.poster .showcase-copy { min-width: 0; background: var(--home-lavender); }
-.poster .showcase-title { max-width: 10ch; margin: 0; color: #111; font: 800 clamp(37px, 4.1vw, 57px)/1.02 var(--font-sans); letter-spacing: -.07em; }
-.poster .showcase-intro { max-width: 35ch; margin: 25px 0 0; color: #30313a; font-size: 14px; line-height: 1.95; }
-.poster .showcase-mark { display: block; width: 72px; height: 72px; margin-top: 25px; color: #111; transform: rotate(15deg); }
-.poster .showcase-mark svg { width: 100%; height: 100%; }
-.poster .spotlight { min-width: 0; width: 100%; max-width: 420px; margin: 0 auto; background: var(--home-lavender); }
-.poster .spotlight-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding-bottom: 15px; }
-.poster .spotlight-heading h2, .poster .spotlight-heading h3 { margin: 0; color: #111; font-size: 13px; font-weight: 700; }
-.poster .spotlight-edition { color: #383243; font: 8px/1.6 var(--font-mono); letter-spacing: .06em; }
-.poster .spotlight-stage { position: relative; display: grid; place-items: center; height: 350px; overflow: hidden; border: 1px solid #111; border-radius: 26px; background: var(--home-blue); }
-.poster .spotlight-screen { position: relative; height: 298px; aspect-ratio: 220 / 478; margin-top: 8px; overflow: hidden; border: 5px solid #fff; border-radius: 22px; background: #fff; box-shadow: 9px 12px 0 rgb(17 17 17 / 16%); transform: rotate(-8deg); }
-.poster .spotlight-screen img { width: 100%; height: 100%; object-fit: contain; }
-.poster .spotlight-screen[data-kind="icon"] { height: 145px; aspect-ratio: 1; border-radius: 30px; }
-.poster .spotlight-seal { position: absolute; right: 15px; bottom: 19px; display: grid; place-content: center; width: 82px; height: 82px; border: 1px solid #111; border-radius: 50%; background: var(--home-yellow); color: #111; font: 700 10px/1.4 var(--font-sans); text-align: center; transform: rotate(11deg); }
-.poster .spotlight-picker { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 19px 0; }
-.poster .spotlight-picker button { flex: 0 0 44px; height: 44px; padding: 5px; border: 1px solid transparent; border-radius: 12px; background: transparent; }
-.poster .spotlight-picker button[aria-pressed="true"] { border-color: #111; background: var(--home-yellow); }
-.poster .spotlight-picker button:hover { border-color: #111; }
-.poster .spotlight-picker img { width: 32px; height: 32px; border-radius: 7px; }
-.poster .spotlight-pick-hint { margin-left: auto; color: #383243; font-size: 10px; }
-.poster .spotlight-info { padding-top: 17px; border-top: 1px solid #82718f; }
-.poster .spotlight-meta { display: flex; justify-content: space-between; gap: 10px; color: #383243; font-size: 10px; }
-.poster .spotlight-link { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 10px; margin-top: 9px; color: #111; }
-.poster .spotlight-link > span:first-child { font: 800 28px/1.3 var(--font-sans); letter-spacing: -.055em; }
-.poster .spotlight-link-label { color: #111; font-size: 11px; white-space: nowrap; }
-.poster .spotlight-link:hover .spotlight-link-label { text-decoration: underline; text-underline-offset: 4px; }
-.poster .spotlight-info p { min-height: 44px; margin: 9px 0 0; color: #30313a; font-size: 12px; line-height: 1.9; }
 
 /* The maker's notes remain a human part of the page, with generous flat color. */
-.poster .workshop { display: grid; grid-template-columns: 1fr 1fr; gap: 65px; margin-block: 32px; padding: 58px; border: 1px solid #111; border-radius: 40px; background: var(--home-mint); }
+.poster .workshop { display: grid; grid-template-columns: 1fr 1fr; gap: 65px; margin-block: 32px; padding: 58px; border: 1.5px solid #111; border-radius: 28px; background: var(--paper-raised); }
 .poster .workshop-lead { position: relative; }
 .poster .workshop-lead h2 { margin: 0; color: #111; font: 800 clamp(28px, 3.1vw, 42px)/1.4 var(--font-sans); letter-spacing: -.055em; white-space: pre-line; }
-.poster .workshop-lead > p:last-of-type { max-width: 36ch; margin: 20px 0 0; color: #21372c; font-size: 13px; line-height: 1.95; }
-.poster .workshop-flower { display: block; width: fit-content; margin-top: 28px; color: #111; font: 82px/1 var(--font-sans); }
+.poster .workshop-lead > p:last-of-type { max-width: 36ch; margin: 20px 0 0; color: #26333d; font-size: 13px; line-height: 1.95; }
+.poster .workshop-facts { display: grid; gap: 6px; margin: 28px 0 0; padding: 0; list-style: none; color: #111; font: 700 13px/1.7 var(--font-sans); }
 .poster .workshop-notes { list-style: none; margin: 0; padding: 0; }
-.poster .workshop-notes li { display: grid; grid-template-columns: 37px 1fr; gap: 19px; padding: 22px 0; border-bottom: 1px solid #348863; }
+.poster .workshop-notes li { display: grid; grid-template-columns: 37px 1fr; gap: 19px; padding: 22px 0; border-bottom: 1px solid #111; }
 .poster .workshop-notes li:first-child { padding-top: 0; }
 .poster .workshop-notes li:last-child { padding-bottom: 0; border: 0; }
 .poster .workshop-number { padding-top: 2px; color: #111; font: 800 23px/1.4 var(--font-sans); letter-spacing: -.055em; }
 .poster .workshop-notes h3 { margin: 0 0 10px; color: #111; font-size: 16px; font-weight: 700; }
-.poster .workshop-notes p { margin: 0; color: #21372c; font-size: 13px; line-height: 1.95; }
-.poster .post-list { gap: 0; }
-.poster .post { grid-template-columns: 132px 1fr; gap: 30px; padding: 25px 0; border-top: 1px solid var(--rule); }
-.poster .post:first-child { padding-top: 0; border: 0; }
-.poster .post:last-child { padding-bottom: 0; }
-.poster .post-date { color: var(--ink-3); font-size: 11px; }
-.poster .post-title { margin: 0 0 10px; font-size: 18px; font-weight: 700; }
-.poster .post-excerpt { max-width: 67ch; margin: 0; color: var(--ink-2); font-size: 13px; line-height: 1.95; }
+.poster .workshop-notes p { margin: 0; color: #26333d; font-size: 13px; line-height: 1.95; }
+.poster .post-list { gap: 0; border-top: 1.5px solid var(--ink); }
+.poster .post { grid-template-columns: 112px 40px minmax(0, 1fr); gap: 14px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.poster .post-date { color: var(--ink-3); font-size: 13px; }
+.poster .post-icon { display: block; width: 40px; height: 40px; border-radius: 10px; box-shadow: 0 0 0 2px var(--app-color); }
+.poster .post-title { margin: 0; font-size: 16px; font-weight: 700; }
+.poster .post-app { margin: 4px 0 0; color: var(--ink-3); font-size: 12px; }
 .poster #contact { padding-top: 0; }
-.poster .contact-postcard { position: relative; padding: 58px; border: 1px solid #111; border-radius: 40px; background: var(--home-yellow); color: #111; }
-.poster .contact-h { max-width: calc(100% - 145px); margin: 0 0 20px; color: #111; font: 800 clamp(35px, 4.6vw, 61px)/1.2 var(--font-sans); letter-spacing: -.065em; }
-.poster .contact-p { max-width: min(51ch, calc(100% - 145px)); margin: 0 0 28px; color: #3b3517; font-size: 14px; line-height: 1.95; }
-.poster .contact-stamp { position: absolute; right: 47px; top: 46px; display: grid; align-content: center; justify-items: center; gap: 7px; width: 102px; height: 102px; border: 1px solid #111; border-radius: 50%; background: var(--home-lavender); color: #111; transform: rotate(12deg); }
-.poster .contact-stamp > span { font: 700 7px/1.4 var(--font-sans); letter-spacing: .07em; }
-.poster .contact-stamp > span:nth-child(2) { font: 800 30px/1.1 var(--font-sans); letter-spacing: -.065em; }
+.poster .contact-postcard { position: relative; padding: 58px; border: 1.5px solid #111; border-radius: 28px; background: var(--paper-raised); color: #111; }
+.poster .contact-h { margin: 0 0 20px; color: #111; font: 800 clamp(35px, 4.6vw, 61px)/1.2 var(--font-sans); letter-spacing: -.065em; }
+.poster .contact-p { max-width: 51ch; margin: 0 0 28px; color: #26333d; font-size: 14px; line-height: 1.95; }
 .poster .socials { gap: 12px; }
-.poster .social-link { align-items: center; flex-wrap: wrap; gap: 7px 13px; min-height: 50px; padding: 12px 22px; border: 1px solid #111; border-radius: 50px; color: #111; background: var(--home-yellow); }
+.poster .social-link { align-items: center; flex-wrap: wrap; gap: 7px 13px; min-height: 50px; padding: 12px 22px; border: 1px solid #111; border-radius: 50px; color: #111; background: #fff; }
 .poster .social-link:hover { color: #111; border-color: #111; background: #fff; }
 .poster .social-label { font-size: 13px; font-weight: 700; }
-.poster .social-handle { color: #3b3517; font-size: 10px; }
-.poster .contact-note { margin: 28px 0 0; padding-top: 22px; border-top: 1px solid #ac9120; color: #3b3517; font-size: 11px; line-height: 1.9; }
+.poster .social-handle { color: #26333d; font-size: 10px; }
+.poster .contact-note { margin: 28px 0 0; padding-top: 22px; border-top: 1px solid #111; color: #26333d; font-size: 11px; line-height: 1.9; }
 .poster .footer { width: min(var(--measure), calc(100% - var(--home-gutter) * 2)); padding: 27px 0 40px; border-top: 1px solid var(--rule); color: var(--ink-3); font-size: 11px; }
 .poster .footer-row { gap: 14px 25px; margin-top: 21px; }
 .poster .footer-links { flex-wrap: wrap; gap: 12px 20px; }
@@ -217,15 +175,10 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 @media (max-width: 1100px) {
   .poster .nav-inner { gap: 23px; }
   .poster .nav-brand-by { display: none; }
-  .poster .home-showcase.section, .poster .workshop { padding: 43px; gap: 42px; }
-  .poster .home-showcase.section { grid-template-columns: minmax(0, 1fr) minmax(0, 360px); }
-  .poster .spotlight-pick-hint { flex: 0 0 100%; margin: 4px 0 0; }
   .poster .app-row-body { padding: 24px; gap: 13px; }
 }
 @media (min-width: 641px) and (max-width: 900px) {
   .poster .hero-wordmark { top: 106px; font-size: 105px; }
-  .poster .hero-orbit { top: 29px; height: 356px; }
-  .poster .playground-spark { top: 85px; left: 26%; width: 34px; height: 34px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="sublog"] { width: 82px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="caflog"] { left: calc(var(--desk-play-left) + 15px); width: 82px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="dev-tools"] { left: calc(var(--desk-play-left) + var(--desk-play-width) - 97px); width: 82px; }
@@ -237,8 +190,6 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   .poster .app-row-name { font-size: 25px; }
   .poster .app-row-tagline { font-size: 11px; }
   .poster .app-row-arrow { width: 29px; height: 29px; }
-  .poster .home-showcase.section { grid-template-columns: minmax(0, 1fr) minmax(0, 300px); padding: 32px; gap: 26px; }
-  .poster .showcase-title { font-size: 35px; }
   .poster .workshop { padding: 33px; gap: 28px; }
   .poster .workshop-lead h2 { font-size: 29px; }
 }
@@ -250,7 +201,6 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   .poster .app-row-visual { height: 254px; }
   .poster .app-preview-phone { height: 266px; }
   .poster .contact-postcard { padding: 40px; }
-  .poster .contact-stamp { right: 33px; top: 33px; width: 84px; height: 84px; }
 }
 @media (max-width: 640px) {
   .poster { --home-gutter: 20px; }
@@ -261,20 +211,14 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   .poster .nav-tools { gap: 7px; }
   .poster .text-btn, .poster .icon-btn { min-width: 36px; width: 36px; height: 36px; }
   .poster .hero { padding-top: 26px; }
-  .poster .hero-tag { max-width: calc(100% - 32px); margin-bottom: 7px; font-size: 8px; letter-spacing: .1em; }
   .poster .hero-playground { width: calc(100% - 32px); height: 420px; }
-  .poster .hero-orbit { top: 66px; width: 410px; max-width: 94%; height: 245px; transform: translateX(-50%) rotate(-12deg); }
   .poster .hero-wordmark { top: 118px; font-size: clamp(70px, 18.3vw, 116px); line-height: .82; letter-spacing: -.095em; }
-  .poster .playground-spark { top: 78px; left: calc(50% - 15px); width: 30px; height: 30px; }
-  .poster .playground-label { top: 328px; padding: 6px 11px; font-size: 8px; transform: translateX(-50%); }
   .poster .hero-copy { width: calc(100% - 40px); padding: 12px 0 34px; }
   .poster .hero-h1 { margin-bottom: 18px; font-size: 27px; line-height: 1.45; }
   .poster .hero-bio { max-width: 34ch; font-size: 12px; }
   .poster .hero-note { max-width: 36ch; margin-bottom: 22px; font-size: 10px; }
   .poster .cta-btn { min-height: 51px; padding: 13px 25px; gap: 19px; font-size: 12px; }
   .poster .desk-hint { margin-top: 17px; font-size: 14px; }
-  .poster .studio-strip { justify-content: space-between; gap: 10px 20px; padding-block: 17px; font-size: 9px; }
-  .poster .studio-strip > span:first-child { flex: 0 0 100%; justify-content: center; }
   .poster .sticker-slot .sticker { padding: 5px; }
   .poster .sticker-slot .sticker-note { min-height: 41px; padding: 7px 3px; font-size: 12px; }
   .poster[data-desk="ready"] .sticker-slot[data-key="sublog"] { left: calc(var(--desk-play-left) + 13px); top: calc(var(--desk-play-top) + 20px); right: auto; bottom: auto; width: 68px; }
@@ -300,40 +244,18 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   .poster .app-row-name { font-size: 28px; }
   .poster .app-row-tagline { font-size: 11px; }
   .poster .app-row-arrow { width: 29px; height: 29px; }
-  .poster .home-showcase.section { grid-template-columns: 1fr; gap: 34px; padding: 33px 23px; margin-block: 0 24px; border-radius: 28px; }
-  .poster .showcase-title { max-width: 100%; font-size: clamp(36px, 10vw, 53px); }
-  .poster .showcase-intro { margin-top: 19px; font-size: 12px; }
-  .poster .showcase-mark { width: 50px; height: 50px; margin-top: 17px; }
-  .poster .spotlight-stage { height: 310px; border-radius: 21px; }
-  .poster .spotlight-screen { height: 270px; }
-  .poster .spotlight-seal { width: 66px; height: 66px; right: 11px; bottom: 15px; font-size: 8px; }
-  .poster .spotlight-heading { gap: 7px; }
-  .poster .spotlight-heading h2, .poster .spotlight-heading h3 { font-size: 11px; }
-  .poster .spotlight-edition { font-size: 7px; }
-  .poster .spotlight-picker { gap: 7px; padding-block: 16px; }
-  .poster .spotlight-pick-hint { flex: 0 0 100%; margin: 4px 0 0; font-size: 9px; }
-  .poster .spotlight-link > span:first-child { font-size: 26px; }
-  .poster .spotlight-link-label { font-size: 10px; }
-  .poster .spotlight-info p { font-size: 11px; }
   .poster .workshop { grid-template-columns: 1fr; gap: 28px; margin-block: 24px 0; padding: 33px 24px; border-radius: 28px; }
-  .poster .workshop-lead { padding-right: 32px; }
   .poster .workshop-lead h2 { font-size: 28px; }
   .poster .workshop-lead > p:last-of-type { margin-top: 16px; font-size: 12px; }
-  .poster .workshop-flower { position: absolute; right: -5px; bottom: 0; margin: 0; font-size: 42px; }
   .poster .workshop-notes li { grid-template-columns: 31px 1fr; gap: 13px; padding-block: 21px; }
   .poster .workshop-notes h3 { font-size: 15px; }
   .poster .workshop-notes p { font-size: 12px; }
-  .poster .post { grid-template-columns: 1fr; gap: 10px; padding-block: 23px; }
-  .poster .post-date { font-size: 10px; }
-  .poster .post-title { font-size: 16px; }
-  .poster .post-excerpt { font-size: 12px; }
+  .poster .post { grid-template-columns: 40px minmax(0, 1fr); gap: 8px 14px; }
+  .poster .post-date { grid-column: 1 / -1; font-size: 12px; }
+  .poster .post-title { font-size: 15px; }
   .poster .contact-postcard { padding: 32px 24px; border-radius: 28px; }
-  .poster .contact-postcard .eyebrow { min-height: 58px; }
   .poster .contact-h { max-width: 100%; font-size: 37px; }
   .poster .contact-p { max-width: 100%; font-size: 12px; }
-  .poster .contact-stamp { top: 20px; right: 21px; width: 71px; height: 71px; gap: 4px; }
-  .poster .contact-stamp > span { font-size: 5px; }
-  .poster .contact-stamp > span:nth-child(2) { font-size: 24px; }
   .poster .socials { gap: 10px; }
   .poster .socials > li { width: 100%; }
   .poster .social-link { width: 100%; justify-content: space-between; gap: 5px; padding: 12px 15px; }
@@ -351,10 +273,6 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   .poster .app-row-icon { width: 33px; height: 33px; border-radius: 9px; }
   .poster .app-row-name { font-size: 24px; }
   .poster .app-row-arrow { width: 26px; height: 26px; }
-  .poster .home-showcase.section { padding-inline: 19px; }
-  .poster .spotlight-heading { flex-wrap: wrap; }
-  .poster .spotlight-edition { font-size: 8px; }
-  .poster .showcase-title { font-size: 35px; }
   .poster .contact-h { font-size: 32px; }
 }
 @media (prefers-reduced-motion: reduce) {
