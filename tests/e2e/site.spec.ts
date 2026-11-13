@@ -2,11 +2,11 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test, type Page } from "@playwright/test";
 import { readdir } from "node:fs/promises";
 import path from "node:path";
-import { apps } from "../../src/data/registry";
+import { apps, getApp } from "../../src/data/registry";
 import { DESK_ITEMS } from "../../src/lib/sticker-desk";
 import { appPageTone } from "../../src/lib/app-tone";
 import { statusLabel } from "../../src/lib/labels";
-import { i18n } from "../../src/lib/site-data";
+import { i18n, posts } from "../../src/lib/site-data";
 
 test("AdMob の公開 seller ファイルを正しい形式で配信する", async ({ request }) => {
   const response = await request.get("/app-ads.txt");
@@ -321,6 +321,23 @@ test("作り手は事実を並べ、展示と飾りを持たず、更新の見�
   await expect(facts).toContainText(i18n.ja.studio_made);
   await page.getByRole("button", { name: i18n.ja.a11y_switch_language }).click();
   await expect(page.locator("#posts h2")).toHaveText("App updates");
+});
+
+test("アプリの更新は、アプリのアイコンと名前つきの行で並ぶ", async ({ page }) => {
+  await page.goto("/");
+  const rows = page.locator("#posts .post");
+  await expect(rows).toHaveCount(posts.length);
+  await expect(page.locator("#posts .post-excerpt")).toHaveCount(0);
+  for (const [i, post] of posts.entries()) {
+    const app = getApp(post.slug)!;
+    const row = rows.nth(i);
+    await expect(row.locator("time")).toHaveText(post.date);
+    await expect(row.locator("h3")).toHaveText(post.title);
+    await expect(row.locator(".post-app")).toHaveText(app.name);
+    const icon = row.locator("img.post-icon");
+    await expect(icon).toHaveAttribute("src", `/apps/${post.slug}/${app.icon}`);
+    await expect(icon).toHaveAttribute("alt", "");
+  }
 });
 
 test("手書きの紹介は日英で読める", async ({ page }) => {

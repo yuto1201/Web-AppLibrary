@@ -6,6 +6,15 @@ import { privacyDocuments } from "@/data/privacy/registry";
 import { supportDocuments } from "@/data/support/registry";
 import { termsDocuments } from "@/data/terms/registry";
 import { appSchema } from "@/data/schema";
+import { posts } from "@/lib/site-data";
+
+describe("アプリの更新", () => {
+  it("すべて掲載中のアプリの話で、新しい順", () => {
+    for (const post of posts) expect(getApp(post.slug), post.slug).toBeDefined();
+    const dates = posts.map((p) => p.date);
+    expect(dates).toEqual([...dates].sort().reverse());
+  });
+});
 
 describe("apps registry", () => {
   it("PayCycle は公開済みの1.1と配布先を示す", () => {

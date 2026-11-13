@@ -54,7 +54,6 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 .poster .section-count { display: grid; place-items: center; min-width: 32px; height: 32px; padding-inline: 8px; border: 1px solid currentColor; border-radius: 50%; color: var(--ink); font: 700 12px/1 var(--font-sans); }
 .poster .section-intro { margin: 0 0 34px; color: var(--ink-2); font-size: 14px; line-height: 1.9; }
 .poster .desk-tape { display: none; }
-.poster .eyebrow { margin: 0 0 20px; color: #111; font: 700 10px/1.5 var(--font-sans); letter-spacing: .12em; }
 
 /* A compact pill-shaped navigation on the sky canvas. */
 .poster .nav { padding-top: 17px; border: 0; background: var(--paper); }
@@ -151,17 +150,16 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 .poster .workshop-number { padding-top: 2px; color: #111; font: 800 23px/1.4 var(--font-sans); letter-spacing: -.055em; }
 .poster .workshop-notes h3 { margin: 0 0 10px; color: #111; font-size: 16px; font-weight: 700; }
 .poster .workshop-notes p { margin: 0; color: #26333d; font-size: 13px; line-height: 1.95; }
-.poster .post-list { gap: 0; }
-.poster .post { grid-template-columns: 132px 1fr; gap: 30px; padding: 25px 0; border-top: 1px solid var(--rule); }
-.poster .post:first-child { padding-top: 0; border: 0; }
-.poster .post:last-child { padding-bottom: 0; }
-.poster .post-date { color: var(--ink-3); font-size: 11px; }
-.poster .post-title { margin: 0 0 10px; font-size: 18px; font-weight: 700; }
-.poster .post-excerpt { max-width: 67ch; margin: 0; color: var(--ink-2); font-size: 13px; line-height: 1.95; }
+.poster .post-list { gap: 0; border-top: 1.5px solid var(--ink); }
+.poster .post { grid-template-columns: 112px 40px minmax(0, 1fr); gap: 14px; align-items: center; padding: 16px 0; border-bottom: 1px solid var(--rule); }
+.poster .post-date { color: var(--ink-3); font-size: 13px; }
+.poster .post-icon { display: block; width: 40px; height: 40px; border-radius: 10px; box-shadow: 0 0 0 2px var(--app-color); }
+.poster .post-title { margin: 0; font-size: 16px; font-weight: 700; }
+.poster .post-app { margin: 4px 0 0; color: var(--ink-3); font-size: 12px; }
 .poster #contact { padding-top: 0; }
 .poster .contact-postcard { position: relative; padding: 58px; border: 1.5px solid #111; border-radius: 28px; background: var(--paper-raised); color: #111; }
-.poster .contact-h { max-width: calc(100% - 145px); margin: 0 0 20px; color: #111; font: 800 clamp(35px, 4.6vw, 61px)/1.2 var(--font-sans); letter-spacing: -.065em; }
-.poster .contact-p { max-width: min(51ch, calc(100% - 145px)); margin: 0 0 28px; color: #26333d; font-size: 14px; line-height: 1.95; }
+.poster .contact-h { margin: 0 0 20px; color: #111; font: 800 clamp(35px, 4.6vw, 61px)/1.2 var(--font-sans); letter-spacing: -.065em; }
+.poster .contact-p { max-width: 51ch; margin: 0 0 28px; color: #26333d; font-size: 14px; line-height: 1.95; }
 .poster .socials { gap: 12px; }
 .poster .social-link { align-items: center; flex-wrap: wrap; gap: 7px 13px; min-height: 50px; padding: 12px 22px; border: 1px solid #111; border-radius: 50px; color: #111; background: #fff; }
 .poster .social-link:hover { color: #111; border-color: #111; background: #fff; }
@@ -247,18 +245,15 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   .poster .app-row-tagline { font-size: 11px; }
   .poster .app-row-arrow { width: 29px; height: 29px; }
   .poster .workshop { grid-template-columns: 1fr; gap: 28px; margin-block: 24px 0; padding: 33px 24px; border-radius: 28px; }
-  .poster .workshop-lead { padding-right: 32px; }
   .poster .workshop-lead h2 { font-size: 28px; }
   .poster .workshop-lead > p:last-of-type { margin-top: 16px; font-size: 12px; }
   .poster .workshop-notes li { grid-template-columns: 31px 1fr; gap: 13px; padding-block: 21px; }
   .poster .workshop-notes h3 { font-size: 15px; }
   .poster .workshop-notes p { font-size: 12px; }
-  .poster .post { grid-template-columns: 1fr; gap: 10px; padding-block: 23px; }
-  .poster .post-date { font-size: 10px; }
-  .poster .post-title { font-size: 16px; }
-  .poster .post-excerpt { font-size: 12px; }
+  .poster .post { grid-template-columns: 40px minmax(0, 1fr); gap: 8px 14px; }
+  .poster .post-date { grid-column: 1 / -1; font-size: 12px; }
+  .poster .post-title { font-size: 15px; }
   .poster .contact-postcard { padding: 32px 24px; border-radius: 28px; }
-  .poster .contact-postcard .eyebrow { min-height: 58px; }
   .poster .contact-h { max-width: 100%; font-size: 37px; }
   .poster .contact-p { max-width: 100%; font-size: 12px; }
   .poster .socials { gap: 10px; }

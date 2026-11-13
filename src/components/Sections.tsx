@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useSiteState } from "@/lib/state";
 import { posts, profile, social } from "@/lib/site-data";
-import { apps } from "@/data/registry";
+import { apps, getApp } from "@/data/registry";
 import project from "../../config/project.json";
 
 export function Workshop() {
@@ -43,15 +43,21 @@ export function Posts() {
       </div>
       <p className="section-intro">{t.posts_intro}</p>
       <ul className="post-list">
-        {posts.map((post) => (
-          <li className="post" lang="ja" key={post.date + post.title}>
-            <time className="post-date" dateTime={post.date}>{post.date}</time>
-            <div className="post-body">
-              <h3 className="post-title">{post.title}</h3>
-              <p className="post-excerpt">{post.excerpt}</p>
-            </div>
-          </li>
-        ))}
+        {posts.map((post) => {
+          const app = getApp(post.slug);
+          if (!app) return null;
+          return (
+            <li className="post" lang="ja" key={post.date + post.slug} style={{ "--app-color": app.accent } as React.CSSProperties}>
+              <time className="post-date" dateTime={post.date}>{post.date}</time>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img className="post-icon" src={`/apps/${post.slug}/${app.icon}`} alt="" width={40} height={40} />
+              <div className="post-body">
+                <h3 className="post-title">{post.title}</h3>
+                <p className="post-app">{app.name}</p>
+              </div>
+            </li>
+          );
+        })}
       </ul>
     </section>
   );

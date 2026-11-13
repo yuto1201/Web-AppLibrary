@@ -14,34 +14,13 @@ export const profile = {
   location: "東京, 日本",
 } as const;
 
-export type Post = { date: string; title: string; excerpt: string };
+export type Post = { date: string; slug: string; title: string };
 
 export const posts: Post[] = [
-  {
-    date: "2026-09-29",
-    title: "さわって、並べて、見つけて。",
-    excerpt: "ホームを、カラフルなアプリの遊び場に。気になるアイコンを動かしたり、実際の画面をのぞいたり。自分のペースで探してみてください。",
-  },
-  {
-    date: "2026-09-29",
-    title: "アプリを眺める、小さな工房に",
-    excerpt: "気になるアイコンから、実際の画面をひとつずつ。紙とシールの机に、アプリの小さな展示を加えました。",
-  },
-  {
-    date: "2026-09-26",
-    title: "使う前に、画面をのぞけるように",
-    excerpt: "アプリの詳細ページにスクリーンショットのギャラリーを追加。機能と一緒に、使い心地も想像できるように。",
-  },
-  {
-    date: "2026-09-08",
-    title: "トップページを紙とステッカーに",
-    excerpt: "検索とフィルタをやめ、アプリを行の索引に。アイコンは掴んで動かせるステッカーにしました。",
-  },
-  {
-    date: "2026-04-19",
-    title: "AppLibrary を新デザインに刷新",
-    excerpt: "liquid-glass デザインの新しいトップページに切り替えました。",
-  },
+  { date: "2026-09-24", slug: "pay-cycle", title: "PayCycle を App Store で公開" },
+  { date: "2026-04-14", slug: "sublog", title: "SubLog を App Store で公開" },
+  { date: "2026-04-10", slug: "caflog", title: "CafLog を App Store で公開" },
+  { date: "2026-03-30", slug: "dev-tools", title: "Dev-Tools を β で公開" },
 ];
 
 export type Social = { label: string; handle: string; url: string };

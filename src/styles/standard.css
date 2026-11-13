@@ -724,11 +724,7 @@ html[data-hero-opening="play"] .poster .sticker-slot:has(.is-held) {
   font-weight: 400;
   margin-bottom: 2px;
 }
-.post-excerpt {
-  display: block;
-  font-size: 15px;
-  color: var(--ink-2);
-}
+.post-app { font-size: 13px; color: var(--ink-2); }
 
 /* ============================================================
    Contact
