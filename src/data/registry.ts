@@ -20,7 +20,7 @@ const entries = [
     icon: "icon.png",
     iconGlyph: "￥",
     color: "#E8E1F2",
-    accent: "#6B5B8E",
+    accent: "#1f86f5",
     featured: false,
 
     category: "ファイナンス",
@@ -85,7 +85,7 @@ const entries = [
     icon: "icon.png",
     iconGlyph: "☕",
     color: "#F5EBDD",
-    accent: "#8B5E3C",
+    accent: "#ff7da0",
     featured: false,
 
     category: "ヘルスケア",
@@ -133,7 +133,7 @@ const entries = [
         description: "過去の記録（前の週の 3D と、前の月の振り返り）、代謝シミュレーション、すべての見た目、ヘルスケアへの記録と iCloud での同期、お気に入り 4 件、広告なし。月額と年額のプランがあります。無料版では振り返りとアカウントの画面の下部に広告を表示しますが、追跡の許可は求めず、個人に合わせた広告も表示しません。",
       },
     ],
-    price: "無料",
+    price: "無料・Pro あり（月額・年額）",
     version: "2.0",
 
     screenshots: [
@@ -162,7 +162,7 @@ const entries = [
     icon: "icon.png",
     iconGlyph: "🧰",
     color: "#E8EEF2",
-    accent: "#357D9A",
+    accent: "#2a9d8f",
     featured: false,
 
     category: "開発ツール",
@@ -227,7 +227,7 @@ const entries = [
     "icon": "icon.png",
     "iconGlyph": "￥",
     "color": "#F6F4F0",
-    "accent": "#D8343A",
+    "accent": "#ee3b2f",
     "featured": false,
     "category": "ファイナンス",
     "description": "給料日を基準に、カード請求・家賃・公共料金などの支払いをひとまとめに。収入と登録済み支払いの見込み差額を、ホーム・カレンダー・推移グラフで確認できます。",
@@ -279,7 +279,7 @@ const entries = [
     slug: "simple-pomo", name: "SimplePomo",
     tagline: "目の前のことに、ただ集中する。", stickerNote: "ひとつずつ、25",
     platforms: ["iOS", "iPadOS"], status: "alpha", releaseDate: null, year: 2026,
-    icon: "icon.png", iconGlyph: "◷", color: "#FFF0E1", accent: "#FD841B", featured: false,
+    icon: "icon.png", iconGlyph: "◷", color: "#FFF0E1", accent: "#fd8b21", featured: false,
     category: "仕事効率化",
     description: "集中と休憩を、自分のリズムで。Dynamic Islandやロック画面で残り時間を確認できる、iPhoneとiPadのためのポモドーロタイマー。現在リリース準備中です。",
     features: [
@@ -294,7 +294,7 @@ const entries = [
     slug: "flower", name: "花島",
     tagline: "浮かぶ島で、花と空を眺める。", stickerNote: "今日のそら、なにいろ？",
     platforms: ["iOS", "iPadOS"], status: "alpha", releaseDate: null, year: 2026,
-    icon: "icon.png", iconGlyph: "✿", color: "#E6F0FB", accent: "#B0123A", featured: false,
+    icon: "icon.png", iconGlyph: "✿", color: "#E6F0FB", accent: "#b0123a", featured: false,
     category: "ライフスタイル",
     description: "浮かぶ島に咲く花と時計を、空の時刻や天気とともに眺めるアプリ。アカウントも広告もなく、iPhoneとiPadで静かに花を眺める時間を届けます。現在リリース準備中です。",
     features: [
