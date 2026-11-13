@@ -39,7 +39,7 @@ body:has(.poster) { background: #dceeff; color: #111111; }
   color-scheme: dark;
 }
 .poster :where(a, button, summary, [tabindex]):focus-visible { outline: 3px solid var(--home-focus); outline-offset: 5px; }
-/* Pastel panels keep dark text and a dark focus ring in either theme. */
+/* 明るい紙の面（Nav・制作の背景・連絡先）は、どちらのテーマでも黒い文字と濃い青のフォーカスの輪を保つ。 */
 .poster :is(.nav-inner, .workshop, .contact-postcard) { --home-focus: #164bca; color-scheme: light; }
 .poster .hero, .poster .section { scroll-margin-top: 104px; }
 .poster .section { width: min(var(--measure), calc(100% - var(--home-gutter) * 2)); padding-block: 76px; border-top: 0; }

@@ -2,6 +2,7 @@
 // three.js 0.170.0 と cannon-es 0.20.0（どちらも MIT）。CSP が外の CDN を許さないので npm から束ねる。
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
+import { advanceSettle, MAX_STEP_SECONDS } from "@/lib/pile-settle";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 
 type Thing = { mesh: THREE.Mesh; body: CANNON.Body };
@@ -56,7 +57,11 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
     const img = new Image();
     img.onload = () => {
       if (destroyed) return;
-      iconCanvas.getContext("2d")?.drawImage(img, 0, 0, ICON_PX, ICON_PX);
+      const ctx = iconCanvas.getContext("2d");
+      if (ctx) {
+        ctx.imageSmoothingQuality = "high";
+        ctx.drawImage(img, 0, 0, ICON_PX, ICON_PX);
+      }
       tex.needsUpdate = true;
       if (!running) renderer.render(scene, camera);
     };
@@ -171,8 +176,8 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
   const allAsleep = () => things.every((t) => t.body.sleepState === CANNON.Body.SLEEPING);
 
   function frame(now: number) {
-    const elapsed = (now - last) / 1000; // 実時間。重い環境でも止める目安は実時間で測る
-    const dt = Math.min(0.05, elapsed);
+    const elapsed = (now - last) / 1000;
+    const dt = Math.min(MAX_STEP_SECONDS, elapsed);
     last = now;
     if (toSpawn > 0) {
       spawnTimer -= dt;
@@ -182,7 +187,7 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
     syncMeshes();
     renderer.render(scene, camera);
     if (toSpawn === 0) {
-      idleTime += elapsed;
+      idleTime = advanceSettle(idleTime, elapsed);
       if (allAsleep() || idleTime >= SETTLE_SECONDS) {
         for (const t of things) t.body.sleep();
         running = false;
@@ -217,6 +222,7 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
     if (!running) renderer.render(scene, camera);
   }
 
+  let resizeTimer: ReturnType<typeof setTimeout> | undefined;
   function resize() {
     const w = canvas.clientWidth, h = canvas.clientHeight;
     if (!w || !h) return;
@@ -227,6 +233,14 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
     camera.lookAt(0, 0, 0.5);
     camera.updateProjectionMatrix();
     rebuildWalls();
+    if (reduceMotion.matches) {
+      // 動きを減らす設定: 板は動かさないので、新しい床の範囲で積もった 1 枚を作り直す（連続した変更はまとめる）
+      if (started) {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => { if (!destroyed) drawSettled(); }, 150);
+      }
+      return;
+    }
     for (const t of things) t.body.wakeUp();
     if (!running) renderer.render(scene, camera);
     wake();
@@ -267,6 +281,12 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
   }
   zone.addEventListener("pointerdown", onPointerDown);
 
+  // タブが戻ったとき、裏にいた時間を落ち着く時計へ入れない
+  const onVisibility = () => {
+    if (document.visibilityState === "visible") { last = performance.now(); idleTime = 0; }
+  };
+  document.addEventListener("visibilitychange", onVisibility);
+
   const onMotionChange = () => { sleep(); if (started) start(); };
   reduceMotion.addEventListener("change", onMotionChange);
   const themeObserver = new MutationObserver(applyTheme);
@@ -277,6 +297,8 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
     replay: start,
     destroy() {
       destroyed = true;
+      clearTimeout(resizeTimer);
+      document.removeEventListener("visibilitychange", onVisibility);
       sleep();
       ro.disconnect(); io.disconnect(); themeObserver.disconnect();
       zone.removeEventListener("pointerdown", onPointerDown);

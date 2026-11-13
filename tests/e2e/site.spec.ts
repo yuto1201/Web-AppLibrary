@@ -1764,8 +1764,11 @@ test("積もる板の描画ループは、降る前も積もった後も止ま�
   });
   await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "ready", { timeout: 20_000 });
   await settled("降り始める前");
+  const beforeStart = await rafCount();
   await page.locator(".fall-zone").scrollIntoViewIfNeeded();
   await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  // 35% 以上見えたら降り始める（ループが本当に動く）
+  await expect.poll(rafCount, { timeout: 10_000 }).toBeGreaterThan(beforeStart + 10);
   // 降り終えて約 6 秒で止まる。重い環境でも待てるよう、止まるまでの上限を長く取る
   await expect
     .poll(async () => {
@@ -1782,6 +1785,20 @@ test("reduced-motion では積もった後の 1 枚だけを描く", async ({ pa
   await page.locator(".fall-zone").scrollIntoViewIfNeeded();
   await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "ready", { timeout: 20_000 });
   await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile-motion", "still");
+});
+
+test("reduced-motion で画面の幅を変えても、板は新しい範囲に積もり直す", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/");
+  await page.locator(".fall-zone").scrollIntoViewIfNeeded();
+  await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "ready", { timeout: 20_000 });
+  const canvasBox = () => page.locator(".fall-canvas").boundingBox();
+  await page.setViewportSize({ width: 390, height: 800 });
+  await expect.poll(async () => (await canvasBox())?.width).toBeLessThanOrEqual(390);
+  await page.waitForTimeout(600);
+  // 描き直しで例外が出ず、canvas が新しい幅のまま
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });
 
 test("明るい枠のページは、保存した dark でも枠のリンクのフォーカスの輪が見える色になる", async ({ page }) => {
