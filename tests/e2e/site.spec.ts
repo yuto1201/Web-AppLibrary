@@ -163,7 +163,6 @@ async function expectInitialPlayground(page: Page, context: string) {
   const board = (await page.locator(".hero-playground").boundingBox())!;
   expect(board, `${context} playground`).not.toBeNull();
   const protectedBoxes = {
-    label: (await page.locator(".playground-label").boundingBox())!,
     h1: (await page.locator(".hero-h1").boundingBox())!,
     bio: (await page.locator(".hero-bio").boundingBox())!,
     note: (await page.locator(".hero-note").boundingBox())!,
@@ -269,11 +268,13 @@ test("ホームは空色の遊び場と大きなワードマーク、黒いピ�
   expect(wordmarkBox.width).toBeGreaterThan(500);
   expect(wordmarkBox.height).toBeGreaterThan(200);
 
-  const ornament = board.locator(".hero-orbit");
-  await expect(ornament).toHaveAttribute("src", "/home/playground/blue-orbit.webp");
-  await expect(ornament).toHaveAttribute("alt", "");
-  await expect(ornament).toHaveAttribute("aria-hidden", "true");
-  await expect.poll(() => ornament.evaluate((image: HTMLImageElement) => image.complete && image.naturalWidth > 0)).toBe(true);
+  for (const gone of [".hero-orbit", ".playground-spark", ".playground-label", ".hero-tag", ".studio-strip"]) {
+    await expect(page.locator(gone), gone).toHaveCount(0);
+  }
+  // CSS は 1.5px。DPR 1 の Chromium は計算値を 1px に丸めるので、枠があること（1px 以上・実線）を見る。
+  await expect(board).toHaveCSS("border-top-style", "solid");
+  expect(await board.evaluate((el) => Number.parseFloat(getComputedStyle(el).borderTopWidth))).toBeGreaterThanOrEqual(1);
+  expect(await board.evaluate((el) => Number.parseFloat(getComputedStyle(el).borderTopLeftRadius))).toBe(32);
   await expect(page.locator(".home-hero-picture")).toHaveCount(0);
 
   const heading = page.locator(".hero-h1");
@@ -290,8 +291,6 @@ test("ホームは空色の遊び場と大きなワードマーク、黒いピ�
   await expect(cta).toHaveCSS("background-color", HOME.black);
   await expect(cta).toHaveAttribute("href", "#apps");
   expect(await cta.evaluate((el) => Number.parseFloat(getComputedStyle(el).borderTopLeftRadius))).toBeGreaterThanOrEqual(24);
-  await expect(page.locator(".home-showcase")).toHaveCSS("background-color", HOME.lavender);
-  await expect(page.locator(".workshop")).toHaveCSS("background-color", HOME.mint);
 
   await page.getByRole("button", { name: "ダークモードに切り替える" }).click();
   await expect(page.locator("body")).toHaveCSS("background-color", HOME.dark.paper);
