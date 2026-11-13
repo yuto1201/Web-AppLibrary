@@ -289,3 +289,9 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 .poster[data-desk="ready"] .sticker-slot[data-key="flower"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .3); top: calc(var(--desk-play-top) + 112px); right: auto; bottom: auto; width: 88px; }
 @media (min-width: 641px) and (max-width: 900px) { .poster[data-desk="ready"] .sticker-slot[data-key="flower"] { left: calc(var(--desk-play-left) + var(--desk-play-width) * .26); top: calc(var(--desk-play-top) + 96px); width: 76px; } }
 @media (max-width: 640px) { .poster[data-desk="ready"] .sticker-slot[data-key="flower"] { left: calc(var(--desk-play-left) + 13px); top: calc(var(--desk-play-top) + 106px); width: 64px; } }
+
+/* 試作（spike）: フッターに物が降って積もる。文字は上、物は canvas の中で下に積もる。 */
+.poster .fall-zone { position: relative; min-height: min(78vh, 680px); overflow: hidden; }
+.poster .fall-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: pan-y; }
+.poster .fall-zone > .footer { position: relative; z-index: 1; pointer-events: none; }
+.poster .fall-zone > .footer :is(a, summary, .colophon-body) { pointer-events: auto; }

@@ -4,6 +4,7 @@ import { AppsSection } from "@/components/AppsSection";
 import { Stickers } from "@/components/Stickers";
 import { Workshop, Posts, Contact, Footer } from "@/components/Sections";
 import { ActivateProvider } from "@/lib/activate";
+import { FallingFooter } from "@/components/FallingFooter";
 
 export default function HomePage() {
   return (
@@ -19,7 +20,9 @@ export default function HomePage() {
           <Posts />
           <Contact />
         </main>
-        <Footer />
+        <FallingFooter>
+          <Footer />
+        </FallingFooter>
       </div>
     </ActivateProvider>
   );
