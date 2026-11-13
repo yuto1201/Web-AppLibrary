@@ -177,7 +177,7 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
 
   function frame(now: number) {
     const elapsed = (now - last) / 1000;
-    const dt = Math.min(MAX_STEP_SECONDS, elapsed);
+    const dt = Math.max(0, Math.min(MAX_STEP_SECONDS, elapsed));
     last = now;
     if (toSpawn > 0) {
       spawnTimer -= dt;
@@ -232,12 +232,13 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
     camera.position.set(0, tall ? 52 : 34, tall ? 12 : 9);
     camera.lookAt(0, 0, 0.5);
     camera.updateProjectionMatrix();
+    camera.updateMatrixWorld(); // lookAt 後の向きを床への光線へ反映する（描画前は古いままになる）
     rebuildWalls();
     if (reduceMotion.matches) {
       // 動きを減らす設定: 板は動かさないので、新しい床の範囲で積もった 1 枚を作り直す（連続した変更はまとめる）
       if (started) {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => { if (!destroyed) drawSettled(); }, 150);
+        resizeTimer = setTimeout(() => { if (!destroyed && reduceMotion.matches) drawSettled(); }, 150);
       }
       return;
     }
@@ -287,7 +288,7 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
   };
   document.addEventListener("visibilitychange", onVisibility);
 
-  const onMotionChange = () => { sleep(); if (started) start(); };
+  const onMotionChange = () => { clearTimeout(resizeTimer); sleep(); if (started) start(); };
   reduceMotion.addEventListener("change", onMotionChange);
   const themeObserver = new MutationObserver(applyTheme);
   themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
