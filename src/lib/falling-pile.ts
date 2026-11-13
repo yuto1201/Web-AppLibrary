@@ -3,7 +3,6 @@
 import * as THREE from "three";
 import * as CANNON from "cannon-es";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
-import { RoomEnvironment } from "three/addons/environments/RoomEnvironment.js";
 
 type Thing = { mesh: THREE.Mesh; body: CANNON.Body };
 
@@ -18,7 +17,7 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
   const rand = (a: number, b: number) => a + Math.random() * (b - a);
   const pick = <T,>(arr: readonly T[]) => arr[Math.floor(Math.random() * arr.length)] as T;
 
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: false, alpha: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -26,12 +25,9 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
   renderer.outputColorSpace = THREE.SRGBColorSpace;
 
   const scene = new THREE.Scene();
-  const pmrem = new THREE.PMREMGenerator(renderer);
-  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-  scene.environmentIntensity = 0.45;
 
   const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 200);
-  scene.add(new THREE.HemisphereLight(0xffffff, 0xdceeff, 0.6));
+  scene.add(new THREE.HemisphereLight(0xffffff, 0xdceeff, 1.0));
   const sun = new THREE.DirectionalLight(0xffffff, 2.2);
   sun.position.set(-8, 24, 10);
   sun.castShadow = true;
@@ -263,7 +259,6 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
       faceGeo.dispose();
       for (const tx of textures) tx.dispose();
       for (const m of materials) m.dispose();
-      pmrem.dispose();
       renderer.dispose();
     },
   };
