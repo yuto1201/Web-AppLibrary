@@ -1740,6 +1740,36 @@ test("WebGL が無くても、フッターの奥付と法務リンクを使え�
   expect(errors).toEqual([]);
 });
 
+test("積もる板の描画ループは、降る前も積もった後も止まる", async ({ page }) => {
+  test.setTimeout(90_000);
+  await page.addInitScript(() => {
+    const w = window as unknown as { __raf: number };
+    w.__raf = 0;
+    const orig = window.requestAnimationFrame.bind(window);
+    window.requestAnimationFrame = (cb) => { w.__raf += 1; return orig(cb); };
+  });
+  const rafCount = () => page.evaluate(() => (window as unknown as { __raf: number }).__raf);
+  const settled = async (label: string) => {
+    await page.waitForTimeout(500);
+    const before = await rafCount();
+    await page.waitForTimeout(1500);
+    expect(await rafCount(), label).toBe(before);
+  };
+  await page.goto("/");
+  // フッターが 2 割だけ見える位置（積もり始める 35% に届かない）
+  await page.evaluate(() => {
+    const zone = document.querySelector(".fall-zone") as HTMLElement;
+    const top = zone.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo(0, top - window.innerHeight + zone.offsetHeight * 0.2);
+  });
+  await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "ready", { timeout: 20_000 });
+  await settled("降り始める前");
+  await page.locator(".fall-zone").scrollIntoViewIfNeeded();
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  await page.waitForTimeout(11_000);
+  await settled("積もった後");
+});
+
 test("reduced-motion では積もった後の 1 枚だけを描く", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.goto("/");

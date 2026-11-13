@@ -31,7 +31,8 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
   const sun = new THREE.DirectionalLight(0xffffff, 2.2);
   sun.position.set(-8, 24, 10);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(2048, 2048);
+  const small0 = matchMedia("(max-width: 640px)").matches;
+  sun.shadow.mapSize.set(small0 ? 1024 : 2048, small0 ? 1024 : 2048);
   Object.assign(sun.shadow.camera, { left: -30, right: 30, top: 30, bottom: -30 });
   sun.shadow.radius = 4;
   scene.add(sun);
@@ -42,12 +43,24 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
   floorMesh.receiveShadow = true;
   scene.add(floorMesh);
 
-  const loader = new THREE.TextureLoader();
+  // アイコンは 256px へ縮めてから GPU へ上げる（同じオリジンの画像だけ。外へは出ない）
+  let destroyed = false;
+  const ICON_PX = 256;
   const textures: THREE.Texture[] = [];
   const kinds = items.map((item) => {
-    const tex = loader.load(item.icon, () => { if (!running) renderer.render(scene, camera); });
+    const iconCanvas = document.createElement("canvas");
+    iconCanvas.width = iconCanvas.height = ICON_PX;
+    const tex = new THREE.CanvasTexture(iconCanvas);
     tex.colorSpace = THREE.SRGBColorSpace;
     textures.push(tex);
+    const img = new Image();
+    img.onload = () => {
+      if (destroyed) return;
+      iconCanvas.getContext("2d")?.drawImage(img, 0, 0, ICON_PX, ICON_PX);
+      tex.needsUpdate = true;
+      if (!running) renderer.render(scene, camera);
+    };
+    img.src = item.icon;
     return {
       body: new THREE.MeshStandardMaterial({ color: item.color, roughness: 0.45, metalness: 0 }),
       face: new THREE.MeshStandardMaterial({ map: tex, roughness: 0.5 }),
@@ -98,11 +111,11 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
   }
 
   const things: Thing[] = [];
-  const boxGeoCache = new Map<string, RoundedBoxGeometry>();
-  const boxGeo = (w: number, h: number, d: number) => {
-    const key = `${w}|${h}|${d}`;
-    let g = boxGeoCache.get(key);
-    if (!g) { g = new RoundedBoxGeometry(w, h, d, 4, Math.min(w, h, d) * 0.22); boxGeoCache.set(key, g); }
+  // 板の台は厚みごとに 1 つ（縦横 1 の単位形）。大きさは mesh の scale で変える
+  const boxGeoCache = new Map<number, RoundedBoxGeometry>();
+  const boxGeo = (t: number) => {
+    let g = boxGeoCache.get(t);
+    if (!g) { g = new RoundedBoxGeometry(1, t, 1, 4, t * 0.22); boxGeoCache.set(t, g); }
     return g;
   };
   const faceGeo = new THREE.PlaneGeometry(1, 1);
@@ -112,10 +125,11 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
     const kind = pick(kinds);
     // アイコンの板: アプリの色の台に、表と裏の両方へアイコンを貼る（裏返っても分かる）
     const s = rand(1.7, 2.3) * scale, t = 0.42 * scale;
-    const mesh = new THREE.Mesh(boxGeo(s, t, s), kind.body);
+    const mesh = new THREE.Mesh(boxGeo(t), kind.body);
+    mesh.scale.set(s, 1, s);
     for (const side of [1, -1]) {
       const face = new THREE.Mesh(faceGeo, kind.face);
-      face.scale.set(s * 0.84, s * 0.84, 1);
+      face.scale.set(0.84, 0.84, 1);
       face.rotation.x = -side * Math.PI / 2;
       face.position.y = side * (t / 2 + 0.003);
       mesh.add(face);
@@ -150,6 +164,9 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
   }
 
   const total = () => (isSmall() ? 18 : 34);
+  // 降り終えてから SETTLE_SECONDS 経っても眠らない板は、止めて眠らせる
+  const SETTLE_SECONDS = 6;
+  let idleTime = 0;
   let toSpawn = 0, spawnTimer = 0, running = false, visible = false, raf = 0, last = 0, started = false;
   const allAsleep = () => things.every((t) => t.body.sleepState === CANNON.Body.SLEEPING);
 
@@ -163,12 +180,19 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
     world.step(1 / 60, dt, 4);
     syncMeshes();
     renderer.render(scene, camera);
-    if (toSpawn === 0 && things.length && allAsleep()) { running = false; return; }
+    if (toSpawn === 0) {
+      idleTime += dt;
+      if (allAsleep() || idleTime >= SETTLE_SECONDS) {
+        for (const t of things) t.body.sleep();
+        running = false;
+        return;
+      }
+    }
     raf = requestAnimationFrame(frame);
   }
   function wake() {
-    if (running || !visible || reduceMotion.matches) return;
-    running = true; last = performance.now();
+    if (running || !visible || !started || reduceMotion.matches) return;
+    running = true; idleTime = 0; last = performance.now();
     raf = requestAnimationFrame(frame);
   }
   function sleep() { cancelAnimationFrame(raf); running = false; }
@@ -177,14 +201,14 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
   function drawSettled() {
     clearAll();
     for (let i = 0; i < total(); i++) spawnOne(4, 20);
-    for (let i = 0; i < 900; i++) world.step(1 / 60);
+    for (let i = 0; i < 240; i++) world.step(1 / 60);
     syncMeshes();
     renderer.render(scene, camera);
   }
   function start() {
     started = true;
     if (reduceMotion.matches) { drawSettled(); return; }
-    clearAll(); toSpawn = total(); spawnTimer = 0; wake();
+    clearAll(); toSpawn = total(); spawnTimer = 0; idleTime = 0; wake();
   }
 
   function applyTheme() {
@@ -214,7 +238,7 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
   const io = new IntersectionObserver(([e]) => {
     if (!e) return;
     visible = e.isIntersecting;
-    if (visible && !started && e.intersectionRatio > 0.35) start();
+    if (visible && !started && e.intersectionRatio >= 0.35) start();
     if (visible) wake(); else sleep();
   }, { threshold: [0, 0.35] });
   io.observe(zone);
@@ -237,6 +261,7 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
       body.applyImpulse(new CANNON.Vec3((dx / (dist || 1)) * 6 * k, 14 * k, (dz / (dist || 1)) * 6 * k));
       body.angularVelocity.set(rand(-6, 6), rand(-6, 6), rand(-6, 6));
     }
+    idleTime = 0;
     wake();
   }
   zone.addEventListener("pointerdown", onPointerDown);
@@ -250,6 +275,7 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
   return {
     replay: start,
     destroy() {
+      destroyed = true;
       sleep();
       ro.disconnect(); io.disconnect(); themeObserver.disconnect();
       zone.removeEventListener("pointerdown", onPointerDown);
@@ -259,6 +285,10 @@ export function createPile(canvas: HTMLCanvasElement, zone: HTMLElement, items: 
       faceGeo.dispose();
       for (const tx of textures) tx.dispose();
       for (const m of materials) m.dispose();
+      shadowMat.dispose();
+      floorMesh.geometry.dispose();
+      sun.shadow.map?.dispose();
+      renderer.forceContextLoss();
       renderer.dispose();
     },
   };
