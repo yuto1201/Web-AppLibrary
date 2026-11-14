@@ -138,7 +138,7 @@ App Store 審査ではプライバシーポリシー URL が必須です。各�
 
 `public/_headers` がセキュリティヘッダとキャッシュ制御を持ちます。CSP を緩める変更は理由を PR に書きます。
 
-`app.yutodev.com` は Pages の custom domain へ登録してから DNS を切り替え、DNS only を確認します。レコードを手で Pages に向けるだけでは検証が完了しないため、公開手順に従います。
+配信する `yutodev.com` は Pages の custom domain へ登録してから DNS を切り替え、DNS only を確認します。`app.yutodev.com` と `www.yutodev.com` は転送専用で、Redirect Rules を働かせるために proxied にします（DNS only に戻すと転送が止まります）。レコードを手で Pages に向けるだけでは検証が完了しないため、`docs/deploy/README.md` の手順に従います。
 
 ## 完了報告の原則
 

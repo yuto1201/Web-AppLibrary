@@ -23,7 +23,7 @@ Next.js は `output: "export"` で静的ファイルを生成する。Pages Func
 
 1. Pages `applibrary` の Custom domains に `yutodev.com` を登録する。作られた DNS レコードを DNS only に戻し、Pages の状態が「アクティブ」になるのを確かめる。この時点では今の中身が `yutodev.com` でも出るだけ。
 2. 移行の PR を `main` にマージし、`https://yutodev.com/apps/` と `https://app.yutodev.com/apps/` に新しい中身が出るのを確かめる。
-3. 直後に、ゾーン `yutodev.com` の `http_request_dynamic_redirect` に転送のルールを入れる。ホストが `app.yutodev.com` でパスが `/` なら `https://yutodev.com/apps/`、それ以外は `https://yutodev.com` に同じパスを付けて 301（クエリを保つ）。続けて `app` の CNAME を proxied にする。`www` の CNAME（proxied）と `www.yutodev.com` → `yutodev.com` の転送を足す。2 と 3 の間の数分は、`app.yutodev.com/` に入口のページが出る。
+3. 直後に、ゾーン `yutodev.com` の `http_request_dynamic_redirect` に転送のルールを入れる。ホストが `app.yutodev.com` でパスが `/` なら `https://yutodev.com/apps/`、それ以外は `https://yutodev.com` に同じパスを付けて 301（クエリを保つ）。続けて `app` の CNAME を proxied にする。`www` の CNAME（proxied）と、`www.yutodev.com` → `https://yutodev.com` に同じパスとクエリを付けた 301 の転送を足す。2 と 3 の間の数分は、`app.yutodev.com/` に入口のページが出る。
 4. `config/kept-urls.json` の全パスを、`yutodev.com` では 200、`app.yutodev.com` では正しい転送先への 301 として確かめる。`app.yutodev.com/#contact` がブラウザで `yutodev.com/apps/#contact` に着くこと、CSP、Cookie、HTML に差し込まれた script がないことも確かめる。
 5. GitHub の Website 欄を `https://yutodev.com/apps/` にする。
 

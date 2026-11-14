@@ -449,7 +449,8 @@ test("作品カードは実画面と掲載情報を持ち、検索・フィル�
   // Review Focus 4: 320px で札がカードからはみ出さず、横スクロールも出ない
   await page.goto("/apps/");
   await page.setViewportSize({ width: 320, height: 800 });
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+  // シールの位置は ResizeObserver が幅の変化の後に合わせ直す。描画前に揃うので、揃った後を測る。
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
   for (const row of await rows.all()) {
     const box = (await row.boundingBox())!;
     for (const tag of await row.locator(".app-row-tag").all()) {
@@ -1044,6 +1045,13 @@ test("/apps/ の canonical と og:url は /apps/ を指す", async ({ page }) =>
   await page.goto("/apps/");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://yutodev.com/apps/");
   await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://yutodev.com/apps/");
+});
+
+test("入口 / を通ってきた初回の訪問でも /apps/ で Hero を再生する", async ({ page }) => {
+  await page.goto("/");
+  await page.getByRole("link", { name: /アプリの一覧へ/u }).click();
+  await expect(page).toHaveURL("/apps/");
+  await expect(page.locator("html")).toHaveAttribute("data-hero-opening", "play");
 });
 
 test("通常モーションでは初回だけ Hero を再生し、履歴を消すと再生する", async ({ page }) => {
