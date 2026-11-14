@@ -38,6 +38,14 @@ Next.js は `output: "export"` で静的ファイルを生成する。Pages Func
 
 検証範囲は Chromium と上記 HTTP / DNS 観測。全地域の DNS キャッシュの反映完了や Safari 実機確認を意味しない。
 
+## 自動デプロイが止まった記録（2026-11-14）
+
+- 09:28 UTC のマージ（#147）を最後に、`main` へのマージと PR の push で Pages のデプロイが作られなくなった。#148（SubLog のアイコン）と #149（SubLog の法務ページ）はマージしても本番に出なかった。
+- 原因: GitHub の「Cloudflare Workers and Pages」アプリ（installation `127417996`）のリポジトリの許可が「Only select repositories」で、`yuto1201/Web-Project-Cafe` だけになっていた。`Web-yutodev` が外れたため、GitHub がこのリポジトリのイベントをアプリに送らなくなった（止まった後のコミットには、ほかのアプリの check suite はあるのに Cloudflare のものだけがなかった）。誰がいつ変えたかは分かっていない。
+- Cloudflare の API の `config_autofill` や「Create a Pages deployment」は、利用者の GitHub の認可で動くので、この間もリポジトリを読めた。止まったのは push の知らせだけ。
+- 対応: 14:1x UTC に Cloudflare の API で `main` の production deployment（`02e98acc-3c52-43d4-af55-4567d5e48f64`、`ae76910`）を手で作って公開した。続けて、所有者の承認を得て、アプリの許可に `Web-yutodev` を足した（`Web-Project-Cafe` は残した）。この記録の PR で、push から Pages のプレビューとチェックが作られることを確かめた。
+- 見張り方: マージの後に本番に出ないときは、そのコミットの `gh api repos/yuto1201/Web-yutodev/commits/<sha>/check-suites` に `cloudflare-workers-and-pages` があるかを見る。ないときは GitHub の [アプリの設定](https://github.com/settings/installations/127417996) の Repository access を確かめる。別のリポジトリを Cloudflare につなぐときは、「Only select repositories」の一覧に `Web-yutodev` を残す。
+
 ## 公開切替の記録（2026-09-28 / Issue #55）
 
 - PR #56 の本番コミットは `26e19fe8613349378ceff16dd20b5a43cec54947`、Pages deployment は `3d836bf0-01fb-48c1-943a-b23e565a369e`。
