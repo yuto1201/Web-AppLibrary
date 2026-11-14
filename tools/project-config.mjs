@@ -12,7 +12,7 @@ export const projectSchema = z.strictObject({
   schemaVersion: z.literal(1),
   name: z.literal("AppLibrary"),
   repository: z.literal("yuto1201/Web-yutodev"),
-  productionUrl: z.literal("https://app.yutodev.com/"),
+  productionUrl: z.literal("https://yutodev.com/"),
   profile: z.literal("static-site"),
   hosting: z.literal("cloudflare-pages"),
   dns: z.strictObject({ provider: z.literal("cloudflare"), proxied: z.literal(false) }),

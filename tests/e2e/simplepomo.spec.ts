@@ -9,9 +9,9 @@ test("SimplePomo: published routes, bilingual legal copy and navigation", async 
     expect(response.status()).toBe(200);
     const html = await response.text();
     const title = route === "privacy/" ? "プライバシーポリシー — SimplePomo" : route === "terms/" ? "利用規約 — SimplePomo" : "SimplePomo — AppLibrary";
-    expect(html).toContain(`<meta property="og:url" content="https://app.yutodev.com/apps/simple-pomo/${route}"/>`);
+    expect(html).toContain(`<meta property="og:url" content="https://yutodev.com/apps/simple-pomo/${route}"/>`);
     expect(html).toContain(`<meta property="og:title" content="${title}"/>`);
-    expect(html).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+    expect(html).toContain('<meta property="og:image" content="https://yutodev.com/ogp.png"/>');
     if (route) {
       await page.goto(`/apps/simple-pomo/${route}`);
       await expect(page.locator("body")).toHaveCSS("background-color", "rgb(255, 248, 241)");

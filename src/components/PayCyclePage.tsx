@@ -114,7 +114,7 @@ export function PayCyclePage({ app }: { app: App }) {
               <details><summary>どんな支払いを登録できますか？<span aria-hidden="true">+</span></summary><p>クレジットカードの請求、家賃、公共料金など、定期的な支払いと一回限りの支払いを登録できます。繰り返す支払いには終了日も設定できます。</p></details>
               <details><summary>銀行やカードとの連携は必要ですか？<span aria-hidden="true">+</span></summary><p>自動連携は使いません。自分で登録した収入と支払いをもとに、給料日サイクルごとの見込みを確認するアプリです。</p></details>
               <details><summary>いつから使えますか？<span aria-hidden="true">+</span></summary><p>{app.appStoreUrl ? <>App Store からダウンロードできます。<a href={app.appStoreUrl} target="_blank" rel="noopener noreferrer">ストアで詳しく見る</a></> : "現在、リリースに向けて準備中です。配布を開始したら、このページにダウンロード先を掲載します。"}</p></details>
-              <details><summary>データの取り扱いや問い合わせ先は？<span aria-hidden="true">+</span></summary><p>データの取り扱いは<Link href={privacyUrl}>プライバシーポリシー</Link>、ご利用の条件は<Link href={termsUrl}>利用規約</Link>をご確認ください。お問い合わせは<a href="https://app.yutodev.com/#contact">サポート窓口</a>へどうぞ。</p></details>
+              <details><summary>データの取り扱いや問い合わせ先は？<span aria-hidden="true">+</span></summary><p>データの取り扱いは<Link href={privacyUrl}>プライバシーポリシー</Link>、ご利用の条件は<Link href={termsUrl}>利用規約</Link>をご確認ください。お問い合わせは<Link href="/apps/#contact">サポート窓口</Link>へどうぞ。</p></details>
             </div>
           </div>
         </section>

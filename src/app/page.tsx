@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "yutodev.com",
+  alternates: { canonical: "/" },
 };
 
 /** yutodev.com の入口。個人サイトを作るまでは、アプリの一覧（/apps/）へのリンクだけを置く。 */

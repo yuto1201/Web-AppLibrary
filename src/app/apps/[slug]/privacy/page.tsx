@@ -56,7 +56,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ slug: 
         {supportDocuments[app.slug] ? (
           <><Link href={`/apps/${app.slug}/support/`}>サポート</Link><span> · </span></>
         ) : app.slug === "pay-cycle" && (
-          <><a href="https://app.yutodev.com/#contact">サポート</a><span> · </span></>
+          <><Link href="/apps/#contact">サポート</Link><span> · </span></>
         )}
       </footer>
     </div>

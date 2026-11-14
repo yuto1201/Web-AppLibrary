@@ -953,16 +953,16 @@ test("テーマと言語の設定が再読み込み後も維持される", async
 
 test("OGP metadata とサイト共通の法務ページ", async ({ page, request }) => {
   await page.goto("/apps/");
-  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://app.yutodev.com/ogp.png");
-  await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute("content", "https://app.yutodev.com/ogp.png");
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://yutodev.com/ogp.png");
+  await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute("content", "https://yutodev.com/ogp.png");
 
   await expect(page.getByRole("link", { name: "プライバシー", exact: true })).toHaveAttribute("href", "/privacy/");
   const privacyResponse = await request.get("/privacy/");
   expect(privacyResponse.ok()).toBe(true);
   const privacyHtml = await privacyResponse.text();
-  expect(privacyHtml).toContain('<meta property="og:url" content="https://app.yutodev.com/privacy/"/>');
+  expect(privacyHtml).toContain('<meta property="og:url" content="https://yutodev.com/privacy/"/>');
   expect(privacyHtml).toContain('<meta property="og:title" content="プライバシーポリシー — AppLibrary"/>');
-  expect(privacyHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+  expect(privacyHtml).toContain('<meta property="og:image" content="https://yutodev.com/ogp.png"/>');
 
   await page.goto("/privacy/");
   await expect(page).toHaveURL(/\/privacy\/$/u);
@@ -973,7 +973,7 @@ test("OGP metadata とサイト共通の法務ページ", async ({ page, request
   await expect(page.locator(".legal-card")).not.toContainText("表示密度");
   await expect(page.locator(".legal-meta")).toContainText("制定日: 2026年9月1日 · 最終更新: 2026年9月27日");
   await expect(page.getByRole("link", { name: "Cloudflare のプライバシーポリシー" })).toHaveAttribute("href", "https://www.cloudflare.com/policies/privacy/");
-  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://app.yutodev.com/privacy/");
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://yutodev.com/privacy/");
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "プライバシーポリシー — AppLibrary");
   await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute("content", "プライバシーポリシー — AppLibrary");
   await expectColorContrast(page);
@@ -988,15 +988,15 @@ test("OGP metadata とサイト共通の法務ページ", async ({ page, request
   const termsResponse = await request.get("/terms/");
   expect(termsResponse.ok()).toBe(true);
   const termsHtml = await termsResponse.text();
-  expect(termsHtml).toContain('<meta property="og:url" content="https://app.yutodev.com/terms/"/>');
+  expect(termsHtml).toContain('<meta property="og:url" content="https://yutodev.com/terms/"/>');
   expect(termsHtml).toContain('<meta property="og:title" content="利用規約 — AppLibrary"/>');
-  expect(termsHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+  expect(termsHtml).toContain('<meta property="og:image" content="https://yutodev.com/ogp.png"/>');
 
   await page.goto("/terms/");
   await expect(page).toHaveURL(/\/terms\/$/u);
   await expect(page.getByRole("heading", { level: 1, name: "利用規約" })).toBeVisible();
   await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese only.");
-  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://app.yutodev.com/terms/");
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://yutodev.com/terms/");
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "利用規約 — AppLibrary");
   await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute("content", "利用規約 — AppLibrary");
   await expectColorContrast(page);
@@ -1020,16 +1020,22 @@ test("/ は /apps/ へのリンクだけを置く", async ({ page }) => {
 test("robots と sitemap が全静的ルートを公開する", async ({ request }) => {
   const robotsResponse = await request.get("/robots.txt");
   expect(robotsResponse.ok()).toBe(true);
-  expect(await robotsResponse.text()).toContain("Sitemap: https://app.yutodev.com/sitemap.xml");
+  expect(await robotsResponse.text()).toContain("Sitemap: https://yutodev.com/sitemap.xml");
 
   const sitemapResponse = await request.get("/sitemap.xml");
   expect(sitemapResponse.ok()).toBe(true);
   const sitemap = await sitemapResponse.text();
   const actual = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/gu)].map((match) => match[1]).sort();
   const expected = (await exportedIndexRoutes())
-    .map((route) => new URL(route, "https://app.yutodev.com/").href)
+    .map((route) => new URL(route, "https://yutodev.com/").href)
     .sort();
   expect(actual).toEqual(expected);
+});
+
+test("/apps/ の canonical と og:url は /apps/ を指す", async ({ page }) => {
+  await page.goto("/apps/");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://yutodev.com/apps/");
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://yutodev.com/apps/");
 });
 
 test("通常モーションでは初回だけ Hero を再生し、履歴を消すと再生する", async ({ page }) => {
@@ -1114,17 +1120,17 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
     const detailResponse = await request.get(`/apps/${app.slug}/`);
     expect(detailResponse.ok()).toBe(true);
     const detailHtml = await detailResponse.text();
-    expect(detailHtml).toContain(`<meta property="og:url" content="https://app.yutodev.com/apps/${app.slug}/"/>`);
+    expect(detailHtml).toContain(`<meta property="og:url" content="https://yutodev.com/apps/${app.slug}/"/>`);
     expect(detailHtml).toContain(`<meta property="og:title" content="${app.name} — AppLibrary"/>`);
-    expect(detailHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+    expect(detailHtml).toContain('<meta property="og:image" content="https://yutodev.com/ogp.png"/>');
     const privacyResponse = await request.get(`/apps/${app.slug}/privacy/`);
     expect(privacyResponse.ok()).toBe(true);
     const privacyHtml = await privacyResponse.text();
     expect(privacyHtml).toContain(
-      `<meta property="og:url" content="https://app.yutodev.com/apps/${app.slug}/privacy/"/>`,
+      `<meta property="og:url" content="https://yutodev.com/apps/${app.slug}/privacy/"/>`,
     );
     expect(privacyHtml).toContain(`<meta property="og:title" content="プライバシーポリシー — ${app.name}"/>`);
-    expect(privacyHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+    expect(privacyHtml).toContain('<meta property="og:image" content="https://yutodev.com/ogp.png"/>');
     const hasTerms = ["pay-cycle", "caflog"].includes(app.slug);
     if (hasTerms) {
       const termsResponse = await request.get(`/apps/${app.slug}/terms/`);
@@ -1132,10 +1138,10 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
       expect(termsResponse.url()).toMatch(new RegExp(`/apps/${app.slug}/terms/$`, "u"));
       const termsHtml = await termsResponse.text();
       expect(termsHtml).toContain(
-        `<meta property="og:url" content="https://app.yutodev.com/apps/${app.slug}/terms/"/>`,
+        `<meta property="og:url" content="https://yutodev.com/apps/${app.slug}/terms/"/>`,
       );
       expect(termsHtml).toContain(`<meta property="og:title" content="利用規約 — ${app.name}"/>`);
-      expect(termsHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+      expect(termsHtml).toContain('<meta property="og:image" content="https://yutodev.com/ogp.png"/>');
     }
     // request.get は HTML / OGP だけ。紙面 CSS は各法務 URL を直接開いて確認する。
     await page.goto(`/apps/${app.slug}/privacy/`);
@@ -1272,7 +1278,7 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
       .toBe(true);
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
       "content",
-      `https://app.yutodev.com/apps/${app.slug}/`,
+      `https://yutodev.com/apps/${app.slug}/`,
     );
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", `${app.name} — AppLibrary`);
     await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute("content", `${app.name} — AppLibrary`);
@@ -1349,6 +1355,8 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
       await expect(englishPolicy).toContainText("StoreKit");
       await expect(englishPolicy.getByRole("link", { name: "developer's contact links", exact: true }))
         .toHaveAttribute("href", "https://app.yutodev.com/#contact");
+      await expect(page.locator("footer.page-footer").getByRole("link", { name: "サポート", exact: true }))
+        .toHaveAttribute("href", "/apps/#contact");
       await page.getByRole("link", { name: "利用規約", exact: true }).click();
       await expect(page).toHaveURL(/\/apps\/pay-cycle\/terms\/$/u);
       await expect(page.getByRole("heading", { level: 1 })).toContainText("PayCycle 利用規約");
@@ -1357,10 +1365,10 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
       await expect(page.getByRole("link", { name: "Apple Standard EULA", exact: true }))
         .toHaveAttribute("href", "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/");
       await expect(page.getByRole("link", { name: "サポート", exact: true }))
-        .toHaveAttribute("href", "https://app.yutodev.com/#contact");
+        .toHaveAttribute("href", "/apps/#contact");
       await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
         "content",
-        "https://app.yutodev.com/apps/pay-cycle/terms/",
+        "https://yutodev.com/apps/pay-cycle/terms/",
       );
       await expect
         .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
@@ -1396,7 +1404,7 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
     await expect(page.locator("footer.page-footer")).toBeVisible();
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
       "content",
-      `https://app.yutodev.com/apps/${app.slug}/privacy/`,
+      `https://yutodev.com/apps/${app.slug}/privacy/`,
     );
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
       "content",
@@ -1613,6 +1621,7 @@ test("PayCycle の案内・実画面・質問をキーボードで操作でき�
   await page.keyboard.press("Enter");
   await expect(question).toHaveAttribute("open", "");
   await expect(question.locator("p")).toBeVisible();
+  await expect(page.locator("#questions a", { hasText: "サポート窓口" })).toHaveAttribute("href", "/apps/#contact");
 
   for (const [width, height] of [[320, 640], [390, 844], [768, 1024], [820, 1180], [1280, 720], [1613, 966]] as const) {
     await page.setViewportSize({ width, height });
