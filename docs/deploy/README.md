@@ -4,10 +4,11 @@
 
 | 項目 | 設定 |
 |---|---|
-| 本番 URL | <https://app.yutodev.com/> |
+| 本番 URL | <https://yutodev.com/>（2026-11-14 の切り替えまでは <https://app.yutodev.com/>） |
 | Pages プロジェクト | `applibrary`（Cloudflare account `Yuto Dev`） |
 | Pages ホスト名 | `applibrary-ag2.pages.dev` |
-| DNS | `app` CNAME → `applibrary-ag2.pages.dev`、DNS only、TTL 自動 |
+| DNS（切り替え前） | `app` CNAME → `applibrary-ag2.pages.dev`、DNS only、TTL 自動 |
+| DNS（切り替え後） | `yutodev.com` → Pages custom domain、DNS only。`app` と `www` は proxied で Redirect Rules により `yutodev.com` へ 301 |
 | ソース | `yuto1201/Web-yutodev` の Git 連携（2026-11-14 に `Web-AppLibrary` から改名） |
 | 本番ブランチ | `main`（自動本番デプロイ有効） |
 | プレビュー | PR ブランチの Pages preview deployment |
@@ -15,6 +16,18 @@
 | Node | `.node-version` の `24.20.0`（Pages の build image v3） |
 
 Next.js は `output: "export"` で静的ファイルを生成する。Pages Functions、DB、認証は使わない。Cloudflare の build image は `.node-version` を読み、Node のバージョンを切り替える。`engines` は互換 major 範囲、ローカルと CI は `policy` で Node/npm の完全一致を検査する。
+
+## yutodev.com への切り替え（Issue #145）
+
+[ADR](../decisions/2026-11-14-yutodev-domain.md) と[設計](../superpowers/specs/2026-11-14-yutodev-domain-move-design.md)に従う。各段は実行の前に対象を示してユーザーの承認を得る。2026-11-14 時点で未実施。
+
+1. Pages `applibrary` の Custom domains に `yutodev.com` を登録する。作られた DNS レコードを DNS only に戻し、Pages の状態が「アクティブ」になるのを確かめる。この時点では今の中身が `yutodev.com` でも出るだけ。
+2. 移行の PR を `main` にマージし、`https://yutodev.com/apps/` と `https://app.yutodev.com/apps/` に新しい中身が出るのを確かめる。
+3. 直後に、ゾーン `yutodev.com` の `http_request_dynamic_redirect` に転送のルールを入れる。ホストが `app.yutodev.com` でパスが `/` なら `https://yutodev.com/apps/`、それ以外は `https://yutodev.com` に同じパスを付けて 301（クエリを保つ）。続けて `app` の CNAME を proxied にする。`www` の CNAME（proxied）と `www.yutodev.com` → `yutodev.com` の転送を足す。2 と 3 の間の数分は、`app.yutodev.com/` に入口のページが出る。
+4. `config/kept-urls.json` の全パスを、`yutodev.com` では 200、`app.yutodev.com` では正しい転送先への 301 として確かめる。`app.yutodev.com/#contact` がブラウザで `yutodev.com/apps/#contact` に着くこと、CSP、Cookie、HTML に差し込まれた script がないことも確かめる。
+5. GitHub の Website 欄を `https://yutodev.com/apps/` にする。
+
+戻すときは、転送のルールを外して `app` を DNS only に戻す。301 は一度来たブラウザに残る。
 
 ## 公開切替の記録（2026-09-28 / Issue #55）
 
