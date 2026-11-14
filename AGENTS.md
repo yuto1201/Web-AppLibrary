@@ -102,9 +102,10 @@ tests/                    Vitest / Playwright
 
 1. `public/apps/<slug>/icon.png` を置く（正方形、128x128 以上）
 2. `public/apps/<slug>/screenshots/1.png` 以降を置く（縦長、3〜5 枚推奨）
-3. `src/data/registry.ts` の配列へ 1 件追加する。`features` にアイコン・見出し・説明を 1 件以上設定し、`screenshots` に各画面の実ファイル名（`file`）と、実際の画像を見て書いた写っている画面の名前と主な内容を書いた日本語の説明（`alt`。80 字程度まで）を並べる。`stickerNote`（日本語 1〜24 字）も必須
+3. `src/data/registry.ts` の配列へ 1 件追加する。`features` にアイコン・見出し・説明を 1 件以上設定し、`screenshots` に各画面の実ファイル名（`file`）と、実際の画像を見て書いた写っている画面の名前と主な内容を書いた日本語の説明（`alt`。80 字程度まで）を並べる。`stickerNote`（日本語 1〜24 字）と `accent`（アプリの色。カードの窓・シール・板の色になり、registry のテストが色を固定している）も必須。
 4. `src/lib/app-tone.ts` に詳細ページの wash / ink / darkInk を足し、`src/styles/app-page.css` の同じ `data-tone` へ同じ hex を書く。法務ページには付けない。未登録だとテストが落ちる
 5. `src/lib/sticker-desk.ts` の `APP_DESK` へ形（`shape`）と役割（`anchor`）を足し、`src/styles/standard.css` に `.sticker-slot[data-key="<slug>"]` の初期位置を書く。規則が無いと右下の山へ落ちる
+   アプリの専用配色が明るい面なら、保存テーマが dark でも枠を light のままにするため、`src/app/apps/[slug]/page.tsx` の light-frame の slug 一覧へ足すか決める。
 6. `src/data/privacy/<slug>.ts` を作り、`src/data/privacy/registry.ts` へ同じ slug で登録する
 7. `tools/requirements-ogp.txt` の hash 検証済み固定依存を `.venv-ogp` へ導入し、`tools/generate-ogp.py` の `APPS` を更新して `npm run generate:ogp` で共通 OGP 画像を再生成する
 8. 鉛筆メモに新しい漢字を足したら `src/fonts/klee-desk-glyphs.txt` を更新し、Klee One の woff2 を作り直す

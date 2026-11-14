@@ -26,6 +26,10 @@
   --frame-store-ink: #ffffff;
 }
 
+.app-frame[data-frame-light] :is(.app-frame-strip, .app-frame-about, .app-frame-others) :focus-visible {
+  outline-color: #164bca; /* 明るい地では dark 用の --accent（淡い青）が見えない */
+}
+
 :root[data-theme="dark"] .app-frame:not([data-frame-light]) {
   --frame-desk: #162330;
   --frame-ink: #f2f6fa;

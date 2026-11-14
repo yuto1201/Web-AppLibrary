@@ -1711,6 +1711,106 @@ test("法務とサポートのページにも上の帯が付き、保存テー�
   }
 });
 
+test("積もる板はフッターが近づくまで読まず、外へは通信しない", async ({ page }) => {
+  const external: string[] = [];
+  page.on("request", (r) => {
+    if (!r.url().startsWith("http://127.0.0.1")) external.push(r.url());
+  });
+  await page.goto("/");
+  await expect(page.locator(".fall-zone")).not.toHaveAttribute("data-pile", "ready");
+  await page.locator(".fall-zone").scrollIntoViewIfNeeded();
+  await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "ready", { timeout: 20_000 });
+  await expect(page.locator(".fall-canvas")).toHaveAttribute("aria-hidden", "true");
+  expect(external).toEqual([]);
+});
+
+test("WebGL が無くても、フッターの奥付と法務リンクを使える", async ({ page }) => {
+  await page.addInitScript(() => {
+    HTMLCanvasElement.prototype.getContext = () => null;
+  });
+  const errors: string[] = [];
+  page.on("pageerror", (e) => errors.push(e.message));
+  await page.goto("/");
+  await page.locator(".fall-zone").scrollIntoViewIfNeeded();
+  await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "off", { timeout: 20_000 });
+  await page.locator(".colophon summary").click();
+  await expect(page.locator(".colophon-body")).toBeVisible();
+  await page.getByRole("link", { name: i18n.ja.privacy }).click();
+  await expect(page).toHaveURL(/\/privacy\/$/u);
+  expect(errors).toEqual([]);
+});
+
+test("積もる板の描画ループは、降る前も積もった後も止まる", async ({ page }) => {
+  test.setTimeout(120_000);
+  await page.addInitScript(() => {
+    const w = window as unknown as { __raf: number };
+    w.__raf = 0;
+    const orig = window.requestAnimationFrame.bind(window);
+    window.requestAnimationFrame = (cb) => { w.__raf += 1; return orig(cb); };
+  });
+  const rafCount = () => page.evaluate(() => (window as unknown as { __raf: number }).__raf);
+  const settled = async (label: string) => {
+    await page.waitForTimeout(500);
+    const before = await rafCount();
+    await page.waitForTimeout(1500);
+    expect(await rafCount(), label).toBe(before);
+  };
+  await page.goto("/");
+  // フッターが 2 割だけ見える位置（積もり始める 35% に届かない）
+  await page.evaluate(() => {
+    const zone = document.querySelector(".fall-zone") as HTMLElement;
+    const top = zone.getBoundingClientRect().top + window.scrollY;
+    window.scrollTo(0, top - window.innerHeight + zone.offsetHeight * 0.2);
+  });
+  await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "ready", { timeout: 20_000 });
+  await settled("降り始める前");
+  const beforeStart = await rafCount();
+  await page.locator(".fall-zone").scrollIntoViewIfNeeded();
+  await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+  // 35% 以上見えたら降り始める（ループが本当に動く）
+  await expect.poll(rafCount, { timeout: 10_000 }).toBeGreaterThan(beforeStart + 10);
+  // 降り終えて約 6 秒で止まる。重い環境でも待てるよう、止まるまでの上限を長く取る
+  await expect
+    .poll(async () => {
+      const before = await rafCount();
+      await page.waitForTimeout(1500);
+      return (await rafCount()) - before;
+    }, { timeout: 45_000, intervals: [0] })
+    .toBe(0);
+});
+
+test("reduced-motion では積もった後の 1 枚だけを描く", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.goto("/");
+  await page.locator(".fall-zone").scrollIntoViewIfNeeded();
+  await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "ready", { timeout: 20_000 });
+  await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile-motion", "still");
+});
+
+test("reduced-motion で画面の幅を変えても、板は新しい範囲に積もり直す", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto("/");
+  await page.locator(".fall-zone").scrollIntoViewIfNeeded();
+  await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "ready", { timeout: 20_000 });
+  const canvasBox = () => page.locator(".fall-canvas").boundingBox();
+  await page.setViewportSize({ width: 390, height: 800 });
+  await expect.poll(async () => (await canvasBox())?.width).toBeLessThanOrEqual(390);
+  await page.waitForTimeout(600);
+  // 描き直しで例外が出ず、canvas が新しい幅のまま
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});
+
+test("明るい枠のページは、保存した dark でも枠のリンクのフォーカスの輪が見える色になる", async ({ page }) => {
+  await page.goto("/apps/caflog/privacy/");
+  await setStoredState(page, { theme: "dark" });
+  await page.goto("/apps/caflog/");
+  await page.keyboard.press("Tab");
+  const link = page.locator('.app-frame-strip a[href="/"]');
+  await link.focus();
+  await expect(link).toHaveCSS("outline-color", "rgb(22, 75, 202)");
+});
+
 test("未生成ルートは 404", async ({ request }) => {
   expect((await request.get("/apps/does-not-exist/")).status()).toBe(404);
 });
