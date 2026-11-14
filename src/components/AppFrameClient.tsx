@@ -20,7 +20,7 @@ export function AppFrameStrip({ app }: { app: App }) {
   return (
     <div className="app-frame-strip" style={colorStyle(app.accent)}>
       <div className="app-frame-wrap app-frame-strip-in">
-        <Link className="app-frame-back" href="/">
+        <Link className="app-frame-back" href="/apps/">
           {t.frame_back}
         </Link>
         <span className="app-frame-crumb">

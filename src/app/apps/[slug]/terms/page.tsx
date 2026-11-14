@@ -52,7 +52,7 @@ export default async function TermsPage({ params }: { params: Promise<{ slug: st
         <Link href={`/apps/${app.slug}/privacy/`}>プライバシーポリシー</Link><span> · </span>
         {supportDocuments[app.slug]
           ? <Link href={`/apps/${app.slug}/support/`}>サポート</Link>
-          : <a href="https://app.yutodev.com/#contact">サポート</a>}
+          : <Link href="/apps/#contact">サポート</Link>}
       </footer>
     </div>
   );

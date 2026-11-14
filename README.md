@@ -1,15 +1,15 @@
 ステータス：運用中
-最終更新日：2026-09-01
+最終更新日：2026-11-14
 
 ---
 
-# AppLibrary
+# yutodev.com
 
-個人開発したアプリを紹介する Web サイト。iOS に限らず、macOS / Web / CLI などプラットフォームを問わず掲載する。liquid-glass デザインを標準採用。
+yutodev.com のサイト。`/apps/` は個人開発したアプリを紹介する AppLibrary。iOS に限らず、macOS / Web / CLI などプラットフォームを問わず掲載する。liquid-glass デザインを標準採用。
 
 - 制作: [@Yuto_Program](https://x.com/Yuto_Program)
 - リポジトリ: <https://github.com/yuto1201/Web-yutodev>
-- 公開先: <https://app.yutodev.com/>（Cloudflare Pages）
+- 公開先: <https://yutodev.com/>（アプリの一覧は <https://yutodev.com/apps/>、Cloudflare Pages）
 
 Next.js の静的出力を Cloudflare Pages で配信する。サーバー処理・DB・認証は使わない。
 

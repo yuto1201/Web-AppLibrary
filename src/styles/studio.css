@@ -292,3 +292,11 @@ body:has(.poster) { background: #dceeff; color: #111111; }
 .poster .fall-zone > .footer :is(a, summary, .colophon-body) { pointer-events: auto; }
 /* canvas の上の文字は紙の色の地を持たせる（コントラストを計れるようにし、板の下に文字が埋もれない）。 */
 .poster .fall-zone > .footer :is(.colophon, .footer-row) { background: var(--paper); }
+
+/* yutodev.com の入口（/）。机の空色の地に、/apps/ へのリンクを 1 つだけ置く。 */
+body:has(.door) { background: #dceeff; color: #111111; }
+[data-theme="dark"] body:has(.door) { background: #162330; color: #f2f6fa; }
+.door { min-height: 100svh; display: grid; place-items: center; padding: 16px; }
+.door-link { font-family: var(--font-display); font-size: clamp(1.5rem, 5vw, 2.5rem); color: inherit; text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: 2px; }
+.door-link-en { margin-left: 0.6em; font-family: var(--font-sans); font-size: 0.55em; opacity: 0.75; }
+.door-link:focus-visible { outline: 3px solid currentColor; outline-offset: 6px; }

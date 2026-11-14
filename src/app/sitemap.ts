@@ -9,6 +9,7 @@ export const dynamic = "force-static";
 export default function sitemap(): MetadataRoute.Sitemap {
   const paths = [
     "",
+    "apps/",
     "privacy/",
     "terms/",
     ...apps.flatMap((app) => [`apps/${app.slug}/`, `apps/${app.slug}/privacy/`]),

@@ -126,6 +126,22 @@ describe("法務 Markdown の描画", () => {
       .toBe('<p><a href="https://example.net/?q=1&amp;amp=2" target="_blank" rel="noopener noreferrer">https://example.net/?q=1&amp;amp=2</a></p>');
   });
 
+  it("古いオリジンのトップと連絡先は /apps/ に向ける", () => {
+    expect(renderLegalMarkdown(`${confirmed}https://app.yutodev.com/#contact\n`).body)
+      .toBe('<p><a href="/apps/#contact">https://app.yutodev.com/#contact</a></p>');
+    expect(renderLegalMarkdown(`${confirmed}https://app.yutodev.com/\n`).body)
+      .toBe('<p><a href="/apps/">https://app.yutodev.com/</a></p>');
+  });
+
+  it("新しいオリジンの URL もサイト内のリンクにする", () => {
+    expect(renderLegalMarkdown(`${confirmed}https://yutodev.com/apps/flower/support/\n`).body)
+      .toBe('<p><a href="/apps/flower/support/">https://yutodev.com/apps/flower/support/</a></p>');
+  });
+
+  it("ほかのサブドメインは外部リンクのまま", () => {
+    expect(renderLegalMarkdown(`${confirmed}https://web-template.yutodev.com/\n`).body).toContain('target="_blank"');
+  });
+
   it("日英を 1 ページに並べて言語切替を付ける", () => {
     const html = bilingualLegalHtml({ id: "app-terms", appName: { ja: "アプリ", en: "App" }, ja: `# 規約\n\nStatus: Confirmed\n\n本文\n`, en: `# Terms\n\nStatus: Confirmed\n\nBody\n` });
     expect(html).toContain('<h1>アプリ 規約 / <span lang="en">App Terms</span></h1>');

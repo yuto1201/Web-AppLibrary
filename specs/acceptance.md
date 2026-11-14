@@ -8,5 +8,6 @@ ID と検証ファイルの対応は [config/acceptance.json](../config/acceptan
 - AC-4: 必須チェックとして記録した名前が実際の CI ジョブと Ruleset export に存在し、GitHub Actions App に固定されている。レビュー証拠の確認は所有者が行い、テストの成功を承認と見なさない。
 - AC-5: ローカル配信は `out/` に限定し、未知のページは 404、外部ファイルへのパス逸脱は拒否する。
 - AC-6: Cloudflare Pages 用の `_headers` は現行 CSP とセキュリティヘッダを維持し、immutable キャッシュをハッシュ付き資産だけに適用する。
+- AC-7: 一度公開した URL（`config/kept-urls.json`）は、ビルドの出力からすべて 200 で返る。`app.yutodev.com` からの転送先もこの一覧のパスに限る。
 
 ビルドやテストの成功は、法務本文の確認、公開先の稼働、DNS の状態、レビュー担当者の身元を証明しない。

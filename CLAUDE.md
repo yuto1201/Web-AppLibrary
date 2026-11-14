@@ -1,4 +1,4 @@
-# CLAUDE.md — AppLibrary
+# CLAUDE.md — yutodev.com
 
 `AGENTS.md` がこのリポジトリの共通正本です。**矛盾する場合は `AGENTS.md` が優先されます。** この文書は Claude 向けの補足だけを置き、`AGENTS.md` の内容を複製しません。
 
@@ -38,7 +38,7 @@ Next.js 移行時に実際に発生した不具合です。同じ轍を踏まな
 - **className を DOM へ直接書き込まない**。React の再描画で失われます
 - **`<html>` の `data-*` 属性は初回訪問でも必ず適用する**。`layout.tsx` のインラインスクリプトは保存値がある場合しか属性を付けないため、`SiteStateProvider` 側の適用を消さないこと
 - **静的出力は絶対パスを使う**。サブディレクトリ配信はできません
-- `app` の DNS を変える前に Pages custom domain を登録し、Pages の状態を確認する
+- DNS を変える前に Pages custom domain を登録し、Pages の状態を確認する
 
 ## 反対モデルレビュー
 

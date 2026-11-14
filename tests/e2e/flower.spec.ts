@@ -26,7 +26,7 @@ async function expectNoHorizontalScroll(page: Page) {
 
 test("Flower: the fixed URLs answer 200 without redirects and carry their own metadata", async ({ request }) => {
   // v2（Issue #96）: ホームのカタログとシールにも旧名を残さない。
-  const home = await (await request.get("/")).text();
+  const home = await (await request.get("/apps/")).text();
   expect(home).toContain(">花島<");
   expect(home).not.toContain("花の島");
   for (const route of ["", "support/", "privacy/", "terms/"]) {
@@ -34,9 +34,9 @@ test("Flower: the fixed URLs answer 200 without redirects and carry their own me
     expect(response.status(), route).toBe(200);
     const html = await response.text();
     const title = LEGAL.find((page) => `${page.route}/` === route)?.title;
-    expect(html).toContain(`<meta property="og:url" content="https://app.yutodev.com/apps/flower/${route}"/>`);
+    expect(html).toContain(`<meta property="og:url" content="https://yutodev.com/apps/flower/${route}"/>`);
     expect(html).toContain(`<meta property="og:title" content="${title ? `${title} — ${app.name}` : `${app.name} — AppLibrary`}"/>`);
-    expect(html).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+    expect(html).toContain('<meta property="og:image" content="https://yutodev.com/ogp.png"/>');
     expect(html).not.toContain("Status: Confirmed");
     // v2（Issue #96）: 旧名を残さない。
     expect(html).not.toContain("花の島");
@@ -152,7 +152,7 @@ test("Flower: the product page follows the visitor's time and offers a sky previ
   await page.getByRole("link", { name: "← 花島", exact: true }).click();
   await expect(page.locator("body")).toHaveCSS("background-color", FLOWER_PAPER);
   await page.getByRole("link", { name: "← AppLibrary", exact: true }).click();
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL("/apps/");
   await expect(page.locator('.app-row[href="/apps/flower/"]')).toBeVisible();
   expect(errors).toEqual([]);
 });

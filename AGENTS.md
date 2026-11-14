@@ -1,14 +1,15 @@
-# AGENTS.md — AppLibrary
+# AGENTS.md — yutodev.com
 
 ## プロジェクト概要
 
-AppLibrary は、個人開発したアプリを紹介する Web サイトです。iOS 限定ではなく、macOS / Web / CLI などプラットフォームを問わず掲載します。
+このリポジトリは yutodev.com のサイトです（2026-11-14 から。[ADR](docs/decisions/2026-11-14-yutodev-domain.md)）。`/` は入口、`/apps/` は個人開発したアプリを紹介する AppLibrary です。AppLibrary は iOS 限定ではなく、macOS / Web / CLI などプラットフォームを問わず掲載します。
 
 Next.js の静的出力 (`output: "export"`) を Cloudflare Pages で配信します。動的サーバーも DB も認証も使いません。
 
-- 公開 URL: <https://app.yutodev.com/>
+- 公開 URL: <https://yutodev.com/>（アプリの一覧は <https://yutodev.com/apps/>）
 - ホスティング: Cloudflare Pages（`main` への push で自動デプロイ）
-- DNS: Cloudflare（`app` の Pages custom domain。DNS only とし、実際のレコードは公開切替時に確認）
+- DNS: Cloudflare（`yutodev.com` を Pages custom domain として DNS only で配信。`app.yutodev.com` と `www.yutodev.com` は Redirect Rules で `yutodev.com` へ 301 転送。手順と状態は `docs/deploy/README.md`）
+- 一度公開した URL は `config/kept-urls.json` に置き、消さない
 - リポジトリ: <https://github.com/yuto1201/Web-yutodev>
 
 2026-08-31 に Next.js へ移行し、2026-09-27 に Cloudflare Pages へ戻す方針を採用しました。GitHub Pages での公開は終了しています。
@@ -137,7 +138,7 @@ App Store 審査ではプライバシーポリシー URL が必須です。各�
 
 `public/_headers` がセキュリティヘッダとキャッシュ制御を持ちます。CSP を緩める変更は理由を PR に書きます。
 
-`app.yutodev.com` は Pages の custom domain へ登録してから DNS を切り替え、DNS only を確認します。レコードを手で Pages に向けるだけでは検証が完了しないため、公開手順に従います。
+配信する `yutodev.com` は Pages の custom domain へ登録してから DNS を切り替え、DNS only を確認します。`app.yutodev.com` と `www.yutodev.com` は転送専用で、Redirect Rules を働かせるために proxied にします（DNS only に戻すと転送が止まります）。レコードを手で Pages に向けるだけでは検証が完了しないため、`docs/deploy/README.md` の手順に従います。
 
 ## 完了報告の原則
 

@@ -7,6 +7,7 @@ import { DESK_ITEMS } from "../../src/lib/sticker-desk";
 import { appPageTone } from "../../src/lib/app-tone";
 import { statusLabel } from "../../src/lib/labels";
 import { i18n, posts } from "../../src/lib/site-data";
+import keptUrls from "../../config/kept-urls.json" with { type: "json" };
 
 test("AdMob の公開 seller ファイルを正しい形式で配信する", async ({ request }) => {
   const response = await request.get("/app-ads.txt");
@@ -66,7 +67,7 @@ async function expectColorContrast(page: Page, include?: string) {
   expect(results.passes.some(({ id }) => id === "color-contrast")).toBe(true);
 }
 
-/** 共通の枠のリンク。専用ページを持たないサポートは連絡先 /#contact へ向かう。 */
+/** 共通の枠のリンク。専用ページを持たないサポートは連絡先 /apps/#contact へ向かう。 */
 function frameAbout(page: Page) {
   return page.locator(".app-frame .app-frame-about");
 }
@@ -241,7 +242,7 @@ async function exportedIndexRoutes(directory = "out", prefix = ""): Promise<stri
 test.describe("静的 HTML の初期表示", () => {
   test.use({ javaScriptEnabled: false });
   test("計測前のシールを旧位置へ出さず、作品へのリンクは使える", async ({ page }) => {
-    await page.goto("/");
+    await page.goto("/apps/");
     await expect(page.locator(".poster")).not.toHaveAttribute("data-desk", "ready");
     for (const slot of await page.locator(".poster .sticker-slot").all()) {
       await expect(slot).toBeHidden();
@@ -256,7 +257,7 @@ test.describe("静的 HTML の初期表示", () => {
 
 test("ホームは空色の遊び場と大きなワードマーク、黒いピルで作品へ案内する", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto("/");
+  await page.goto("/apps/");
 
   await expect(page.locator("body")).toHaveCSS("background-color", HOME.light.paper);
   await expect(page.locator("body")).toHaveCSS("color", HOME.light.ink);
@@ -314,7 +315,7 @@ test("ホームは空色の遊び場と大きなワードマーク、黒いピ�
 });
 
 test("連絡先の黒いリンクをキーボードで識別できる", async ({ page }) => {
-  await page.goto("/#contact");
+  await page.goto("/apps/#contact");
   const socials = page.locator(".contact-postcard .social-link");
   await socials.first().focus();
   await page.keyboard.press("Tab");
@@ -328,7 +329,7 @@ test("連絡先の黒いリンクをキーボードで識別できる", async ({
 });
 
 test("作り手は事実を並べ、展示と飾りを持たず、更新の見出しが英語に切り替わる", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
   await expect(page.locator(".home-showcase")).toHaveCount(0);
   await expect(page.locator(".workshop-flower, .workshop .eyebrow")).toHaveCount(0);
   const facts = page.locator(".workshop-facts");
@@ -340,7 +341,7 @@ test("作り手は事実を並べ、展示と飾りを持たず、更新の見�
 });
 
 test("アプリの更新は、アプリのアイコンと名前つきの行で並ぶ", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
   const rows = page.locator("#posts .post");
   await expect(rows).toHaveCount(posts.length);
   await expect(page.locator("#posts .post-excerpt")).toHaveCount(0);
@@ -357,7 +358,7 @@ test("アプリの更新は、アプリのアイコンと名前つきの行で�
 });
 
 test("手書きの紹介は日英で読める", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
   const hint = page.locator(".desk-hint");
   await expect(hint).toHaveText(i18n.ja.desk_hint);
   const hintFont = await hint.evaluate((el) => getComputedStyle(el).fontFamily);
@@ -391,7 +392,7 @@ test("Klee One を全ページへ preload しない", async ({ page }) => {
 
 test("作品カードは実画面と掲載情報を持ち、検索・フィルタ・モーダルを持たない", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto("/");
+  await page.goto("/apps/");
 
   const rows = page.locator(".app-row");
   await expect(rows).toHaveCount(apps.length);
@@ -446,9 +447,10 @@ test("作品カードは実画面と掲載情報を持ち、検索・フィル�
   await expect(page.getByRole("dialog")).toHaveCount(0);
   await expect.poll(() => new URL(page.url()).pathname).toMatch(/^\/apps\/[a-z-]+\/$/u);
   // Review Focus 4: 320px で札がカードからはみ出さず、横スクロールも出ない
-  await page.goto("/");
+  await page.goto("/apps/");
   await page.setViewportSize({ width: 320, height: 800 });
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
+  // シールの位置は ResizeObserver が幅の変化の後に合わせ直す。描画前に揃うので、揃った後を測る。
+  await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(320);
   for (const row of await rows.all()) {
     const box = (await row.boundingBox())!;
     for (const tag of await row.locator(".app-row-tag").all()) {
@@ -459,7 +461,7 @@ test("作品カードは実画面と掲載情報を持ち、検索・フィル�
 });
 
 test("ステッカーは掴んで動かせて、離すと横スクロールを作らない", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
 
   const sticker = page.locator('.sticker[href="/apps/sublog/"]');
   await raiseSticker(sticker);
@@ -502,7 +504,7 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
   expect(await sticker.evaluate((el) => el.getBoundingClientRect().right <= document.documentElement.clientWidth)).toBe(true);
 
   // ドラッグの終わりのクリックでは遷移しない。
-  await expect.poll(() => new URL(page.url()).pathname).toBe("/");
+  await expect.poll(() => new URL(page.url()).pathname).toBe("/apps/");
 
   // ならべ直すと遊び場の初期位置へ戻る（操作でスクロールしても文書座標は同じ）。
   const reset = page.getByRole("button", { name: "ならべ直す" });
@@ -525,7 +527,7 @@ test("ステッカーは掴んで動かせて、離すと横スクロールを�
 });
 
 test("アプリシールの形が違い、beta / alpha に印がある", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
   const sublog = page.locator('.sticker[href="/apps/sublog/"]');
   const caflog = page.locator('.sticker[href="/apps/caflog/"]');
   const devTools = page.locator('.sticker[href="/apps/dev-tools/"]');
@@ -561,7 +563,7 @@ test("アプリシールの形が違い、beta / alpha に印がある", async (
 
 test("初期表示の全シールと操作案内は Hero の遊び場に収まる", async ({ page }) => {
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto("/");
+  await page.goto("/apps/");
   await expectInitialPlayground(page, "1280px");
   await expect(page.locator(".sticker-band")).toHaveCount(0);
   await expect(page.locator(".sticker-name")).toHaveCount(0);
@@ -574,7 +576,7 @@ test("初期表示の全シールと操作案内は Hero の遊び場に収ま�
 test("320〜1280px と英語でも遊び場の全シールは本文と CTA を覆わない", async ({ page }) => {
   for (const width of [320, 390, 640, 641, 768, 834, 1023, 1024, 1180, 1240, 1279, 1280] as const) {
     await page.setViewportSize({ width, height: width >= 800 ? 900 : 844 });
-    await page.goto("/");
+    await page.goto("/apps/");
     await expectInitialPlayground(page, `${width}px`);
     expect(await centerHits(page, page.locator(".hero-h1"), ".hero-h1"), `${width}px heading center`).toBe(true);
     expect(await centerHits(page, page.locator(".cta-btn"), ".cta-btn"), `${width}px cta center`).toBe(true);
@@ -584,7 +586,7 @@ test("320〜1280px と英語でも遊び場の全シールは本文と CTA を�
   }
 
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto("/");
+  await page.goto("/apps/");
   await page.getByRole("button", { name: "英語に切り替える" }).click();
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await expectInitialPlayground(page, "1280px en");
@@ -594,7 +596,7 @@ test("320〜1280px と英語でも遊び場の全シールは本文と CTA を�
 });
 
 test("置いたシールはスクロールしても viewport に張り付かない", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
 
   const sticker = page.locator('.sticker[href="/apps/pay-cycle/"]');
   await raiseSticker(sticker);
@@ -631,7 +633,7 @@ test("置いたシールはスクロールしても viewport に張り付かな�
 });
 
 test("ドラッグの後でもキーボードから遷移できる", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
 
   const sticker = page.locator(`.sticker[href="/apps/${apps[0]!.slug}/"]`);
   await raiseSticker(sticker);
@@ -643,7 +645,7 @@ test("ドラッグの後でもキーボードから遷移できる", async ({ pa
   await page.mouse.down();
   await page.mouse.move(box!.x + 120, box!.y - 40, { steps: 8 });
   await page.mouse.up();
-  await expect.poll(() => new URL(page.url()).pathname).toBe("/");
+  await expect.poll(() => new URL(page.url()).pathname).toBe("/apps/");
 
   await sticker.focus();
   await page.keyboard.press("Enter");
@@ -651,7 +653,7 @@ test("ドラッグの後でもキーボードから遷移できる", async ({ pa
 });
 
 test("ステッカーは動かさずに離すと個別ページへ移る", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
 
   const sticker = page.locator(`.sticker[href="/apps/${apps[0]!.slug}/"]`);
   await raiseSticker(sticker);
@@ -685,7 +687,7 @@ test("個別ページの標本シールはリンクではなく動かせる", as
 });
 
 test("一覧行とステッカーが slug で相互にハイライトする", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
   const target = apps[1]!; // CafLog。先頭以外を選び、初期状態が非活性であることも確認する。
   const row = page.locator(`.app-row[href="/apps/${target.slug}/"]`);
   const sticker = page.locator(`.sticker[href="/apps/${target.slug}/"]`);
@@ -729,7 +731,7 @@ test("一覧行とステッカーが slug で相互にハイライトする", as
 });
 
 test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間だけ元の位置に跡が残る", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
   const sticker = page.locator('.sticker[href="/apps/sublog/"]');
   await raiseSticker(sticker);
   await sticker.scrollIntoViewIfNeeded();
@@ -781,7 +783,7 @@ test("ステッカーは掴んだ位置に応じて傾き、掴んでいる間�
 });
 
 test("ホバーと掴みで鉛筆メモが出て、飾りには出ない", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
   const sublog = page.locator('.sticker[href="/apps/sublog/"]');
   const caption = sublog.locator(".sticker-caption");
   await expect(caption).toHaveCount(1);
@@ -812,7 +814,7 @@ test("ホバーと掴みで鉛筆メモが出て、飾りには出ない", async
 
 test("390px で右端の鉛筆メモが画面内に収まる", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/");
+  await page.goto("/apps/");
   const sublog = page.locator('.sticker[href="/apps/sublog/"]');
   const caption = sublog.locator(".sticker-caption");
   await raiseSticker(sublog);
@@ -825,7 +827,7 @@ test("390px で右端の鉛筆メモが画面内に収まる", async ({ page }) 
 
 test("reduced-motion では掴み中に拡大しない", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("/apps/");
   await expect(page.locator(".poster")).toHaveAttribute("data-desk", "ready");
   const sublog = page.locator('.sticker[href="/apps/sublog/"]');
   await raiseSticker(sublog);
@@ -846,7 +848,7 @@ test("reduced-motion では掴み中に拡大しない", async ({ page }) => {
 });
 
 test("画面リサイズがドラッグ中に起きても、掴んだままの見た目で固着しない", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
   const sticker = page.locator('.sticker[href="/apps/sublog/"]');
   const slot = page.locator(".sticker-slot").filter({ has: sticker });
   await raiseSticker(sticker);
@@ -867,7 +869,7 @@ test("画面リサイズがドラッグ中に起きても、掴んだままの�
   await page.mouse.move(box.x + 90, box.y - 20, { steps: 4 });
   await page.mouse.up();
 
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL("/apps/");
   await expect(sticker).not.toHaveClass(/\bis-held\b/u);
   await expect(slot.locator(".sticker-ghost")).toHaveCount(0);
   await expect
@@ -881,7 +883,7 @@ test("画面リサイズがドラッグ中に起きても、掴んだままの�
 });
 
 test("フッターの奥付は既定で閉じており、開くと本文とリンクが読める", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
   const colophon = page.locator(".colophon");
   const body = colophon.locator(".colophon-body");
 
@@ -901,7 +903,7 @@ test("フッターの奥付は既定で閉じており、開くと本文とリ�
 });
 
 test("ホームの light / dark 双方が専用の実配色でコントラストを満たす", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
   await expect(page.locator("html")).toHaveAttribute("data-theme", "light");
   await expect(page.locator("body")).toHaveCSS("background-color", HOME.light.paper);
   await expect(page.locator("body")).toHaveCSS("color", HOME.light.ink);
@@ -915,7 +917,7 @@ test("ホームの light / dark 双方が専用の実配色でコントラスト
 });
 
 test("テーマと言語の設定が再読み込み後も維持される", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
   await expect(page.getByRole("navigation", { name: "メインナビゲーション" })).toBeVisible();
   await page.getByRole("button", { name: "ダークモードに切り替える" }).click();
   await page.getByRole("button", { name: "英語に切り替える" }).click();
@@ -952,17 +954,17 @@ test("テーマと言語の設定が再読み込み後も維持される", async
 });
 
 test("OGP metadata とサイト共通の法務ページ", async ({ page, request }) => {
-  await page.goto("/");
-  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://app.yutodev.com/ogp.png");
-  await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute("content", "https://app.yutodev.com/ogp.png");
+  await page.goto("/apps/");
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute("content", "https://yutodev.com/ogp.png");
+  await expect(page.locator('meta[name="twitter:image"]')).toHaveAttribute("content", "https://yutodev.com/ogp.png");
 
   await expect(page.getByRole("link", { name: "プライバシー", exact: true })).toHaveAttribute("href", "/privacy/");
   const privacyResponse = await request.get("/privacy/");
   expect(privacyResponse.ok()).toBe(true);
   const privacyHtml = await privacyResponse.text();
-  expect(privacyHtml).toContain('<meta property="og:url" content="https://app.yutodev.com/privacy/"/>');
+  expect(privacyHtml).toContain('<meta property="og:url" content="https://yutodev.com/privacy/"/>');
   expect(privacyHtml).toContain('<meta property="og:title" content="プライバシーポリシー — AppLibrary"/>');
-  expect(privacyHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+  expect(privacyHtml).toContain('<meta property="og:image" content="https://yutodev.com/ogp.png"/>');
 
   await page.goto("/privacy/");
   await expect(page).toHaveURL(/\/privacy\/$/u);
@@ -973,7 +975,7 @@ test("OGP metadata とサイト共通の法務ページ", async ({ page, request
   await expect(page.locator(".legal-card")).not.toContainText("表示密度");
   await expect(page.locator(".legal-meta")).toContainText("制定日: 2026年9月1日 · 最終更新: 2026年9月27日");
   await expect(page.getByRole("link", { name: "Cloudflare のプライバシーポリシー" })).toHaveAttribute("href", "https://www.cloudflare.com/policies/privacy/");
-  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://app.yutodev.com/privacy/");
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://yutodev.com/privacy/");
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "プライバシーポリシー — AppLibrary");
   await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute("content", "プライバシーポリシー — AppLibrary");
   await expectColorContrast(page);
@@ -988,15 +990,15 @@ test("OGP metadata とサイト共通の法務ページ", async ({ page, request
   const termsResponse = await request.get("/terms/");
   expect(termsResponse.ok()).toBe(true);
   const termsHtml = await termsResponse.text();
-  expect(termsHtml).toContain('<meta property="og:url" content="https://app.yutodev.com/terms/"/>');
+  expect(termsHtml).toContain('<meta property="og:url" content="https://yutodev.com/terms/"/>');
   expect(termsHtml).toContain('<meta property="og:title" content="利用規約 — AppLibrary"/>');
-  expect(termsHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+  expect(termsHtml).toContain('<meta property="og:image" content="https://yutodev.com/ogp.png"/>');
 
   await page.goto("/terms/");
   await expect(page).toHaveURL(/\/terms\/$/u);
   await expect(page.getByRole("heading", { level: 1, name: "利用規約" })).toBeVisible();
   await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese only.");
-  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://app.yutodev.com/terms/");
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://yutodev.com/terms/");
   await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", "利用規約 — AppLibrary");
   await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute("content", "利用規約 — AppLibrary");
   await expectColorContrast(page);
@@ -1007,23 +1009,53 @@ test("OGP metadata とサイト共通の法務ページ", async ({ page, request
   await expectColorContrast(page);
 });
 
+test("/ は /apps/ へのリンクだけを置く", async ({ page }) => {
+  await page.goto("/");
+  const links = page.locator("a[href]");
+  await expect(links).toHaveCount(1);
+  await expect(links.first()).toHaveAttribute("href", "/apps/");
+  await links.first().click();
+  await expect(page).toHaveURL("/apps/");
+  await expect(page.locator("#contact")).toBeVisible();
+});
+
+test("一度公開した URL はすべて 200 で返る", async ({ request }) => {
+  for (const path of keptUrls.paths) {
+    const response = await request.get(path, { maxRedirects: 0 });
+    expect(response.status(), path).toBe(200);
+  }
+});
+
 test("robots と sitemap が全静的ルートを公開する", async ({ request }) => {
   const robotsResponse = await request.get("/robots.txt");
   expect(robotsResponse.ok()).toBe(true);
-  expect(await robotsResponse.text()).toContain("Sitemap: https://app.yutodev.com/sitemap.xml");
+  expect(await robotsResponse.text()).toContain("Sitemap: https://yutodev.com/sitemap.xml");
 
   const sitemapResponse = await request.get("/sitemap.xml");
   expect(sitemapResponse.ok()).toBe(true);
   const sitemap = await sitemapResponse.text();
   const actual = [...sitemap.matchAll(/<loc>([^<]+)<\/loc>/gu)].map((match) => match[1]).sort();
   const expected = (await exportedIndexRoutes())
-    .map((route) => new URL(route, "https://app.yutodev.com/").href)
+    .map((route) => new URL(route, "https://yutodev.com/").href)
     .sort();
   expect(actual).toEqual(expected);
 });
 
-test("通常モーションでは初回だけ Hero を再生し、履歴を消すと再生する", async ({ page }) => {
+test("/apps/ の canonical と og:url は /apps/ を指す", async ({ page }) => {
+  await page.goto("/apps/");
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute("href", "https://yutodev.com/apps/");
+  await expect(page.locator('meta[property="og:url"]')).toHaveAttribute("content", "https://yutodev.com/apps/");
+});
+
+test("入口 / を通ってきた初回の訪問でも /apps/ で Hero を再生する", async ({ page }) => {
   await page.goto("/");
+  await page.getByRole("link", { name: /アプリの一覧へ/u }).click();
+  await expect(page).toHaveURL("/apps/");
+  await expect(page.locator("html")).toHaveAttribute("data-hero-opening", "play");
+});
+
+test("通常モーションでは初回だけ Hero を再生し、履歴を消すと再生する", async ({ page }) => {
+  await page.goto("/apps/");
   await expect(page.locator("html")).toHaveAttribute("data-hero-opening", "play");
   await page.reload();
   await expect(page.locator("html")).toHaveAttribute("data-hero-opening", "off");
@@ -1034,12 +1066,12 @@ test("通常モーションでは初回だけ Hero を再生し、履歴を消�
 
 test("reduced-motion では初回でも Hero を再生しない", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("/apps/");
   await expect(page.locator("html")).toHaveAttribute("data-hero-opening", "off");
 });
 
 test("ホームのシールは呼吸し、個別の標本は静止する", async ({ page }) => {
-  await page.goto("/");
+  await page.goto("/apps/");
   await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
   const home = page.locator(".poster .sticker-slot").first();
   await expect.poll(() => home.evaluate((el) => getComputedStyle(el).animationName)).toContain("vinyl-breathe");
@@ -1088,7 +1120,7 @@ test("ホームのシールは呼吸し、個別の標本は静止する", async
 
 test("reduced-motion ではシールも呼吸しない", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("/apps/");
   await expect.poll(() => page.locator(".poster").getAttribute("data-desk")).toBe("ready");
   const slot = page.locator(".poster .sticker-slot").first();
   expect(await slot.evaluate((el) => getComputedStyle(el).animationName)).toMatch(/^(?:none)?$/u);
@@ -1104,17 +1136,17 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
     const detailResponse = await request.get(`/apps/${app.slug}/`);
     expect(detailResponse.ok()).toBe(true);
     const detailHtml = await detailResponse.text();
-    expect(detailHtml).toContain(`<meta property="og:url" content="https://app.yutodev.com/apps/${app.slug}/"/>`);
+    expect(detailHtml).toContain(`<meta property="og:url" content="https://yutodev.com/apps/${app.slug}/"/>`);
     expect(detailHtml).toContain(`<meta property="og:title" content="${app.name} — AppLibrary"/>`);
-    expect(detailHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+    expect(detailHtml).toContain('<meta property="og:image" content="https://yutodev.com/ogp.png"/>');
     const privacyResponse = await request.get(`/apps/${app.slug}/privacy/`);
     expect(privacyResponse.ok()).toBe(true);
     const privacyHtml = await privacyResponse.text();
     expect(privacyHtml).toContain(
-      `<meta property="og:url" content="https://app.yutodev.com/apps/${app.slug}/privacy/"/>`,
+      `<meta property="og:url" content="https://yutodev.com/apps/${app.slug}/privacy/"/>`,
     );
     expect(privacyHtml).toContain(`<meta property="og:title" content="プライバシーポリシー — ${app.name}"/>`);
-    expect(privacyHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+    expect(privacyHtml).toContain('<meta property="og:image" content="https://yutodev.com/ogp.png"/>');
     const hasTerms = ["pay-cycle", "caflog"].includes(app.slug);
     if (hasTerms) {
       const termsResponse = await request.get(`/apps/${app.slug}/terms/`);
@@ -1122,10 +1154,10 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
       expect(termsResponse.url()).toMatch(new RegExp(`/apps/${app.slug}/terms/$`, "u"));
       const termsHtml = await termsResponse.text();
       expect(termsHtml).toContain(
-        `<meta property="og:url" content="https://app.yutodev.com/apps/${app.slug}/terms/"/>`,
+        `<meta property="og:url" content="https://yutodev.com/apps/${app.slug}/terms/"/>`,
       );
       expect(termsHtml).toContain(`<meta property="og:title" content="利用規約 — ${app.name}"/>`);
-      expect(termsHtml).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+      expect(termsHtml).toContain('<meta property="og:image" content="https://yutodev.com/ogp.png"/>');
     }
     // request.get は HTML / OGP だけ。紙面 CSS は各法務 URL を直接開いて確認する。
     await page.goto(`/apps/${app.slug}/privacy/`);
@@ -1197,7 +1229,7 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
         await expect(page.locator(`#${target}`).getByRole("heading")).toHaveText(title!);
       }
       // Issue #116: App Store のサポート URL のページから、開発者の連絡先へ移れる（共通の枠の「このアプリについて」）。
-      await expect(frameAbout(page).locator('a[href="/#contact"]')).toHaveCount(1);
+      await expect(frameAbout(page).locator('a[href="/apps/#contact"]')).toHaveCount(1);
       await expect(frameAbout(page).locator('a[href="/apps/caflog/terms/"]')).toHaveCount(1);
       const download = page.locator(".caflog-button").first();
       await expect(download).toHaveCSS("background-color", CAFLOG.ink);
@@ -1262,7 +1294,7 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
       .toBe(true);
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
       "content",
-      `https://app.yutodev.com/apps/${app.slug}/`,
+      `https://yutodev.com/apps/${app.slug}/`,
     );
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute("content", `${app.name} — AppLibrary`);
     await expect(page.locator('meta[name="twitter:title"]')).toHaveAttribute("content", `${app.name} — AppLibrary`);
@@ -1318,12 +1350,12 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
         await expect(link).toHaveAttribute("rel", /noopener/u);
       }
       await expect(page.locator(".paycycle-site")).not.toContainText("準備中");
-      await expect(frameAbout(page).locator('a[href="/#contact"]')).toHaveCount(1);
+      await expect(frameAbout(page).locator('a[href="/apps/#contact"]')).toHaveCount(1);
       await expect(frameAbout(page).locator('a[href="/apps/pay-cycle/terms/"]')).toHaveCount(1);
     }
     // 共通の枠: 帯のトップへの道は 1 つだけ。ほかのリンクはこのアプリについてへ集約されている。
-    await expect(page.locator('.app-frame-strip a[href="/"]')).toBeVisible();
-    await expect(page.locator('a[href="/"]', { hasText: "AppLibrary" })).toHaveCount(1);
+    await expect(page.locator('.app-frame-strip a[href="/apps/"]')).toBeVisible();
+    await expect(page.locator('a[href="/apps/"]', { hasText: "AppLibrary" })).toHaveCount(1);
     await frameAbout(page).locator(`a[href="/apps/${app.slug}/privacy/"]`).click();
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/privacy/$`, "u"));
     await expect(page.locator(".app-shell")).not.toHaveAttribute("data-tone");
@@ -1339,6 +1371,8 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
       await expect(englishPolicy).toContainText("StoreKit");
       await expect(englishPolicy.getByRole("link", { name: "developer's contact links", exact: true }))
         .toHaveAttribute("href", "https://app.yutodev.com/#contact");
+      await expect(page.locator("footer.page-footer").getByRole("link", { name: "サポート", exact: true }))
+        .toHaveAttribute("href", "/apps/#contact");
       await page.getByRole("link", { name: "利用規約", exact: true }).click();
       await expect(page).toHaveURL(/\/apps\/pay-cycle\/terms\/$/u);
       await expect(page.getByRole("heading", { level: 1 })).toContainText("PayCycle 利用規約");
@@ -1347,10 +1381,10 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
       await expect(page.getByRole("link", { name: "Apple Standard EULA", exact: true }))
         .toHaveAttribute("href", "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/");
       await expect(page.getByRole("link", { name: "サポート", exact: true }))
-        .toHaveAttribute("href", "https://app.yutodev.com/#contact");
+        .toHaveAttribute("href", "/apps/#contact");
       await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
         "content",
-        "https://app.yutodev.com/apps/pay-cycle/terms/",
+        "https://yutodev.com/apps/pay-cycle/terms/",
       );
       await expect
         .poll(() => page.evaluate(() => document.body.scrollWidth <= document.body.clientWidth))
@@ -1386,7 +1420,7 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
     await expect(page.locator("footer.page-footer")).toBeVisible();
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
       "content",
-      `https://app.yutodev.com/apps/${app.slug}/privacy/`,
+      `https://yutodev.com/apps/${app.slug}/privacy/`,
     );
     await expect(page.locator('meta[property="og:title"]')).toHaveAttribute(
       "content",
@@ -1402,8 +1436,8 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
     await expectColorContrast(page);
     await page.getByRole("link", { name: `← ${app.name}`, exact: true }).click();
     await expect(page).toHaveURL(new RegExp(`/apps/${app.slug}/$`, "u"));
-    await page.locator('.app-frame-strip a[href="/"]').click();
-    await expect.poll(() => new URL(page.url()).pathname).toBe("/");
+    await page.locator('.app-frame-strip a[href="/apps/"]').click();
+    await expect.poll(() => new URL(page.url()).pathname).toBe("/apps/");
     await expect(page.locator(".app-shell")).toHaveCount(0);
     // トップへ戻るとホーム専用の配色へ戻り、アプリや法務の色が残らない。
     await expect(page.locator("body")).toHaveCSS("background-color", HOME.light.paper);
@@ -1603,6 +1637,7 @@ test("PayCycle の案内・実画面・質問をキーボードで操作でき�
   await page.keyboard.press("Enter");
   await expect(question).toHaveAttribute("open", "");
   await expect(question.locator("p")).toBeVisible();
+  await expect(page.locator("#questions a", { hasText: "サポート窓口" })).toHaveAttribute("href", "/apps/#contact");
 
   for (const [width, height] of [[320, 640], [390, 844], [768, 1024], [820, 1180], [1280, 720], [1613, 966]] as const) {
     await page.setViewportSize({ width, height });
@@ -1669,17 +1704,17 @@ for (const app of apps) {
   test(`${app.slug}: 共通の枠（帯・このアプリについて・ほかのアプリ）と重なるリンクの整理`, async ({ page }) => {
     await page.goto(`/apps/${app.slug}/`);
     const frame = page.locator(".app-frame");
-    await expect(frame.locator('.app-frame-strip a[href="/"]')).toBeVisible();
+    await expect(frame.locator('.app-frame-strip a[href="/apps/"]')).toBeVisible();
     const about = frame.locator(".app-frame-about");
     await expect(about.getByRole("link", { name: /App Store/ })).toHaveCount(app.appStoreUrl ? 1 : 0);
     // 値段と版は公開中のアプリだけ。
     await expect(about.getByText(app.price, { exact: true })).toHaveCount(app.appStoreUrl ? 1 : 0);
     await expect(about.getByText(app.version, { exact: true })).toHaveCount(app.appStoreUrl ? 1 : 0);
-    await expect(about.locator(`a[href="${app.slug === "flower" ? "/apps/flower/support/" : "/#contact"}"]`)).toHaveCount(1);
+    await expect(about.locator(`a[href="${app.slug === "flower" ? "/apps/flower/support/" : "/apps/#contact"}"]`)).toHaveCount(1);
     await expect(about.locator(`a[href="/apps/${app.slug}/privacy/"]`)).toHaveCount(1);
     await expect(frame.locator(".app-frame-others a")).toHaveCount(apps.length - 1);
     // 重なるリンクが残っていない: 「AppLibrary」へのリンクはページ全体で帯の 1 つだけ。
-    await expect(page.locator('a[href="/"]', { hasText: "AppLibrary" })).toHaveCount(1);
+    await expect(page.locator('a[href="/apps/"]', { hasText: "AppLibrary" })).toHaveCount(1);
     await expect(page.locator("nav[aria-label$='関連リンク']")).toHaveCount(0);
   });
 }
@@ -1702,10 +1737,10 @@ test("法務とサポートのページにも上の帯が付き、保存テー�
     for (const path of ["/apps/caflog/privacy/", "/apps/pay-cycle/terms/", "/apps/flower/support/"]) {
       await page.goto(path);
       const strip = page.locator(".app-frame-strip");
-      await expect(strip.locator('a[href="/"]')).toBeVisible();
+      await expect(strip.locator('a[href="/apps/"]')).toBeVisible();
       await expect(strip, `${path} ${theme}`).toHaveCSS("background-color", bg);
       await expect(strip, `${path} ${theme}`).toHaveCSS("color", ink);
-      await expect(page.locator('a[href="/"]', { hasText: "AppLibrary" })).toHaveCount(1);
+      await expect(page.locator('a[href="/apps/"]', { hasText: "AppLibrary" })).toHaveCount(1);
       await expect(page.locator(".app-frame-about")).toHaveCount(0);
     }
   }
@@ -1716,7 +1751,7 @@ test("積もる板はフッターが近づくまで読まず、外へは通信�
   page.on("request", (r) => {
     if (!r.url().startsWith("http://127.0.0.1")) external.push(r.url());
   });
-  await page.goto("/");
+  await page.goto("/apps/");
   await expect(page.locator(".fall-zone")).not.toHaveAttribute("data-pile", "ready");
   await page.locator(".fall-zone").scrollIntoViewIfNeeded();
   await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "ready", { timeout: 20_000 });
@@ -1730,7 +1765,7 @@ test("WebGL が無くても、フッターの奥付と法務リンクを使え�
   });
   const errors: string[] = [];
   page.on("pageerror", (e) => errors.push(e.message));
-  await page.goto("/");
+  await page.goto("/apps/");
   await page.locator(".fall-zone").scrollIntoViewIfNeeded();
   await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "off", { timeout: 20_000 });
   await page.locator(".colophon summary").click();
@@ -1755,7 +1790,7 @@ test("積もる板の描画ループは、降る前も積もった後も止ま�
     await page.waitForTimeout(1500);
     expect(await rafCount(), label).toBe(before);
   };
-  await page.goto("/");
+  await page.goto("/apps/");
   // フッターが 2 割だけ見える位置（積もり始める 35% に届かない）
   await page.evaluate(() => {
     const zone = document.querySelector(".fall-zone") as HTMLElement;
@@ -1781,7 +1816,7 @@ test("積もる板の描画ループは、降る前も積もった後も止ま�
 
 test("reduced-motion では積もった後の 1 枚だけを描く", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
-  await page.goto("/");
+  await page.goto("/apps/");
   await page.locator(".fall-zone").scrollIntoViewIfNeeded();
   await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "ready", { timeout: 20_000 });
   await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile-motion", "still");
@@ -1790,7 +1825,7 @@ test("reduced-motion では積もった後の 1 枚だけを描く", async ({ pa
 test("reduced-motion で画面の幅を変えても、板は新しい範囲に積もり直す", async ({ page }) => {
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 1280, height: 900 });
-  await page.goto("/");
+  await page.goto("/apps/");
   await page.locator(".fall-zone").scrollIntoViewIfNeeded();
   await expect(page.locator(".fall-zone")).toHaveAttribute("data-pile", "ready", { timeout: 20_000 });
   const canvasBox = () => page.locator(".fall-canvas").boundingBox();
@@ -1806,7 +1841,7 @@ test("明るい枠のページは、保存した dark でも枠のリンクの�
   await setStoredState(page, { theme: "dark" });
   await page.goto("/apps/caflog/");
   await page.keyboard.press("Tab");
-  const link = page.locator('.app-frame-strip a[href="/"]');
+  const link = page.locator('.app-frame-strip a[href="/apps/"]');
   await link.focus();
   await expect(link).toHaveCSS("outline-color", "rgb(22, 75, 202)");
 });

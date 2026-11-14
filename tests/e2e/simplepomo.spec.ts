@@ -9,9 +9,9 @@ test("SimplePomo: published routes, bilingual legal copy and navigation", async 
     expect(response.status()).toBe(200);
     const html = await response.text();
     const title = route === "privacy/" ? "プライバシーポリシー — SimplePomo" : route === "terms/" ? "利用規約 — SimplePomo" : "SimplePomo — AppLibrary";
-    expect(html).toContain(`<meta property="og:url" content="https://app.yutodev.com/apps/simple-pomo/${route}"/>`);
+    expect(html).toContain(`<meta property="og:url" content="https://yutodev.com/apps/simple-pomo/${route}"/>`);
     expect(html).toContain(`<meta property="og:title" content="${title}"/>`);
-    expect(html).toContain('<meta property="og:image" content="https://app.yutodev.com/ogp.png"/>');
+    expect(html).toContain('<meta property="og:image" content="https://yutodev.com/ogp.png"/>');
     if (route) {
       await page.goto(`/apps/simple-pomo/${route}`);
       await expect(page.locator("body")).toHaveCSS("background-color", "rgb(255, 248, 241)");
@@ -58,7 +58,7 @@ test("SimplePomo: published routes, bilingual legal copy and navigation", async 
   await page.getByRole("link", { name: "← SimplePomo", exact: true }).click();
   await expect(page.locator("body")).toHaveCSS("background-color", "rgb(233, 237, 240)");
   await page.getByRole("link", { name: "← AppLibrary", exact: true }).click();
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL("/apps/");
   await expect(page.locator("body")).toHaveCSS("background-color", "rgb(220, 238, 255)");
   await expect(page.locator('.app-row[href="/apps/simple-pomo/"]')).toBeVisible();
   expect(errors).toEqual([]);

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "note": "一度公開した URL。消さない。app.yutodev.com からは同じパスへ転送する（/ だけ /apps/）。2026-11-14 の本番 sitemap に、/apps/ と公開ファイルを足したもの。",
+  "paths": [
+    "/",
+    "/app-ads.txt",
+    "/apps/",
+    "/apps/caflog/",
+    "/apps/caflog/privacy/",
+    "/apps/caflog/terms/",
+    "/apps/dev-tools/",
+    "/apps/dev-tools/privacy/",
+    "/apps/flower/",
+    "/apps/flower/privacy/",
+    "/apps/flower/support/",
+    "/apps/flower/terms/",
+    "/apps/pay-cycle/",
+    "/apps/pay-cycle/privacy/",
+    "/apps/pay-cycle/terms/",
+    "/apps/simple-pomo/",
+    "/apps/simple-pomo/privacy/",
+    "/apps/simple-pomo/terms/",
+    "/apps/sublog/",
+    "/apps/sublog/privacy/",
+    "/favicon.svg",
+    "/ogp.png",
+    "/privacy/",
+    "/robots.txt",
+    "/sitemap.xml",
+    "/terms/"
+  ]
+}
