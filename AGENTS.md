@@ -9,7 +9,7 @@ Next.js の静的出力 (`output: "export"`) を Cloudflare Pages で配信し�
 - 公開 URL: <https://app.yutodev.com/>
 - ホスティング: Cloudflare Pages（`main` への push で自動デプロイ）
 - DNS: Cloudflare（`app` の Pages custom domain。DNS only とし、実際のレコードは公開切替時に確認）
-- リポジトリ: <https://github.com/yuto1201/Web-AppLibrary>
+- リポジトリ: <https://github.com/yuto1201/Web-yutodev>
 
 2026-08-31 に Next.js へ移行し、2026-09-27 に Cloudflare Pages へ戻す方針を採用しました。GitHub Pages での公開は終了しています。
 
