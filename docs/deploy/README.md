@@ -4,11 +4,10 @@
 
 | 項目 | 設定 |
 |---|---|
-| 本番 URL | <https://yutodev.com/>（2026-11-14 の切り替えまでは <https://app.yutodev.com/>） |
+| 本番 URL | <https://yutodev.com/>（アプリの一覧は `/apps/`。2026-11-14 までは <https://app.yutodev.com/>） |
 | Pages プロジェクト | `applibrary`（Cloudflare account `Yuto Dev`） |
 | Pages ホスト名 | `applibrary-ag2.pages.dev` |
-| DNS（切り替え前） | `app` CNAME → `applibrary-ag2.pages.dev`、DNS only、TTL 自動 |
-| DNS（切り替え後） | `yutodev.com` → Pages custom domain、DNS only。`app` と `www` は proxied で Redirect Rules により `yutodev.com` へ 301 |
+| DNS | `yutodev.com` CNAME → `applibrary-ag2.pages.dev`（Pages custom domain）、DNS only。`app` CNAME → `applibrary-ag2.pages.dev` と `www` CNAME → `yutodev.com` は proxied で、Redirect Rules により `yutodev.com` へ 301 |
 | ソース | `yuto1201/Web-yutodev` の Git 連携（2026-11-14 に `Web-AppLibrary` から改名） |
 | 本番ブランチ | `main`（自動本番デプロイ有効） |
 | プレビュー | PR ブランチの Pages preview deployment |
@@ -19,7 +18,7 @@ Next.js は `output: "export"` で静的ファイルを生成する。Pages Func
 
 ## yutodev.com への切り替え（Issue #145）
 
-[ADR](../decisions/2026-11-14-yutodev-domain.md) と[設計](../superpowers/specs/2026-11-14-yutodev-domain-move-design.md)に従う。各段は実行の前に対象を示してユーザーの承認を得る。2026-11-14 時点で未実施。
+[ADR](../decisions/2026-11-14-yutodev-domain.md) と[設計](../superpowers/specs/2026-11-14-yutodev-domain-move-design.md)に従う。各段は実行の前に対象を示してユーザーの承認を得る。2026-11-14 に実施した（下の記録）。
 
 1. Pages `applibrary` の Custom domains に `yutodev.com` を登録する。作られた DNS レコードを DNS only に戻し、Pages の状態が「アクティブ」になるのを確かめる。この時点では今の中身が `yutodev.com` でも出るだけ。
 2. 移行の PR を `main` にマージし、`https://yutodev.com/apps/` と `https://app.yutodev.com/apps/` に新しい中身が出るのを確かめる。
@@ -28,6 +27,16 @@ Next.js は `output: "export"` で静的ファイルを生成する。Pages Func
 5. GitHub の Website 欄を `https://yutodev.com/apps/` にする。
 
 戻すときは、転送のルールを外して `app` を DNS only に戻す。301 は一度来たブラウザに残る。
+
+### 切り替えの記録（2026-11-14 / Issue #145）
+
+- Pages `applibrary` の Custom domains に `yutodev.com` を API で登録した。CNAME は自動で作られず、Pages が「CNAME record not set」で待ったため、`yutodev.com` → `applibrary-ag2.pages.dev` の CNAME を DNS only で作った。約 2 分で `active`。登録直後の `yutodev.com` は `app.yutodev.com` と同じ中身・CSP を返し、MX・SPF・DKIM は変わっていない。
+- 09:21:48 UTC に PR #146（`7ec21da`）を squash merge。約 60 秒で本番に入口のページが出た。
+- 09:22 UTC 台に、ゾーンの `http_request_dynamic_redirect` に 3 つのルールを入れた（`app.yutodev.com` の `/` → `https://yutodev.com/apps/`、`app.yutodev.com` のその他 → `concat("https://yutodev.com", http.request.uri.path)`、`www.yutodev.com` → 同じ形。すべて 301、クエリを保つ）。続けて `app` の CNAME を proxied にし、`www` CNAME → `yutodev.com`（proxied）を作った。マージから転送までの間は約 1 分。
+- 09:23 UTC に、`config/kept-urls.json` の 26 パスすべてで `yutodev.com` が 200、`app.yutodev.com` が期待どおりの 301（`/` は `/apps/`）を返すことを確かめた。クエリ付きの URL、`www`、`http://app.yutodev.com` の転送も確かめた。ブラウザで `https://app.yutodev.com/#contact` が `https://yutodev.com/apps/#contact` に着いて連絡先が表示され、外部の script と Cookie がないことを確かめた。
+- GitHub の Website 欄を `https://yutodev.com/apps/` にした。
+
+検証範囲は Chromium と上記 HTTP / DNS 観測。全地域の DNS キャッシュの反映完了や Safari 実機確認を意味しない。
 
 ## 公開切替の記録（2026-09-28 / Issue #55）
 
