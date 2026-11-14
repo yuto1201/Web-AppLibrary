@@ -7,6 +7,7 @@ import { DESK_ITEMS } from "../../src/lib/sticker-desk";
 import { appPageTone } from "../../src/lib/app-tone";
 import { statusLabel } from "../../src/lib/labels";
 import { i18n, posts } from "../../src/lib/site-data";
+import keptUrls from "../../config/kept-urls.json" with { type: "json" };
 
 test("AdMob の公開 seller ファイルを正しい形式で配信する", async ({ request }) => {
   const response = await request.get("/app-ads.txt");
@@ -1015,6 +1016,13 @@ test("/ は /apps/ へのリンクだけを置く", async ({ page }) => {
   await links.first().click();
   await expect(page).toHaveURL("/apps/");
   await expect(page.locator("#contact")).toBeVisible();
+});
+
+test("一度公開した URL はすべて 200 で返る", async ({ request }) => {
+  for (const path of keptUrls.paths) {
+    const response = await request.get(path, { maxRedirects: 0 });
+    expect(response.status(), path).toBe(200);
+  }
 });
 
 test("robots と sitemap が全静的ルートを公開する", async ({ request }) => {
