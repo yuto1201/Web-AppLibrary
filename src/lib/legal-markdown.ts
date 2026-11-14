@@ -1,5 +1,3 @@
-import project from "../../config/project.json";
-
 /**
  * アプリ側で承認された法務 Markdown を、文言を変えずに HTML へ写す。
  * 使える書式は見出し（# / ##）、1 行の段落、段落全体の太字、裸の https URL だけ。
@@ -16,7 +14,9 @@ const UNSUPPORTED_INLINE = /[*`[\]\\<~]|&(?:#\d+|#x[\da-f]+|[a-z][a-z\d]*);|(?:^
 const URL_PATTERN = /https:\/\/[A-Za-z0-9\-._~:/?#@!$&+,;=%]+/gu;
 /** 句読点で終わる URL は、その記号が URL の一部か文の区切りかが曖昧になる。 */
 const AMBIGUOUS_URL_END = /[.,;:!?]$/u;
-const productionOrigin = new URL(project.productionUrl).origin;
+/** 自サイトのオリジン。古い app.yutodev.com の URL は承認済みの原文に残るので、同じサイトとして扱う。 */
+const SITE_ORIGIN = "https://yutodev.com";
+const LEGACY_ORIGIN = "https://app.yutodev.com";
 
 export type RenderedLegalMarkdown = { title: string; body: string };
 
@@ -28,11 +28,21 @@ function escapeAttribute(value: string): string {
   return escapeText(value).replaceAll('"', "&quot;");
 }
 
+/**
+ * 自サイトの URL なら、検索部分と断片を保った相対パスを返す。ほかのサイトなら null。
+ * 古いオリジンのトップ（連絡先 #contact を含む）は、今は /apps/ にある。
+ */
+export function siteLocalPath(url: URL): string | null {
+  if (url.origin !== SITE_ORIGIN && url.origin !== LEGACY_ORIGIN) return null;
+  const pathname = url.origin === LEGACY_ORIGIN && url.pathname === "/" ? "/apps/" : url.pathname;
+  return pathname + url.search + url.hash;
+}
+
 function link(url: string): string {
-  const parsed = new URL(url);
   // 自サイトの URL は表示を原文のまま保ち、遷移先だけ相対にしてプレビューでも辿れるようにする。
-  if (parsed.origin === productionOrigin) {
-    return `<a href="${escapeAttribute(parsed.pathname + parsed.search + parsed.hash)}">${escapeText(url)}</a>`;
+  const local = siteLocalPath(new URL(url));
+  if (local !== null) {
+    return `<a href="${escapeAttribute(local)}">${escapeText(url)}</a>`;
   }
   return `<a href="${escapeAttribute(url)}" target="_blank" rel="noopener noreferrer">${escapeText(url)}</a>`;
 }
