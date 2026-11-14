@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function SitePrivacyPage() {
   return (
     <main className="legal-page" lang="ja">
-      <nav className="legal-nav"><Link href="/">← AppLibrary</Link></nav>
+      <nav className="legal-nav"><Link href="/apps/">← AppLibrary</Link></nav>
       <article className="legal-card">
         <p className="legal-eyebrow">AppLibrary</p>
         <h1>プライバシーポリシー</h1>
@@ -80,7 +80,7 @@ export default function SitePrivacyPage() {
         </p>
       </article>
       <footer className="legal-footer">
-        <Link href="/terms/">利用規約</Link><span> · </span><Link href="/">AppLibrary</Link>
+        <Link href="/terms/">利用規約</Link><span> · </span><Link href="/apps/">AppLibrary</Link>
       </footer>
     </main>
   );

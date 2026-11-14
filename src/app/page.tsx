@@ -1,29 +1,18 @@
-import { Nav } from "@/components/Nav";
-import { Hero } from "@/components/Hero";
-import { AppsSection } from "@/components/AppsSection";
-import { Stickers } from "@/components/Stickers";
-import { Workshop, Posts, Contact, Footer } from "@/components/Sections";
-import { ActivateProvider } from "@/lib/activate";
-import { FallingFooter } from "@/components/FallingFooter";
+import type { Metadata } from "next";
 
-export default function HomePage() {
+export const metadata: Metadata = {
+  title: "yutodev.com",
+};
+
+/** yutodev.com の入口。個人サイトを作るまでは、アプリの一覧（/apps/）へのリンクだけを置く。 */
+export default function RootPage() {
   return (
-    <ActivateProvider>
-      <div className="poster">
-        <Nav />
-        {/* シールは紙の上に見えるので、フッターの後ではなく Nav の次に置く。 */}
-        <Stickers />
-        <main className="page">
-          <Hero />
-          <AppsSection />
-          <Workshop />
-          <Posts />
-          <Contact />
-        </main>
-        <FallingFooter>
-          <Footer />
-        </FallingFooter>
-      </div>
-    </ActivateProvider>
+    <main className="door">
+      <a className="door-link" href="/apps/">
+        <span lang="ja">アプリの一覧へ</span>
+        <span className="door-link-en" lang="en">Apps</span>
+        <span aria-hidden="true"> →</span>
+      </a>
+    </main>
   );
 }

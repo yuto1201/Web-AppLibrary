@@ -5,7 +5,7 @@ import { appLinks, showsStoreFacts } from "../src/lib/app-links";
 describe("appLinks", () => {
   it("サポートは花島だけ専用ページ、ほかは連絡先", () => {
     expect(appLinks(getApp("flower")!).support).toBe("/apps/flower/support/");
-    expect(appLinks(getApp("caflog")!).support).toBe("/#contact");
+    expect(appLinks(getApp("caflog")!).support).toBe("/apps/#contact");
   });
   it("利用規約は持つアプリだけ", () => {
     expect(appLinks(getApp("caflog")!).terms).toBe("/apps/caflog/terms/");

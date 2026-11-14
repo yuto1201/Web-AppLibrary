@@ -58,7 +58,7 @@ test("SimplePomo: published routes, bilingual legal copy and navigation", async 
   await page.getByRole("link", { name: "← SimplePomo", exact: true }).click();
   await expect(page.locator("body")).toHaveCSS("background-color", "rgb(233, 237, 240)");
   await page.getByRole("link", { name: "← AppLibrary", exact: true }).click();
-  await expect(page).toHaveURL("/");
+  await expect(page).toHaveURL("/apps/");
   await expect(page.locator("body")).toHaveCSS("background-color", "rgb(220, 238, 255)");
   await expect(page.locator('.app-row[href="/apps/simple-pomo/"]')).toBeVisible();
   expect(errors).toEqual([]);

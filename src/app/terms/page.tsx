@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 export default function TermsPage() {
   return (
     <main className="legal-page" lang="ja">
-      <nav className="legal-nav"><Link href="/">← AppLibrary</Link></nav>
+      <nav className="legal-nav"><Link href="/apps/">← AppLibrary</Link></nav>
       <article className="legal-card">
         <p className="legal-eyebrow">AppLibrary</p>
         <h1>利用規約</h1>
@@ -74,7 +74,7 @@ export default function TermsPage() {
         </p>
       </article>
       <footer className="legal-footer">
-        <Link href="/privacy/">プライバシー</Link><span> · </span><Link href="/">AppLibrary</Link>
+        <Link href="/privacy/">プライバシー</Link><span> · </span><Link href="/apps/">AppLibrary</Link>
       </footer>
     </main>
   );

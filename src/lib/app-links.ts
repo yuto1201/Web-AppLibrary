@@ -12,7 +12,7 @@ export type AppLinks = {
 /** アプリの「このアプリについて」に並べるリンクの行き先。専用ページを持たないものは連絡先 / null。 */
 export function appLinks(app: App): AppLinks {
   return {
-    support: Object.hasOwn(supportDocuments, app.slug) ? `/apps/${app.slug}/support/` : "/#contact",
+    support: Object.hasOwn(supportDocuments, app.slug) ? `/apps/${app.slug}/support/` : "/apps/#contact",
     privacy: `/apps/${app.slug}/privacy/`,
     terms: Object.hasOwn(termsDocuments, app.slug) ? `/apps/${app.slug}/terms/` : null,
     store: app.appStoreUrl,
