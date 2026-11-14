@@ -82,10 +82,16 @@ function heading(block: string, marker: "# " | "## "): string {
   return inline(text);
 }
 
-/** `# 見出し` / `Status: Confirmed` で始まる承認済みの原文だけを受け付ける。 */
+/**
+ * `# 見出し` と `Status: Confirmed` で始まる承認済みの原文だけを受け付ける。
+ * 2 行の順番はどちらでもよい（花島は見出しが先、SubLog は Status 行が先）。
+ */
 export function renderLegalMarkdown(source: string): RenderedLegalMarkdown {
   if (source.includes("\r")) throw new Error("改行は LF に限る");
-  const [titleBlock, statusBlock, ...blocks] = source.replace(/\n+$/u, "").split(/\n{2,}/u);
+  const [first, second, ...blocks] = source.replace(/\n+$/u, "").split(/\n{2,}/u);
+  const statusFirst = first?.startsWith("Status:") ?? false;
+  const titleBlock = statusFirst ? second : first;
+  const statusBlock = statusFirst ? first : second;
   if (!titleBlock?.startsWith("# ") || titleBlock.includes("\n")) throw new Error("先頭は 1 行の # 見出しにする");
   // Status 行は文書管理の印として表示しない（Issue #92 で所有者が決定）。未確定の原文は公開しない。
   if (statusBlock !== CONFIRMED) throw new Error(`${CONFIRMED} の原文だけを公開する`);
@@ -106,8 +112,10 @@ export function renderLegalMarkdown(source: string): RenderedLegalMarkdown {
 export function bilingualLegalHtml({ id, appName, ja, en }: { id: string; appName: { ja: string; en: string }; ja: string; en: string }): string {
   const japanese = renderLegalMarkdown(ja);
   const english = renderLegalMarkdown(en);
+  // 題がすでにアプリ名で始まる原文（SubLog）には、アプリ名を足さない。
+  const named = (name: string, title: string) => (title.startsWith(escapeText(name)) ? title : `${escapeText(name)} ${title}`);
   return `
-<h1>${escapeText(appName.ja)} ${japanese.title} / <span lang="en">${escapeText(appName.en)} ${english.title}</span></h1>
+<h1>${named(appName.ja, japanese.title)} / <span lang="en">${named(appName.en, english.title)}</span></h1>
 <p class="legal-language">本ページは日本語と英語で提供しています。 <span lang="en">This page is available in Japanese and English.</span></p>
 <nav class="legal-language-switch" aria-label="言語 / Language"><a href="#${id}-ja">日本語</a><span> · </span><a href="#${id}-en" lang="en">English</a></nav>
 

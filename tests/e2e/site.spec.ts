@@ -3,6 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { apps, getApp } from "../../src/data/registry";
+import { supportDocuments } from "../../src/data/support/registry";
 import { DESK_ITEMS } from "../../src/lib/sticker-desk";
 import { appPageTone } from "../../src/lib/app-tone";
 import { statusLabel } from "../../src/lib/labels";
@@ -18,10 +19,6 @@ test("AdMob の公開 seller ファイルを正しい形式で配信する", asy
 
 const privacyContacts: Record<string, { label: string; url: string }> = {
   "pay-cycle": { label: "開発者の連絡先", url: "https://app.yutodev.com/#contact" },
-  sublog: {
-    label: "SubLog お問い合わせフォーム",
-    url: "https://docs.google.com/forms/d/e/1FAIpQLSfm2fsJLBAy4CVIBscx2ueab2znR5pYTzxZo7ntUULdtaoODg/viewform",
-  },
   caflog: { label: "開発者の連絡先", url: "https://app.yutodev.com/#contact" },
   "dev-tools": { label: "Dev-Tools お問い合わせ", url: "https://github.com/yuto1201/Dev-Tools/issues" },
 };
@@ -1019,6 +1016,30 @@ test("/ は /apps/ へのリンクだけを置く", async ({ page }) => {
   await expect(page.locator("#contact")).toBeVisible();
 });
 
+test("SubLog の法務 3 ページは日英を 1 ページに置き、互いにリンクする", async ({ page }) => {
+  const titles = {
+    support: "SubLog サポート / SubLog Support",
+    privacy: "SubLog プライバシーポリシー / SubLog Privacy Policy",
+    terms: "SubLog 利用規約 / SubLog Terms of Use",
+  } as const;
+  const labels = { support: "サポート", privacy: "プライバシー", terms: "利用規約" } as const;
+  for (const [kind, title] of Object.entries(titles) as [keyof typeof titles, string][]) {
+    const response = await page.goto(`/apps/sublog/${kind}/`);
+    expect(response?.status(), kind).toBe(200);
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
+    await expect(page.locator(`section#sublog-${kind}-ja[lang='ja']`)).toBeVisible();
+    await expect(page.locator(`section#sublog-${kind}-en[lang='en']`)).toBeVisible();
+    await expect(page.getByRole("link", { name: "English", exact: true })).toHaveAttribute("href", `#sublog-${kind}-en`);
+    await expect(page.locator("body")).not.toContainText("Status:");
+    const footer = page.locator("footer.page-footer");
+    for (const other of Object.keys(titles).filter((k) => k !== kind) as (keyof typeof titles)[]) {
+      const pattern = other === "privacy" ? /プライバシー/u : new RegExp(`^${labels[other]}$`, "u");
+      await expect(footer.getByRole("link", { name: pattern }), `${kind} → ${other}`).toHaveAttribute("href", `/apps/sublog/${other}/`);
+    }
+    await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+});
+
 test("一度公開した URL はすべて 200 で返る", async ({ request }) => {
   for (const path of keptUrls.paths) {
     const response = await request.get(path, { maxRedirects: 0 });
@@ -1410,13 +1431,25 @@ for (const app of apps.filter(({ slug }) => !["simple-pomo", "flower"].includes(
       await expect(page.getByRole("heading", { level: 1 })).toHaveText("CafLog 利用規約 / Terms of Use");
       await page.goBack();
       await expect(page).toHaveURL(/\/apps\/caflog\/privacy\/$/u);
+    } else if (app.slug === "sublog") {
+      // Issue #141: SubLog 2.0 のポリシーは日英を 1 ページに置き、連絡先はメールアドレスを本文に書く。
+      await expect(page.getByRole("heading", { level: 1 })).toHaveText("SubLog プライバシーポリシー / SubLog Privacy Policy");
+      await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese and English.");
+      await expect(page.locator("section#sublog-privacy-ja[lang='ja']")).toContainText("FloatRates");
+      await expect(page.locator("section#sublog-privacy-en[lang='en']")).toContainText("support@yutodev.com");
+      await expectLegalHeadingHierarchy(page);
+      const footer = page.locator("footer.page-footer");
+      await expect(footer.getByRole("link", { name: "利用規約", exact: true })).toHaveAttribute("href", "/apps/sublog/terms/");
+      await expect(footer.getByRole("link", { name: "サポート", exact: true })).toHaveAttribute("href", "/apps/sublog/support/");
     } else {
       await expect(page.locator(".legal-language [lang='en']")).toHaveText("This page is available in Japanese only.");
     }
-    const expectedContact = privacyContacts[app.slug]!;
-    const contact = page.getByRole("link", { name: expectedContact.label, exact: true });
-    await expect(contact).toBeVisible();
-    await expect(contact).toHaveAttribute("href", expectedContact.url);
+    const expectedContact = privacyContacts[app.slug];
+    if (expectedContact) {
+      const contact = page.getByRole("link", { name: expectedContact.label, exact: true });
+      await expect(contact).toBeVisible();
+      await expect(contact).toHaveAttribute("href", expectedContact.url);
+    }
     await expect(page.locator("footer.page-footer")).toBeVisible();
     await expect(page.locator('meta[property="og:url"]')).toHaveAttribute(
       "content",
@@ -1710,7 +1743,7 @@ for (const app of apps) {
     // 値段と版は公開中のアプリだけ。
     await expect(about.getByText(app.price, { exact: true })).toHaveCount(app.appStoreUrl ? 1 : 0);
     await expect(about.getByText(app.version, { exact: true })).toHaveCount(app.appStoreUrl ? 1 : 0);
-    await expect(about.locator(`a[href="${app.slug === "flower" ? "/apps/flower/support/" : "/apps/#contact"}"]`)).toHaveCount(1);
+    await expect(about.locator(`a[href="${Object.hasOwn(supportDocuments, app.slug) ? `/apps/${app.slug}/support/` : "/apps/#contact"}"]`)).toHaveCount(1);
     await expect(about.locator(`a[href="/apps/${app.slug}/privacy/"]`)).toHaveCount(1);
     await expect(frame.locator(".app-frame-others a")).toHaveCount(apps.length - 1);
     // 重なるリンクが残っていない: 「AppLibrary」へのリンクはページ全体で帯の 1 つだけ。

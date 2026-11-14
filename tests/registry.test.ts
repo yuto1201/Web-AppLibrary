@@ -39,7 +39,7 @@ describe("apps registry", () => {
   });
 
   it("PayCycle の日英利用規約が承認済み条件とApple標準EULAを保持する", () => {
-    expect(Object.keys(termsDocuments).sort()).toEqual(["caflog", "flower", "pay-cycle", "simple-pomo"]);
+    expect(Object.keys(termsDocuments).sort()).toEqual(["caflog", "flower", "pay-cycle", "simple-pomo", "sublog"]);
     const document = termsDocuments["pay-cycle"]!;
     const japanese = document.match(/<section[^>]*lang="ja"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
     const english = document.match(/<section[^>]*lang="en"[^>]*>([\s\S]*?)<\/section>/u)?.[1] ?? "";
@@ -238,20 +238,13 @@ describe("apps registry", () => {
     }
   });
 
-  it("SubLog の公開ポリシーが StoreKit 検出とリセット範囲を明示する", () => {
+  it("SubLog の公開ポリシーは 2.0 の承認済み原文（日英）で、旧版の本文を残さない", () => {
     const document = privacyDocuments.sublog!;
-    expect(document).toContain("検証済み取引履歴");
-    expect(document).toContain("商品 ID、価格、通貨、期限");
-    expect(document).toContain("通知履歴、表示や同期などの設定");
-    expect(document).toContain("通常の請求日前通知");
-    expect(document).toContain("無料トライアル終了、契約記念日、月次レポートの保留中通知");
-    expect(document).toContain("iOS のカレンダーへのフルアクセス");
-    expect(document).toContain("登録内容と一致しない予定を削除");
-    expect(document).toContain("本アプリと無関係な予定を保存しないでください");
-    expect(document).toContain("カレンダーへ同期済みの予定");
-    expect(document).toContain("Spotlight の検索インデックス");
-    expect(document).toContain("アプリをアンインストールすると削除されます");
-    expect(document).toContain("App Store の取引履歴は、この操作の対象ではありません");
+    expect(document).toContain('<section id="sublog-privacy-ja" lang="ja">');
+    expect(document).toContain('<section id="sublog-privacy-en" lang="en">');
+    expect(document).toContain("support@yutodev.com");
+    expect(document).not.toContain("検証済み取引履歴");
+    expect(document).not.toContain("docs.google.com");
   });
 
   it("SubLog 1.0 のサービス候補数を App Store の配布情報と一致させる", () => {
@@ -377,7 +370,7 @@ describe("Flower publication", () => {
       name: "花島", platforms: ["iOS", "iPadOS"], status: "alpha", releaseDate: null,
       icon: "icon.png", screenshots: [], appStoreUrl: null, siteUrl: null,
     });
-    expect(Object.keys(supportDocuments)).toEqual(["flower"]);
+    expect(Object.keys(supportDocuments)).toContain("flower");
     for (const document of [supportDocuments.flower, privacyDocuments.flower, termsDocuments.flower]) {
       expect(document).toMatch(/<section id="flower-(?:support|privacy|terms)-ja" lang="ja">/u);
       expect(document).toMatch(/<section id="flower-(?:support|privacy|terms)-en" lang="en">/u);
