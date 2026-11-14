@@ -6,6 +6,12 @@ import {
   type FlowerLegalKind,
   type FlowerLegalLanguage,
 } from "@/data/legal-sources/flower";
+import {
+  readSublogLegalSource,
+  sublogLegalSource,
+  type SublogLegalKind,
+  type SublogLegalLanguage,
+} from "@/data/legal-sources/sublog";
 import { privacyDocuments } from "@/data/privacy/registry";
 import { supportDocuments } from "@/data/support/registry";
 import { termsDocuments } from "@/data/terms/registry";
@@ -81,7 +87,57 @@ describe("Flower の承認済み法務原文", () => {
   });
 });
 
+describe("SubLog の承認済み法務原文（iOS-SubLog #250、Issue #141）", () => {
+  const sublogPages: Record<SublogLegalKind, string | undefined> = {
+    support: supportDocuments.sublog,
+    privacy: privacyDocuments.sublog,
+    terms: termsDocuments.sublog,
+  };
+  const sublogKinds = Object.keys(sublogLegalSource.digests) as SublogLegalKind[];
+
+  it("iOS-SubLog #250 で承認されたファイルを digest どおりに保持する", () => {
+    expect(sublogKinds).toEqual(["support", "privacy", "terms"]);
+    for (const kind of sublogKinds) {
+      for (const language of Object.keys(languages) as SublogLegalLanguage[]) {
+        const digest = createHash("sha256").update(readSublogLegalSource(kind, language)).digest("hex");
+        expect(digest, `${language}/${kind}.md`).toBe(sublogLegalSource.digests[kind][language]);
+      }
+    }
+  });
+
+  it("support・privacy・terms の各ページに日英の原文を全文載せ、Status 行は出さない", () => {
+    for (const kind of sublogKinds) {
+      const page = sublogPages[kind]!;
+      expect(page, kind).toBeDefined();
+      expect(page).not.toContain("Status:");
+      for (const [language, lang] of Object.entries(languages) as [SublogLegalLanguage, string][]) {
+        const text = visibleText(section(page, `sublog-${kind}-${lang}`));
+        for (const block of sourceBlocks(readSublogLegalSource(kind, language))) expect(text).toContain(block);
+      }
+      expect(page).toContain(`<a href="#sublog-${kind}-ja">日本語</a>`);
+      expect(page).toContain(`<a href="#sublog-${kind}-en" lang="en">English</a>`);
+    }
+  });
+
+  it("題にアプリ名を二重に付けない", () => {
+    expect(sublogPages.support).toContain('<h1>SubLog サポート / <span lang="en">SubLog Support</span></h1>');
+    expect(sublogPages.privacy).toContain('<h1>SubLog プライバシーポリシー / <span lang="en">SubLog Privacy Policy</span></h1>');
+    expect(sublogPages.terms).toContain('<h1>SubLog 利用規約 / <span lang="en">SubLog Terms of Use</span></h1>');
+  });
+});
+
 describe("法務 Markdown の描画", () => {
+  it("Status 行が題の前にある原文も受け付け、題は Status 行の後の見出しにする", () => {
+    expect(renderLegalMarkdown("Status: Confirmed\n\n# Title\n\nBody\n")).toEqual({ title: "Title", body: "<p>Body</p>" });
+    expect(() => renderLegalMarkdown("Status: Draft\n\n# Title\n\nBody\n")).toThrow();
+    expect(() => renderLegalMarkdown("Status: Confirmed\n\nBody\n")).toThrow();
+  });
+
+  it("題がアプリ名で始まるときは、アプリ名を前に足さない", () => {
+    const html = bilingualLegalHtml({ id: "app-support", appName: { ja: "App", en: "App" }, ja: "Status: Confirmed\n\n# App サポート\n\n本文\n", en: "Status: Confirmed\n\n# App Support\n\nBody\n" });
+    expect(html).toContain('<h1>App サポート / <span lang="en">App Support</span></h1>');
+  });
+
   it("見出し・太字の段落・本文を、文言を変えずに描く", () => {
     expect(renderLegalMarkdown(`${confirmed}## 見出し\n\n**質問 & 答え**\n\n本文 3 > 2、@Yuto_Program\n`)).toEqual({
       title: "Title",

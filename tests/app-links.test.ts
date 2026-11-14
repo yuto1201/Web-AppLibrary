@@ -9,7 +9,8 @@ describe("appLinks", () => {
   });
   it("利用規約は持つアプリだけ", () => {
     expect(appLinks(getApp("caflog")!).terms).toBe("/apps/caflog/terms/");
-    expect(appLinks(getApp("sublog")!).terms).toBeNull();
+    expect(appLinks(getApp("sublog")!).terms).toBe("/apps/sublog/terms/");
+    expect(appLinks(getApp("dev-tools")!).terms).toBeNull();
   });
   it("App Store は公開中のアプリだけ", () => {
     expect(appLinks(getApp("pay-cycle")!).store).toBe(getApp("pay-cycle")!.appStoreUrl);
