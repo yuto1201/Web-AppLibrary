@@ -893,7 +893,7 @@ test("フッターの奥付は既定で閉じており、開くと本文とリ�
   await expect(body).toBeVisible();
 
   const sourceLink = colophon.getByRole("link");
-  await expect(sourceLink).toHaveAttribute("href", "https://github.com/yuto1201/Web-AppLibrary");
+  await expect(sourceLink).toHaveAttribute("href", "https://github.com/yuto1201/Web-yutodev");
   await expect(sourceLink).toHaveAttribute("target", "_blank");
 
   // 既存のフッター（著作権表示・法務リンク）は壊れていない。

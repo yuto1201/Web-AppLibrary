@@ -8,7 +8,7 @@
 個人開発したアプリを紹介する Web サイト。iOS に限らず、macOS / Web / CLI などプラットフォームを問わず掲載する。liquid-glass デザインを標準採用。
 
 - 制作: [@Yuto_Program](https://x.com/Yuto_Program)
-- リポジトリ: <https://github.com/yuto1201/Web-AppLibrary>
+- リポジトリ: <https://github.com/yuto1201/Web-yutodev>
 - 公開先: <https://app.yutodev.com/>（Cloudflare Pages）
 
 Next.js の静的出力を Cloudflare Pages で配信する。サーバー処理・DB・認証は使わない。
@@ -77,7 +77,7 @@ sessionStorage.removeItem('applibrary_hero_seen'); location.reload();
 - SubLog / CafLog / Dev-Tools の 3 本を掲載
 - iOS と Web のプラットフォーム絞り込みを実データで検証
 
-未完了項目は GitHub の [Issues](https://github.com/yuto1201/Web-AppLibrary/issues) で管理する。
+未完了項目は GitHub の [Issues](https://github.com/yuto1201/Web-yutodev/issues) で管理する。
 
 ---
 

@@ -11,7 +11,7 @@ const repositoryPath = z.string().min(1).refine((value) =>
 export const projectSchema = z.strictObject({
   schemaVersion: z.literal(1),
   name: z.literal("AppLibrary"),
-  repository: z.literal("yuto1201/Web-AppLibrary"),
+  repository: z.literal("yuto1201/Web-yutodev"),
   productionUrl: z.literal("https://app.yutodev.com/"),
   profile: z.literal("static-site"),
   hosting: z.literal("cloudflare-pages"),

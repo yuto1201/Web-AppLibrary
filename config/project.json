@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "name": "AppLibrary",
-  "repository": "yuto1201/Web-AppLibrary",
+  "repository": "yuto1201/Web-yutodev",
   "productionUrl": "https://app.yutodev.com/",
   "profile": "static-site",
   "hosting": "cloudflare-pages",

@@ -8,7 +8,7 @@
 | Pages プロジェクト | `applibrary`（Cloudflare account `Yuto Dev`） |
 | Pages ホスト名 | `applibrary-ag2.pages.dev` |
 | DNS | `app` CNAME → `applibrary-ag2.pages.dev`、DNS only、TTL 自動 |
-| ソース | `yuto1201/Web-AppLibrary` の Git 連携 |
+| ソース | `yuto1201/Web-yutodev` の Git 連携（2026-11-14 に `Web-AppLibrary` から改名） |
 | 本番ブランチ | `main`（自動本番デプロイ有効） |
 | プレビュー | PR ブランチの Pages preview deployment |
 | ビルド | `npm run build`、出力ディレクトリ `out` |

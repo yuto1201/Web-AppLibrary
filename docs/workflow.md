@@ -39,8 +39,8 @@ Ruleset は default branch だけを対象にし、bypass actor を持たない�
 `config/workflow.json`、`.github/workflows/ci.yml`、`config/github-ruleset.json` の check 名がずれた場合は `npm run policy` が失敗する。ライブ設定の変更は export の編集だけでは完了せず、次の GitHub API で Ruleset 一覧と ID `21968432` の詳細を確認する。
 
 ```bash
-gh api repos/yuto1201/Web-AppLibrary/rulesets
-gh api repos/yuto1201/Web-AppLibrary/rulesets/21968432
+gh api repos/yuto1201/Web-yutodev/rulesets
+gh api repos/yuto1201/Web-yutodev/rulesets/21968432
 ```
 
 2026-09-01 に、default branch に適用される active なリポジトリ Ruleset はこの 1 件で、export と実効設定が一致することを確認した。この記録は取得時点の証拠であり、`npm run policy` は GitHub のライブ状態を取得しない。
